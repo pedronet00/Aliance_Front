@@ -1,0 +1,163 @@
+import apiClient from "@/api/apiClient";
+import GenericTable from "@/components/tables/GenericTable";
+import { useEffect, useState } from "react";
+import { MoreDotIcon } from "@/icons";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import PageMeta from "@/components/common/PageMeta";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import ComponentCard from "@/components/common/ComponentCard";
+import { useNavigate } from "react-router-dom";
+import { showDeletedToast, showErrorToast} from "@/components/toast/Toasts";
+import { Button } from "@/components/ui/button";
+import { AccountPayable } from "@/types/AccountPayable/AccountPayable";
+import Badge from "@/components/ui/badge/Badge";
+
+export default function AccountPayableList() {
+  const [accounts, setAccounts] = useState<AccountPayable[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [filterNome, setFilterNome] = useState("");
+  const [filterCnpj, setFilterCnpj] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    apiClient
+      .get("/AccountPayable")
+      .then((res) => setAccounts(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleEditar = (u: AccountPayable) => {
+    navigate(`/fornecedores/editar/${u.id}`);
+  };
+
+  const handleExcluir = async (u: AccountPayable) => {
+    try {
+      await apiClient.delete(`/AccountPayable/${u.id}`);
+      showDeletedToast();
+      setAccounts((prev) => prev.filter((c) => c.id !== u.id));
+    } catch (error) {
+      showErrorToast("Erro ao deletar conta: " + error);
+    }
+  };
+
+  const columns = [
+    { key: "description", label: "Descrição" },
+    { key: "dueDate", label: "Data de vencimento" },
+    { key: "amount", label: "Valor" },
+    { key: "paymentDate", label: "Data de pagamento" },
+    { key: "costCenterName", label: "Centro de Custo" },
+    {
+        key: "accountStatus",
+        label: "Status",
+        render: (c: AccountPayable) => {
+            const statusMap: Record<string, { color: string; label: string }> = {
+            Pendente:   { color: "warning", label: "Pendente" },
+            Paga:       { color: "success", label: "Paga" },
+            Atrasada:   { color: "error",   label: "Atrasada" },
+            Parcial:    { color: "info",    label: "Parcial" },
+            Cancelada:  { color: "secondary", label: "Cancelada" },
+            };
+
+            const status = statusMap[c.accountStatus] ?? { color: "default", label: c.accountStatus };
+
+            return (
+            <Badge size="sm" color={status.color}>
+                {status.label}
+            </Badge>
+            );
+        }
+    },
+    {
+      label: "Ações",
+      render: (u: AccountPayable) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+              <MoreDotIcon />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => handleEditar(u)}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => handleExcluir(u)}
+              className="text-destructive focus:text-destructive"
+            >
+              <span>Excluir</span>
+              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
+    
+  const contasFiltradas = accounts.filter((c) => {
+    return (
+        c.description.toLowerCase().includes(filterNome.toLowerCase()) &&
+        c.guid.toLowerCase().includes(filterCnpj.toLowerCase()) &&
+        (filterStatus === "" ||
+            (filterStatus === "ativo" && c.accountStatus) ||
+            (filterStatus === "inativo" && !c.accountStatus))
+    );
+  });
+
+  if (loading) return <p>Carregando...</p>;
+
+  return (
+    <>
+      <PageMeta title="Contas a Pagar" description="Lista de Contas a Pagar" />
+      <PageBreadcrumb pageTitle="Contas a Pagar" />
+      <div className="space-y-6">
+        <ComponentCard title="Lista de Contas a Pagar">
+          <div className="flex flex-col gap-3 mb-6">
+            <div className="flex gap-3">
+              <Button
+                onClick={() => (window.location.href = "/contas-a-pagar/criar")}
+              >
+                Nova conta a pagar
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setShowFilters((prev) => !prev)}
+              >
+                {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
+              </Button>
+            </div>
+
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <input
+                  type="text"
+                  placeholder="Filtrar por descrição"
+                  value={filterNome}
+                  onChange={(e) => setFilterNome(e.target.value)}
+                  className="border p-2 rounded w-full"
+                />
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="border p-2 rounded w-full"
+                >
+                  <option value="">Todos os Status</option>
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          <GenericTable columns={columns} data={contasFiltradas} />
+        </ComponentCard>
+      </div>
+    </>
+  );
+}
