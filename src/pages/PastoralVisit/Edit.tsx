@@ -1,39 +1,39 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import FormPatrimony, { PatrimonyFormData } from "../Forms/FormPatrimony";
+import FormPastoralVisit, { PastoralVisitFormData } from "../Forms/FormPastoralVisit";
 import { showEditedSuccessfullyToast } from "@/components/toast/Toasts";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 
-export default function PatrimonyEdit() {
+export default function PastoralVisitEdit() {
   const { guid } = useParams();
   const navigate = useNavigate();
-  const [patrimony, setPatrimony] = useState<PatrimonyFormData | null>(null);
+  const [visit, setVisit] = useState<PastoralVisitFormData | null>(null);
 
   useEffect(() => {
-    apiClient.get(`/Patrimony/${guid}`).then((res) => {
-      setPatrimony(res.data);
+    apiClient.get(`/PastoralVisit/${guid}`).then((res) => {
+      setVisit(res.data);
     });
   }, [guid]);
 
-  const handleSubmit = async (data: PatrimonyFormData) => {
-    await apiClient.put(`/Patrimony`, data);
+  const handleSubmit = async (data: PastoralVisitFormData) => {
+    await apiClient.put(`/PastoralVisit/${guid}`, data);
     showEditedSuccessfullyToast();
-    navigate("/patrimonios");
+    navigate("/visitas-pastorais");
   };
 
-   if (!patrimony) return <LoadingSpinner/>;
+   if (!visit) return <LoadingSpinner/>;
 
   return (
     <>
-        <PageMeta title="Editar Patrimônio" description="Editar Patrimônio" />
-        <PageBreadcrumb pageTitle="Editar Patrimônio" />
+        <PageMeta title="Editar Visita" description="Editar Visita" />
+        <PageBreadcrumb pageTitle="Editar Visita" />
             <div className="space-y-6">
                 <ComponentCard title="">
-                    <FormPatrimony initialData={patrimony} onSubmit={handleSubmit} />
+                    <FormPastoralVisit initialData={visit} onSubmit={handleSubmit} />
                 </ComponentCard>
             </div>
     </>

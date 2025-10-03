@@ -43,6 +43,7 @@ import UsuariosList from "./pages/Usuarios/List";
 import UsuariosCreate from "./pages/Usuarios/Create";
 import PastoralVisitCreate from "./pages/PastoralVisit/Create";
 import PastoralVisitList from "./pages/PastoralVisit/List";
+import PastoralVisitEdit from "./pages/PastoralVisit/Edit";
 
 export default function App() {
   return (
@@ -72,6 +73,7 @@ export default function App() {
               <Route path="/membros/criar" element={<UsuariosCreate />} />
               <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
               <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />
+              <Route path="/visitas-pastorais/editar/:guid" element={<PastoralVisitEdit />} />
               <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
               <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
               <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />

@@ -17,6 +17,7 @@ import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { PastoralVisit } from "@/types/PastoralVisit/PastoralVisit";
+import VisitDescriptionModal from "./DescriptionModal";
 
 export default function PastoralVisitList() {
   const [visits, setVisits] = useState<PastoralVisit[]>([]);
@@ -24,6 +25,8 @@ export default function PastoralVisitList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterDescription, setFilterDescription] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [selectedVisit, setSelectedVisit] = useState<PastoralVisit | null>(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +52,11 @@ export default function PastoralVisitList() {
   };
 
   const columns = [
-    { key: "visitDate", label: "Data da Visita", render: (v: PastoralVisit) => new Date(v.visitDate).toLocaleDateString() },
+    { key: "visitDate", label: "Data da Visita", render: (v: PastoralVisit) => new Date(v.visitDate).toLocaleString("pt-BR", { 
+  dateStyle: "medium", 
+  timeStyle: "medium" 
+})
+},
     { key: "pastorName", label: "Pastor" },
     { key: "visitedMemberName", label: "Visitado" },
     {
@@ -80,7 +87,7 @@ export default function PastoralVisitList() {
 
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(v)}>Editar</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate(`/visitas-pastorais/${v.guid}`)}>
+            <DropdownMenuItem onClick={() => setSelectedVisit(v)}>
               Ver detalhes
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -108,6 +115,7 @@ export default function PastoralVisitList() {
     <>
       <PageMeta title="Visitas Pastorais" description="Lista de Visitas Pastorais" />
       <PageBreadcrumb pageTitle="Visitas Pastorais" />
+      <VisitDescriptionModal visit={selectedVisit} onClose={() => setSelectedVisit(null)} />
       <div className="space-y-6">
         <ComponentCard title="Lista de Visitas Pastorais">
           <div className="flex flex-col gap-3 mb-6">

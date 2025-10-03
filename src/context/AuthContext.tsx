@@ -8,6 +8,7 @@ interface User {
   email: string;
   role: string;
   churchId: number;
+  name: string;
 }
 
 interface AuthContextType {
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const decoded = jwtDecode<any>(token);
     const userInfo = {
       email: decoded.email,
+      name: decoded.unique_name,
       role: decoded.role,
       churchId: parseInt(decoded.churchId),
     };
@@ -76,6 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userInfo = {
           email: decoded.email,
           role: decoded.role,
+          name: decoded.unique_name,
           churchId: parseInt(decoded.churchId),
         };
         setUser(userInfo);

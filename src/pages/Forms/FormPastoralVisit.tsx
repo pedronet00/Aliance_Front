@@ -20,6 +20,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
     if (initialData) {
       return {
         ...initialData,
+        visitDate: new Date(initialData.visitDate), // garante Date
         churchId: user?.churchId ?? 0,
       };
     }
@@ -27,9 +28,9 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
     return {
       visitDate: new Date(),
       description: "",
-      visitedMemberId: "", // string vazia ao invés de 0
-      pastorId: "",        // string vazia ao invés de 0
-      status: "Agendado",  // default
+      visitedMemberId: "",
+      pastorId: "",
+      status: "Agendado",
       churchId: user?.churchId ?? 0,
     };
   });
@@ -43,7 +44,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
       .get("/User/pastores")
       .then((res) => {
         const options = res.data.result.map((p: any) => ({
-          value: p.id, // GUID do backend
+          value: p.id,
           label: p.userName,
         }));
         setPastoresOptions(options);
@@ -61,7 +62,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
       .get("/User")
       .then((res) => {
         const options = res.data.result.map((m: any) => ({
-          value: m.id, // GUID do backend
+          value: m.id,
           label: m.userName,
         }));
         setMembrosOptions(options);
@@ -82,19 +83,45 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+
+    // Normaliza para string ISO sem timezone
+    const payload: PastoralVisitDTO = {
+      ...formData,
+      visitDate: formatDateTimeLocal(new Date(formData.visitDate))
+    };
+
+    await onSubmit(payload);
   };
+
+  function formatDateTimeLocal(date: Date) {
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes())
+  );
+}
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <Label>Data da Visita</Label>
-        <Input
-          type="date"
-          value={formData.visitDate.toISOString().split("T")[0]}
-          onChange={(e) => setFormData({ ...formData, visitDate: new Date(e.target.value) })}
-        />
-      </div>
+  <Label>Data da Visita</Label>
+  <Input
+    type="datetime-local"
+    value={formData.visitDate ? formatDateTimeLocal(new Date(formData.visitDate)) : ""}
+    onChange={(e) =>
+      setFormData({ ...formData, visitDate: new Date(e.target.value) })
+    }
+  />
+</div>
+
 
       <div>
         <Label>Descrição</Label>
