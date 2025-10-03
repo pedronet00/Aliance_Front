@@ -47,14 +47,25 @@ export default function PatrimonyMaintenanceList() {
     { key: "patrimonyName", label: "Patrimônio" },
     { key: "maintenanceDate", label: "Data da manutenção", render: (c: PatrimonyMaintenance) => new Date(c.maintenanceDate).toLocaleDateString() },
     { key: "description", label: "Descrição" },
-    // {
-    //   key: "status",
-    //   label: "Status",
-    //   render: (c: PatrimonyMaintenance) =>
-    //     <Badge size="sm" color={c.status == true ? "success" : "error"}>
-    //       {c.status == true ? "Ativo" : "Inativo"}
-    //     </Badge>
-    // },
+    {
+        key: "Status",
+        label: "Status",
+        render: (c: PatrimonyMaintenance) => {
+            const statusMap: Record<string, { color: string; label: string }> = {
+            Agendado:   { color: "warning", label: "Agendado" },
+            Concluido:       { color: "success", label: "Concluido" },
+            Cancelado:   { color: "error",   label: "Cancelado" },
+            };
+
+            const status = statusMap[c.status] ?? { color: "default", label: c.status };
+
+            return (
+            <Badge size="sm" color={status.color}>
+                {status.label}
+            </Badge>
+            );
+        }
+    },
     {
       label: "Ações",
       render: (u: PatrimonyMaintenance) => (

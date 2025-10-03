@@ -1,17 +1,17 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate } from "react-router-dom";
-import FormPatrimonyMaintenance, {PatrimonyMaintenanceFormData} from "../Forms/FormPatrimonyMaintenance";
+import FormPastoralVisit, {PastoralVisitFormData} from "../Forms/FormPastoralVisit";
 import { showCreatedSuccessfullyToast, showErrorToast } from "@/components/toast/Toasts";
 
-export default function PatrimonyMaintenanceCreate() {
+export default function PastoralVisitCreate() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: PatrimonyMaintenanceFormData) => {
+  const handleSubmit = async (data: PastoralVisitFormData) => {
   try {
-    const result = await apiClient.post("/PatrimonyMaintenance", data);
+    const result = await apiClient.post("/PastoralVisit", data);
 
     showCreatedSuccessfullyToast();
-    navigate("/manutencoes-patrimonios");
+    navigate("/visitas-pastorais");
   } catch (error: any) {
     // Tenta extrair mensagens do backend (DomainNotificationsResult)
     const messages =
@@ -28,8 +28,8 @@ export default function PatrimonyMaintenanceCreate() {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold mb-4">Cadastrar Manutenção de Patrimônio</h1>
-      <FormPatrimonyMaintenance onSubmit={handleSubmit} />
+      <h1 className="text-xl font-semibold mb-4">Cadastrar Visita Pastoral</h1>
+      <FormPastoralVisit onSubmit={handleSubmit} />
     </div>
   );
 }

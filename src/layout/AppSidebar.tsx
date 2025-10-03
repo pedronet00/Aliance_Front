@@ -70,9 +70,9 @@ const navItems: NavItem[] = [
     name: "Membros & Pastoral",
     icon: <UsersRound />,
     subItems: [
-      { name: "Membros", path: "/contas-a-pagar" },
+      { name: "Membros", path: "/membros" },
       { name: "Reuniões de Liderança", path: "/contas-a-receber" },
-      { name: "Visitas Pastorias", path: "/contas-a-receber" },
+      { name: "Visitas Pastorais", path: "/visitas-pastorais" },
     ]
   },
   {

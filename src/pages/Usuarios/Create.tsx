@@ -1,21 +1,21 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate } from "react-router-dom";
-import FormUsuario, {UsuarioDTO} from "../Forms/FormUsuario";
 import { showCreatedSuccessfullyToast } from "@/components/toast/Toasts";
+import FormUser, {UsuarioDTO}  from "../Forms/FormUser";
 
 export default function UsuariosCreate() {
   const navigate = useNavigate();
 
   const handleSubmit = async (data: UsuarioDTO) => {
-    await apiClient.post("/Usuario", data);
+    await apiClient.post("/User", data);
     showCreatedSuccessfullyToast();
-    navigate("/usuarios"); 
+    navigate("/membros"); 
   };
 
   return (
     <div className="p-6">
       <h1 className="text-xl font-semibold mb-4">Cadastrar Usuário</h1>
-      <FormUsuario onSubmit={handleSubmit} />
+      <FormUser onSubmit={handleSubmit} />
     </div>
   );
 }

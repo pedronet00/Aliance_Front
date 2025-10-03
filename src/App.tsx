@@ -39,6 +39,10 @@ import PatrimonyMaintenanceCreate from "./pages/PatrimonyMaintenance/Create";
 import PatrimonyMaintenanceList from "./pages/PatrimonyMaintenance/List";
 import PatrimonyMaintenanceDocumentList from "./pages/PatrimonyMaintenance/PatrimonyMaintenanceDocumentList";
 import PatrimonyMaintenanceEdit from "./pages/PatrimonyMaintenance/Edit";
+import UsuariosList from "./pages/Usuarios/List";
+import UsuariosCreate from "./pages/Usuarios/Create";
+import PastoralVisitCreate from "./pages/PastoralVisit/Create";
+import PastoralVisitList from "./pages/PastoralVisit/List";
 
 export default function App() {
   return (
@@ -64,6 +68,10 @@ export default function App() {
               <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
               <Route path="/contas-a-pagar" element={<AccountPayableList />} />
               <Route path="/patrimonios" element={<PatrimonyList />} />
+              <Route path="/membros" element={<UsuariosList />} />
+              <Route path="/membros/criar" element={<UsuariosCreate />} />
+              <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
+              <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />
               <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
               <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
               <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />
