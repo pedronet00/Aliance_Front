@@ -31,17 +31,27 @@ export default function CellList() {
   }, []);
 
   const handleEditar = (u: Cell) => {
-    navigate(`/orcamentos/editar/${u.id}`);
+    navigate(`/celulas/editar/${u.guid}`);
   };
 
   const handleExcluir = async (u: Cell) => {
     try {
-      await apiClient.delete(`/Cell/${u.id}`);
+      await apiClient.delete(`/Cell/${u.guid}`);
       showDeletedToast();
-      setCells((prev) => prev.filter((c) => c.id !== u.id));
+      setCells((prev) => prev.filter((c) => c.guid !== u.guid));
     } catch (error) {
       showErrorToast("Erro ao deletar célula: " + error);
     }
+  };
+
+  const weekdayMap: Record<string, string> = {
+    Domingo: "Domingo",
+    SegundaFeira: "Segunda-feira",
+    TercaFeira: "Terça-feira",
+    QuartaFeira: "Quarta-feira",
+    QuintaFeira: "Quinta-feira",
+    SextaFeira: "Sexta-feira",
+    Sabado: "Sábado"
   };
 
 
@@ -49,7 +59,7 @@ export default function CellList() {
     { key: "name", label: "Nome" },
     { key: "locationName", label: "Local" },
     { key: "leaderName", label: "Líder" },
-    { key: "meetingDay", label: "Dia de reunião" },
+    { key: "meetingDay", label: "Dia de reunião",render: (u: Cell) => weekdayMap[u.meetingDay] || u.meetingDay},
     {
       label: "Ações",
       render: (u: Cell) => (
@@ -63,6 +73,12 @@ export default function CellList() {
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(u)}>
               Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/celulas/${u.guid}/membros`)}>
+              Ver membros 
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/celulas/${u.guid}/encontros`)}>
+              Ver encontros 
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -89,13 +105,19 @@ export default function CellList() {
   return (
     <>
       <PageMeta title="Células" description="Lista de Células" />
-      <PageBreadcrumb pageTitle="Células" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Células", path: "/celulas" },
+        ]}
+      />
+
       <div className="space-y-6">
         <ComponentCard title="Lista de Células">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
               <Button
-                onClick={() => (window.location.href = "/orcamentos/criar")}
+                onClick={() => (window.location.href = "/celulas/criar")}
               >
                 Nova célula
               </Button>

@@ -30,7 +30,13 @@ export default function CostCenterEdit() {
   return (
     <>
         <PageMeta title="Editar Centro de Custo" description="Editar Centro de Custo" />
-        <PageBreadcrumb pageTitle="Editar Centro de Custo" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Centros de Custo", path: "/centros-de-custo" },
+            { label: "Editar Centro de Custo", path: `/centros-de-custo/editar/${id}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormCostCenter initialData={center} onSubmit={handleSubmit} />

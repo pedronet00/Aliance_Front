@@ -127,7 +127,12 @@ export default function DepartmentList() {
   return (
     <>
       <PageMeta title="Departamentos" description="Lista de Departamentos" />
-      <PageBreadcrumb pageTitle="Departamentos" />
+      <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Departamentos", path: "/departamentos" }
+          ]}
+        />
       <div className="space-y-6">
         <ComponentCard title="Lista de Departamentos">
           <div className="flex flex-col gap-3 mb-6">

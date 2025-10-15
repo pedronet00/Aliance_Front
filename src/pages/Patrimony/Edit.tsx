@@ -30,7 +30,13 @@ export default function PatrimonyEdit() {
   return (
     <>
         <PageMeta title="Editar Patrimônio" description="Editar Patrimônio" />
-        <PageBreadcrumb pageTitle="Editar Patrimônio" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Patrimônios", path: "/patrimonios" },
+            { label: "Editar Patrimônio", path: `/patrimonios/editar/${guid}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormPatrimony initialData={patrimony} onSubmit={handleSubmit} />

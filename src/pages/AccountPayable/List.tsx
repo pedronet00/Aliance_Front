@@ -2,12 +2,26 @@ import apiClient from "@/api/apiClient";
 import GenericTable from "@/components/tables/GenericTable";
 import { useEffect, useState } from "react";
 import { MoreDotIcon } from "@/icons";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { useNavigate } from "react-router-dom";
-import { showDeletedToast, showErrorToast} from "@/components/toast/Toasts";
+import {
+  showDeletedToast,
+  showErrorToast,
+  showEditedSuccessfullyToast,
+} from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import { AccountPayable } from "@/types/AccountPayable/AccountPayable";
 import Badge from "@/components/ui/badge/Badge";
@@ -16,7 +30,6 @@ export default function AccountPayableList() {
   const [accounts, setAccounts] = useState<AccountPayable[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
-
   const [filterNome, setFilterNome] = useState("");
   const [filterCnpj, setFilterCnpj] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -37,76 +50,126 @@ export default function AccountPayableList() {
 
   const handleExcluir = async (u: AccountPayable) => {
     try {
-      await apiClient.delete(`/AccountPayable/${u.id}`);
+      await apiClient.delete(`/AccountPayable/${u.guid}`);
       showDeletedToast();
-      setAccounts((prev) => prev.filter((c) => c.id !== u.id));
+      setAccounts((prev) => prev.filter((c) => c.guid !== u.guid));
     } catch (error) {
       showErrorToast("Erro ao deletar conta: " + error);
     }
   };
 
+  // --- Novo: mudança de status ---
+  const handleToggleStatus = async (account: AccountPayable, newStatus: string) => {
+    try {
+      await apiClient.patch(`/AccountPayable/${account.guid}/status/${newStatus}`);
+      showEditedSuccessfullyToast(`Status alterado para ${newStatus}`);
+      setAccounts((prev) =>
+        prev.map((c) =>
+          c.guid === account.guid ? { ...c, accountStatus: newStatus } : c
+        )
+      );
+    } catch (error) {
+      showErrorToast("Erro ao alterar status: " + error);
+    }
+  };
+
   const columns = [
-    { key: "description", label: "Descrição" },
-    { key: "dueDate", label: "Data de vencimento" },
-    { key: "amount", label: "Valor" },
-    { key: "paymentDate", label: "Data de pagamento" },
-    { key: "costCenterName", label: "Centro de Custo" },
-    {
-        key: "accountStatus",
-        label: "Status",
-        render: (c: AccountPayable) => {
-            const statusMap: Record<string, { color: string; label: string }> = {
-            Pendente:   { color: "warning", label: "Pendente" },
-            Paga:       { color: "success", label: "Paga" },
-            Atrasada:   { color: "error",   label: "Atrasada" },
-            Parcial:    { color: "info",    label: "Parcial" },
-            Cancelada:  { color: "secondary", label: "Cancelada" },
-            };
+  { key: "description", label: "Descrição" },
+  { key: "dueDate", label: "Data de vencimento" },
+  { key: "amount", label: "Valor" },
+  {
+    key: "paymentDate",
+    label: "Data de pagamento",
+    render: (c: AccountPayable) =>
+      c.paymentDate
+        ? new Date(c.paymentDate).toLocaleDateString()
+        : "-",
+  },
+  { key: "costCenterName", label: "Centro de Custo" },
+  {
+    key: "accountStatus",
+    label: "Status",
+    render: (c: AccountPayable) => {
+      const statusMap: Record<string, { color: string; label: string }> = {
+        Pendente: { color: "warning", label: "Pendente" },
+        Paga: { color: "success", label: "Paga" },
+        Atrasada: { color: "error", label: "Atrasada" },
+        Parcial: { color: "info", label: "Parcial" },
+        Cancelada: { color: "secondary", label: "Cancelada" },
+      };
 
-            const status = statusMap[c.accountStatus] ?? { color: "default", label: c.accountStatus };
+      const status = statusMap[c.accountStatus] ?? {
+        color: "default",
+        label: c.accountStatus,
+      };
 
-            return (
-            <Badge size="sm" color={status.color}>
-                {status.label}
-            </Badge>
-            );
-        }
+      return (
+        <Badge size="sm" color={status.color}>
+          {status.label}
+        </Badge>
+      );
     },
-    {
-      label: "Ações",
-      render: (u: AccountPayable) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-              <MoreDotIcon />
-            </button>
-          </DropdownMenuTrigger>
+  },
+  {
+    label: "Ações",
+    render: (u: AccountPayable) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+            <MoreDotIcon />
+          </button>
+        </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleExcluir(u)}
-              className="text-destructive focus:text-destructive"
-            >
-              <span>Excluir</span>
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-    },
-  ];
-    
+        <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuItem
+            disabled={u.accountStatus === "Paga"}
+            onClick={() => handleEditar(u)}
+          >
+            Editar
+          </DropdownMenuItem>
+
+          {u.accountStatus != "Paga" && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-44">
+                {["Paga", "Atrasada", "Parcial", "Cancelada"].map(
+                  (s) => (
+                    <DropdownMenuItem
+                      key={s}
+                      onClick={() => handleToggleStatus(u, s)}
+                    >
+                      {s}
+                    </DropdownMenuItem>
+                  )
+                )}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )}
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={() => handleExcluir(u)}
+            disabled={u.accountStatus === "Paga"}
+            className="text-destructive focus:text-destructive"
+          >
+            <span>Excluir</span>
+            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+  },
+];
+
+
   const contasFiltradas = accounts.filter((c) => {
     return (
-        c.description.toLowerCase().includes(filterNome.toLowerCase()) &&
-        c.guid.toLowerCase().includes(filterCnpj.toLowerCase()) &&
-        (filterStatus === "" ||
-            (filterStatus === "ativo" && c.accountStatus) ||
-            (filterStatus === "inativo" && !c.accountStatus))
+      c.description.toLowerCase().includes(filterNome.toLowerCase()) &&
+      c.guid.toLowerCase().includes(filterCnpj.toLowerCase()) &&
+      (filterStatus === "" ||
+        (filterStatus === "ativo" && c.accountStatus) ||
+        (filterStatus === "inativo" && !c.accountStatus))
     );
   });
 
@@ -115,7 +178,12 @@ export default function AccountPayableList() {
   return (
     <>
       <PageMeta title="Contas a Pagar" description="Lista de Contas a Pagar" />
-      <PageBreadcrumb pageTitle="Contas a Pagar" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Contas a pagar", path: "/contas-a-pagar" },
+        ]}
+      />
       <div className="space-y-6">
         <ComponentCard title="Lista de Contas a Pagar">
           <div className="flex flex-col gap-3 mb-6">

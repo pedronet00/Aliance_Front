@@ -1,11 +1,11 @@
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Button from "../ui/button/Button";
 import { useAuth } from "../../context/AuthContext";
-import { showSuccessfulLogininToast, showErrorLogininToast } from "../toast/Toasts";
+import { showSuccessfulLogininToast, showErrorLogininToast, showSessionExpiredToast, showLogoffToast } from "../toast/Toasts";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +28,21 @@ export default function SignInForm() {
       showErrorLogininToast();
     }
   };
+
+  useEffect(() => {
+  const toastType = localStorage.getItem("toastType");
+  if (toastType) {
+    setTimeout(() => {
+      if (toastType === "sessionExpired") {
+        showSessionExpiredToast();
+      } else if (toastType === "logoff") {
+        showLogoffToast();
+      }
+      localStorage.removeItem("toastType");
+    }, 100); // espera o provider montar
+  }
+}, []);
+
 
   return (
     <div className="flex flex-col flex-1">

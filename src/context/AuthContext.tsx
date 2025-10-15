@@ -1,8 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import apiClient from "../api/apiClient";
 import { jwtDecode } from "jwt-decode";
-import { showLogoffToast, showSessionExpiredToast } from "@/components/toast/Toasts";
-import { useNavigate } from "react-router";
 
 interface User {
   email: string;
@@ -14,7 +12,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => void; // logout manual do usuário
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -42,23 +40,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(userInfo);
   };
 
-  const logout = (redirect: boolean = true) => {
+  // Função base: limpa estado e redireciona
+  const baseLogout = (toastType: "logoff" | "sessionExpired") => {
     localStorage.removeItem("token");
     setUser(null);
-    showLogoffToast();
-    if (redirect) {
-      window.location.href = "/login"; // Redireciona para a página de login
-    }
+
+    // Marca o tipo de toast que deve aparecer após reload
+    localStorage.setItem("toastType", toastType);
+
+    window.location.href = "/login";
   };
 
-  // Interceptor para capturar 401 e deslogar
+  // Logout manual → usado pelo usuário ao clicar em "sair"
+  const manualLogout = () => {
+    baseLogout("logoff");
+  };
+
+  // Interceptor para capturar 401 e deslogar automaticamente
   useEffect(() => {
     const interceptor = apiClient.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
-          logout(true);
-          showSessionExpiredToast();
+          baseLogout("sessionExpired");
         }
         return Promise.reject(error);
       }
@@ -83,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
         setUser(userInfo);
       } catch (err) {
-        logout();
+        baseLogout("sessionExpired");
       }
     }
     setIsLoading(false);
@@ -94,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         login,
-        logout,
+        logout: manualLogout,
         isAuthenticated: !!user,
         isLoading,
       }}

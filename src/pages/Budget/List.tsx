@@ -102,7 +102,7 @@ export default function BudgetList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
+            <DropdownMenuItem disabled={u.status == "Aprovado" || u.status == "Rejeitado"} onClick={() => handleEditar(u)}>
               Editar
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleEditar(u)}>
@@ -122,6 +122,7 @@ export default function BudgetList() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(u)}
+              disabled={u.status == "Aprovado" || u.status == "Rejeitado"}
               className="text-destructive focus:text-destructive"
             >
               <span>Excluir</span>
@@ -148,7 +149,12 @@ export default function BudgetList() {
   return (
     <>
       <PageMeta title="Orçamentos" description="Lista de Orçamentos" />
-      <PageBreadcrumb pageTitle="Orçamentos" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Orçamentos", path: "/orcamentos" },
+        ]}
+      />
       <div className="space-y-6">
         <ComponentCard title="Lista de Orçamentos">
           <div className="flex flex-col gap-3 mb-6">

@@ -95,7 +95,13 @@ export default function PatrimonyList() {
   return (
     <>
       <PageMeta title="Patrimônios" description="Lista de Patrimônios" />
-      <PageBreadcrumb pageTitle="Patrimônios" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Patrimônios", path: "/patrimonios" },
+        ]}
+      />
+
       <div className="space-y-6">
         <ComponentCard title="Lista de Patrimônios">
           <div className="flex flex-col gap-3 mb-6">

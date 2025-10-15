@@ -30,7 +30,13 @@ export default function DepartmentEdit() {
   return (
     <>
         <PageMeta title="Editar Departamento" description="Editar Departamento" />
-        <PageBreadcrumb pageTitle="Editar Departamento" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Departamentos", path: "/departamentos" },
+            { label: "Editar Departamento", path: `/departamentos/editar/${id}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormDepartment initialData={center} onSubmit={handleSubmit} />

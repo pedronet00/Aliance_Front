@@ -30,7 +30,13 @@ export default function PastoralVisitEdit() {
   return (
     <>
         <PageMeta title="Editar Visita" description="Editar Visita" />
-        <PageBreadcrumb pageTitle="Editar Visita" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Visitas Pastorais", path: "/visitas-pastorais" },
+            { label: "Editar Visita", path: `/visitas-pastorais/editar/${guid}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormPastoralVisit initialData={visit} onSubmit={handleSubmit} />

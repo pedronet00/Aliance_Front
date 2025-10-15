@@ -31,14 +31,14 @@ export default function CostCenterList() {
   }, []);
 
   const handleEditar = (u: CostCenter) => {
-    navigate(`/centros-de-custo/editar/${u.id}`);
+    navigate(`/centros-de-custo/editar/${u.guid}`);
   };
 
   const handleExcluir = async (u: CostCenter) => {
     try {
-      await apiClient.delete(`/CostCenter/${u.id}`);
+      await apiClient.delete(`/CostCenter/${u.guid}`);
       showDeletedToast();
-      setCenters((prev) => prev.filter((c) => c.id !== u.id));
+      setCenters((prev) => prev.filter((c) => c.guid !== u.guid));
     } catch (error) {
       showErrorToast("Erro ao deletar centro de custo: " + error);
     }
@@ -46,7 +46,7 @@ export default function CostCenterList() {
 
   const handleStatus = async (u: CostCenter, action: "activate" | "deactivate") => {
     try {
-      const endpoint = action === "activate" ? `CostCenter/activate/${u.id}` : `CostCenter/deactivate/${u.id}`; 
+      const endpoint = action === "activate" ? `CostCenter/activate/${u.guid}` : `CostCenter/deactivate/${u.guid}`; 
         await apiClient.patch(endpoint);
         const response = await apiClient.get("/CostCenter");
         setCenters(response.data);
@@ -125,7 +125,12 @@ export default function CostCenterList() {
   return (
     <>
       <PageMeta title="Centros de Custo" description="Lista de Centros de Custo" />
-      <PageBreadcrumb pageTitle="Centros de Custo" />
+      <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Centros de Custo", path: "/centros-de-custo" }
+          ]}
+        />
       <div className="space-y-6">
         <ComponentCard title="Lista de Centros de Custo">
           <div className="flex flex-col gap-3 mb-6">

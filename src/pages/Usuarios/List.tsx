@@ -116,7 +116,12 @@ export default function UsuariosList() {
   return (
     <>
       <PageMeta title="Usuários" description="Lista de Usuários" />
-      <PageBreadcrumb pageTitle="Usuários" />
+      <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Membros", path: "/membros" },
+          ]}
+        />
       <div className="space-y-6">
         <ComponentCard title="Lista de Usuários">
           <Button

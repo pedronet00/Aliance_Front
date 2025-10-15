@@ -47,7 +47,13 @@ export default function PatrimonyDocumentsList() {
   return (
     <>
       <PageMeta title="Documentos do Patrimônio" description="Lista de documentos" />
-      <PageBreadcrumb pageTitle="Documentos" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Patrimônios", path: "/patrimonios" },
+          { label: "Documentos do Patrimônio", path: `/patrimonios/${guid}/documentos` },
+        ]}
+      />
       {openModal && (
         <UploadDocumentModal
           patrimonyGuid={guid}

@@ -47,7 +47,13 @@ export default function PatrimonyMaintenanceDocumentList() {
   return (
     <>
       <PageMeta title="Documentos da Manutenção" description="Lista de documentos" />
-      <PageBreadcrumb pageTitle="Documentos" />
+      <PageBreadcrumb
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Manutenções de Patrimônios", path: "/manutencoes-patrimonios" },
+          { label: "Documentos da Manutenção do Patrimônio", path: `/manutencoes-patrimonios/${guid}/documentos` },
+        ]}
+      />
       {openModal && (
         <UploadDocumentModal
           maintenanceGuid={guid}

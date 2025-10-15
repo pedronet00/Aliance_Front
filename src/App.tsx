@@ -44,6 +44,25 @@ import UsuariosCreate from "./pages/Usuarios/Create";
 import PastoralVisitCreate from "./pages/PastoralVisit/Create";
 import PastoralVisitList from "./pages/PastoralVisit/List";
 import PastoralVisitEdit from "./pages/PastoralVisit/Edit";
+import IncomeCreate from "./pages/Income/Create";
+import IncomeList from "./pages/Income/List";
+import ExpenseList from "./pages/Expense/List";
+import ExpenseCreate from "./pages/Expense/Create";
+import AccountReceivableList from "./pages/AccountReceivable/List";
+import AccountPayableCreate from "./pages/AccountPayable/Create";
+import AccountReceivableCreate from "./pages/AccountReceivable/Create";
+import CellMeetingList from "./pages/CellMeeting/List";
+import CellMeetingCreate from "./pages/CellMeeting/Create";
+import CellMeetingEdit from "./pages/CellMeeting/Edit";
+import CellCreate from "./pages/Cell/Create";
+import CellEdit from "./pages/Cell/Edit";
+import CellMemberCreate from "./pages/CellMember/Create";
+import CellMemberList from "./pages/CellMember/List";
+import EventList from "./pages/Event/List";
+import EventCreate from "./pages/Event/Create";
+import EventEdit from "./pages/Event/Edit";
+import TitheList from "./pages/Tithe/List";
+import TitheCreate from "./pages/Tithe/Create";
 
 export default function App() {
   return (
@@ -60,14 +79,33 @@ export default function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
+              <Route path="/dizimos" element={<TitheList />} />
+              <Route path="/dizimos/criar" element={<TitheCreate />} />
+              <Route path="/eventos" element={<EventList />} />
+              <Route path="/eventos/criar" element={<EventCreate />} />
+              <Route path="/eventos/editar/:guid" element={<EventEdit />} />
               <Route path="/celulas" element={<CellList />} />
+              <Route path="/celulas/criar" element={<CellCreate />} />
+              <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
+              <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
+              <Route path="/celulas/:cellGuid/membros/criar" element={<CellMemberCreate/>} />
+              <Route path="/celulas/:guid/encontros" element={<CellMeetingList/>} />
+              <Route path="/celulas/:guid/encontros/criar" element={<CellMeetingCreate/>} />
+              <Route path="/celulas/:guidCelula/encontros/:guidEncontro/editar" element={<CellMeetingEdit/>} />
               <Route path="/centros-de-custo" element={<CostCenterList />} />
               <Route path="/centros-de-custo/criar" element={<CostCenterCreate />} />
               <Route path="/centros-de-custo/editar/:id" element={<CostCenterEdit />} />
               <Route path="/departamentos" element={<DepartmentList />} />
               <Route path="/departamentos/criar" element={<DepartmentCreate />} />
               <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
+              <Route path="/financeiro/entradas" element={<IncomeList />} />
+              <Route path="/financeiro/entradas/criar" element={<IncomeCreate />} />
+              <Route path="/financeiro/saidas" element={<ExpenseList />} />
+              <Route path="/financeiro/saidas/criar" element={<ExpenseCreate />} />
               <Route path="/contas-a-pagar" element={<AccountPayableList />} />
+              <Route path="/contas-a-pagar/criar" element={<AccountPayableCreate />} />
+              <Route path="/contas-a-receber" element={<AccountReceivableList />} />
+              <Route path="/contas-a-receber/criar" element={<AccountReceivableCreate />} />
               <Route path="/patrimonios" element={<PatrimonyList />} />
               <Route path="/membros" element={<UsuariosList />} />
               <Route path="/membros/criar" element={<UsuariosCreate />} />

@@ -31,12 +31,13 @@ const navItems: NavItem[] = [
     ]
   },
   {
-    name: "Cultos",
+    name: "Serviço eclesiástico",
     icon: <Church />,
     subItems: [
-      { name: "Batismos", path: "/contas-a-pagar" },
-      { name: "Cultos", path: "/contas-a-receber" },
-      { name: "Louvor", path: "/contas-a-receber" },
+      { name: "Batismos", path: "/batismos" },
+      { name: "Corais", path: "/corais" },
+      { name: "Cultos", path: "/cultos" },
+      { name: "Louvor", path: "/louvor" },
     ]
   },
   {
@@ -44,16 +45,16 @@ const navItems: NavItem[] = [
     icon: <GraduationCap />,
     subItems: [
       { name: "Células", path: "/celulas" },
-      { name: "Aulas de EBD", path: "/contas-a-receber" },
+      { name: "Aulas de EBD", path: "/aulas-ebd" },
     ]
   },
   {
     name: "Eventos & Missões",
     icon: <Calendar />,
     subItems: [
-      { name: "Campanhas de Missões", path: "/contas-a-receber" },
-      { name: "Eventos", path: "/contas-a-pagar" },
-      { name: "Missões", path: "/contas-a-pagar" },
+      { name: "Campanhas de Missões", path: "/campanhas-missoes" },
+      { name: "Eventos", path: "/eventos" },
+      { name: "Missões", path: "/missoes" },
     ]
   },
   {
@@ -62,8 +63,10 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Contas a Pagar", path: "/contas-a-pagar" },
       { name: "Contas a Receber", path: "/contas-a-receber" },
-      { name: "Dízimos", path: "/contas-a-receber" },
+      { name: "Dízimos", path: "/dizimos" },
+      { name: "Entradas", path: "/financeiro/entradas" },
       { name: "Orçamentos", path: "/orcamentos" },
+      { name: "Saídas", path: "/financeiro/saidas" },
     ]
   },
   {
@@ -71,7 +74,7 @@ const navItems: NavItem[] = [
     icon: <UsersRound />,
     subItems: [
       { name: "Membros", path: "/membros" },
-      { name: "Reuniões de Liderança", path: "/contas-a-receber" },
+      { name: "Reuniões de Liderança", path: "/reunioes-lideranca" },
       { name: "Visitas Pastorais", path: "/visitas-pastorais" },
     ]
   },
@@ -79,8 +82,8 @@ const navItems: NavItem[] = [
     name: "Outros",
     icon: <Ellipsis />,
     subItems: [
-      { name: "Locais", path: "/contas-a-pagar" },
-      { name: "Classes de EBD", path: "/contas-a-receber" },
+      { name: "Locais", path: "/locais" },
+      { name: "Classes de EBD", path: "/classes-ebd" },
     ]
   },
   
@@ -401,7 +404,6 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
-        {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}
       </div>
     </aside>
   );

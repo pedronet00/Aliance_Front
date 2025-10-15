@@ -8,12 +8,15 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { useNavigate } from "react-router-dom";
-import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
+import { showDeletedToast, showErrorToast, showToggleStatusToast } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { PastoralVisit } from "@/types/PastoralVisit/PastoralVisit";
@@ -51,12 +54,30 @@ export default function PastoralVisitList() {
     }
   };
 
+  const handleToggleStatus = async (visit: PastoralVisit, newStatus: string) => {
+    try {
+      await apiClient.patch(`/PastoralVisit/${visit.guid}/status/${newStatus}`);
+      setVisits((prev) =>
+        prev.map((v) =>
+          v.guid === visit.guid ? { ...v, status: newStatus } : v
+        )
+      );
+      showToggleStatusToast;
+    } catch (error) {
+      showErrorToast("Erro ao atualizar status: " + error);
+    }
+  };
+
   const columns = [
-    { key: "visitDate", label: "Data da Visita", render: (v: PastoralVisit) => new Date(v.visitDate).toLocaleString("pt-BR", { 
-  dateStyle: "medium", 
-  timeStyle: "medium" 
-})
-},
+    { 
+      key: "visitDate", 
+      label: "Data da Visita", 
+      render: (v: PastoralVisit) =>
+        new Date(v.visitDate).toLocaleString("pt-BR", { 
+          dateStyle: "medium", 
+          timeStyle: "medium" 
+        })
+    },
     { key: "pastorName", label: "Pastor" },
     { key: "visitedMemberName", label: "Visitado" },
     {
@@ -85,11 +106,28 @@ export default function PastoralVisitList() {
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-40">
+          <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => handleEditar(v)}>Editar</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSelectedVisit(v)}>
               Ver detalhes
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-44">
+                {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
+                  <DropdownMenuItem
+                    key={s}
+                    onClick={() => handleToggleStatus(v, s)}
+                    disabled={v.status === s}
+                  >
+                    {s}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(v)}
@@ -114,7 +152,12 @@ export default function PastoralVisitList() {
   return (
     <>
       <PageMeta title="Visitas Pastorais" description="Lista de Visitas Pastorais" />
-      <PageBreadcrumb pageTitle="Visitas Pastorais" />
+      <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Visitas Pastorais", path: "/visitas-pastorais" },
+          ]}
+        />
       <VisitDescriptionModal visit={selectedVisit} onClose={() => setSelectedVisit(null)} />
       <div className="space-y-6">
         <ComponentCard title="Lista de Visitas Pastorais">
