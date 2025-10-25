@@ -9,6 +9,7 @@ import apiClient from "@/api/apiClient";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
 import { CostCenterDTO } from "@/types/CostCenter/CostCenterDTO";
 import { Department } from "@/types/Department/Department";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: CostCenterDTO;
@@ -17,6 +18,9 @@ type Props = {
 
 export default function FormCostCenter({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<CostCenterDTO>(() => {
   if (initialData) {
@@ -41,9 +45,9 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
   // Carrega os centros de custo e ajusta o formData se estiver editando
   useEffect(() => {
   apiClient
-    .get<Department[]>("/Department")
+    .get<Department[]>("/Department/paged?pageNumber=1&pageSize=100000")
     .then((res) => {
-      const options = res.data.map((f) => ({
+      const options = res.data.items.map((f) => ({
         value: String(f.id),
         label: f.name,
       }));
@@ -61,22 +65,23 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
 }, [initialData]);
 
 
-useEffect(() => {
-  if (user?.churchId) {
-    setFormData((prev) => ({
-      ...prev,
-      churchId: user.churchId, // agora garante que vem atualizado
-    }));
-  }
-}, [user]); // importante: depende do user
+  useEffect(() => {
+    if (user?.churchId) {
+      setFormData((prev) => ({
+        ...prev,
+        churchId: user.churchId, // agora garante que vem atualizado
+      }));
+    }
+  }, [user]); // importante: depende do user
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  await onSubmit({
-    ...formData,
-    departmentId: Number(formData.departmentId),
-  });
-};
+    e.preventDefault();
+    setLoading(true);
+    await onSubmit({
+      ...formData,
+      departmentId: Number(formData.departmentId),
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,19 +97,21 @@ useEffect(() => {
       <div>
         <Label>Departamento</Label>
         <Select
-  options={departmentOptions}
-  placeholder="Selecione um departamento"
-  value={formData.departmentId}
-  onChange={(val) =>
-    setFormData({ ...formData, departmentId: val })
-  }
-/>
-
-
-
+          options={departmentOptions}
+          placeholder="Selecione um departamento"
+          value={formData.departmentId}
+          onChange={(val) =>
+            setFormData({ ...formData, departmentId: val })
+          }
+        />
       </div>
 
-      <Button type="submit">Salvar</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

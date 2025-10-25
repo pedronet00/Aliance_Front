@@ -26,27 +26,44 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { PatrimonyMaintenance } from "@/types/PatrimonyMaintenance/PatrimonyMaintenance";
 import { toast } from "react-toastify";
+import NoData from "@/components/no-data";
 
 export default function PatrimonyMaintenanceList() {
-  const [centers, setMaintenances] = useState<PatrimonyMaintenance[]>([]);
+  const [maintenances, setMaintenances] = useState<PatrimonyMaintenance[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchMaintenances();
-  }, []);
-
-  const fetchMaintenances = () => {
+  const fetchMaintenances = async (page: number = 1) => {
     setLoading(true);
-    apiClient
-      .get("/PatrimonyMaintenance")
-      .then((res) => setMaintenances(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiClient.get(
+        `/PatrimonyMaintenance/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+
+      const data = res.data;
+      setMaintenances(data.items || []);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+      setCurrentPage(data.currentPage);
+    } catch (error) {
+      showErrorToast("Erro ao carregar manutenções");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchMaintenances(currentPage);
+  }, [currentPage]);
 
   const handleEditar = (u: PatrimonyMaintenance) => {
     navigate(`/manutencoes-patrimonios/editar/${u.guid}`);
@@ -56,67 +73,56 @@ export default function PatrimonyMaintenanceList() {
     try {
       await apiClient.delete(`/PatrimonyMaintenance/${u.guid}`);
       showDeletedToast();
-      setMaintenances((prev) => prev.filter((c) => c.guid !== u.guid));
+      fetchMaintenances(currentPage);
     } catch (error) {
       showErrorToast("Erro ao deletar manutenção: " + error);
     }
   };
 
   const handleToggleStatus = async (u: PatrimonyMaintenance, newStatus: string) => {
-  if (newStatus === "Concluido") {
-    toast.warn(
-      ({ closeToast }) => (
-        <div>
-          <p>Tem certeza que deseja marcar como <b>Concluído</b>? Essa ação não é reversível.</p>
-          <div className="flex justify-end mt-3 space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => closeToast && closeToast()}
-            >
-              Cancelar
-            </Button>
-            <Button
-              size="sm"
-              onClick={async () => {
-                try {
-                  await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
-                  showEditedSuccessfullyToast();
-                  setMaintenances((prev) =>
-                    prev.map((c) =>
-                      c.guid === u.guid ? { ...c, status: newStatus } : c
-                    )
-                  );
-                } catch (error) {
-                  showErrorToast("Erro ao alterar status: " + error);
-                } finally {
-                  closeToast && closeToast();
-                }
-              }}
-            >
-              Confirmar
-            </Button>
+    if (newStatus === "Concluido") {
+      toast.warn(
+        ({ closeToast }) => (
+          <div>
+            <p>
+              Tem certeza que deseja marcar como <b>Concluído</b>? Essa ação não é reversível.
+            </p>
+            <div className="flex justify-end mt-3 space-x-2">
+              <Button size="sm" variant="outline" onClick={() => closeToast && closeToast()}>
+                Cancelar
+              </Button>
+              <Button
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
+                    showEditedSuccessfullyToast();
+                    fetchMaintenances(currentPage);
+                  } catch (error) {
+                    showErrorToast("Erro ao alterar status: " + error);
+                  } finally {
+                    closeToast && closeToast();
+                  }
+                }}
+              >
+                Confirmar
+              </Button>
+            </div>
           </div>
-        </div>
-      ),
-      { autoClose: false, closeOnClick: false }
-    );
-    return;
-  }
+        ),
+        { autoClose: false, closeOnClick: false }
+      );
+      return;
+    }
 
-  // fluxo normal se não for "Concluído"
-  try {
-    await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
-    showEditedSuccessfullyToast("Status atualizado com sucesso");
-    setMaintenances((prev) =>
-      prev.map((c) =>
-        c.guid === u.guid ? { ...c, status: newStatus } : c
-      )
-    );
-  } catch (error) {
-    showErrorToast("Erro ao alterar status: " + error);
-  }
-};
+    try {
+      await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
+      showEditedSuccessfullyToast("Status atualizado com sucesso");
+      fetchMaintenances(currentPage);
+    } catch (error) {
+      showErrorToast("Erro ao alterar status: " + error);
+    }
+  };
 
   const columns = [
     { key: "patrimonyName", label: "Patrimônio" },
@@ -137,10 +143,7 @@ export default function PatrimonyMaintenanceList() {
           Cancelado: { color: "error", label: "Cancelado" },
         };
 
-        const status = statusMap[c.status] ?? {
-          color: "default",
-          label: c.status,
-        };
+        const status = statusMap[c.status] ?? { color: "default", label: c.status };
 
         return (
           <Badge size="sm" color={status.color}>
@@ -160,8 +163,8 @@ export default function PatrimonyMaintenanceList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-44">
-            {u.status != "Concluido" && (
-            <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
+            {u.status !== "Concluido" && (
+              <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
             )}
             <DropdownMenuItem
               onClick={() => navigate(`/manutencoes-patrimonios/${u.guid}/documentos`)}
@@ -169,22 +172,22 @@ export default function PatrimonyMaintenanceList() {
               Ver documentos
             </DropdownMenuItem>
 
-            {u.status != "Concluido" && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-44">
-                {["Agendado", "Concluido", "Cancelado"]
-                  .filter((s) => s !== u.status)
-                  .map((s) => (
-                    <DropdownMenuItem key={s} onClick={() => handleToggleStatus(u, s)}>
-                      {s}
-                    </DropdownMenuItem>
-                  ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+            {u.status !== "Concluido" && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-44">
+                  {["Agendado", "Concluido", "Cancelado"]
+                    .filter((s) => s !== u.status)
+                    .map((s) => (
+                      <DropdownMenuItem key={s} onClick={() => handleToggleStatus(u, s)}>
+                        {s}
+                      </DropdownMenuItem>
+                    ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             )}
 
-            {u.status != "Concluido" && (
+            {u.status !== "Concluido" && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -202,7 +205,7 @@ export default function PatrimonyMaintenanceList() {
     },
   ];
 
-  const filteredMaintenances = centers.filter((c) => {
+  const filteredMaintenances = maintenances.filter((c) => {
     const matchesDescription = c.description
       .toLowerCase()
       .includes(filterNome.toLowerCase());
@@ -215,7 +218,10 @@ export default function PatrimonyMaintenanceList() {
 
   return (
     <>
-      <PageMeta title="Manutenções de Patrimônios" description="Lista de Manutenções de Patrimônios" />
+      <PageMeta
+        title="Manutenções de Patrimônios"
+        description="Lista de Manutenções de Patrimônios"
+      />
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
@@ -260,7 +266,36 @@ export default function PatrimonyMaintenanceList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={filteredMaintenances} />
+          {filteredMaintenances.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={filteredMaintenances} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

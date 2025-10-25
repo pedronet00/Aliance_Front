@@ -6,6 +6,7 @@ import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { CellDTO } from "@/types/Cell/CellDTO";
 import { useAuth } from "@/context/AuthContext";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: CellDTO;
@@ -27,6 +28,9 @@ export default function FormCell({ initialData, onSubmit }: Props) {
   const [leaders, setLeaders] = useState<{ value: string; label: string }[]>([]);
   const [locations, setLocations] = useState<{ value: number; label: string }[]>([]);
   const { user } = useAuth();
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: initialData?.name ?? "",
@@ -37,7 +41,6 @@ export default function FormCell({ initialData, onSubmit }: Props) {
     churchId: user?.churchId ?? 0
   });
 
-  // 🔹 Carrega líderes e locais
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,15 +78,15 @@ export default function FormCell({ initialData, onSubmit }: Props) {
     fetchData();
   }, [initialData]);
 
-  // 🔹 Envia payload formatado corretamente para o backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setLoading(true);
     const payload: CellDTO = {
       name: formData.name.trim(),
       locationId: Number(formData.locationId),
-      leaderId: formData.leaderId, // string (guid)
-      meetingDay: String(formData.meetingDay), // ou number se o backend converter
+      leaderId: formData.leaderId, 
+      meetingDay: String(formData.meetingDay),
       cellBanner: formData.cellBanner.trim(),
       churchId: user?.churchId ?? 0
     };
@@ -159,7 +162,12 @@ export default function FormCell({ initialData, onSubmit }: Props) {
         />
       </div>
 
-      <Button type="submit">Salvar Célula</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

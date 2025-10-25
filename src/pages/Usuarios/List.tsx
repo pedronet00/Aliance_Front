@@ -2,13 +2,13 @@ import apiClient from "@/api/apiClient";
 import GenericTable from "@/components/tables/GenericTable";
 import { useEffect, useState } from "react";
 import { MoreDotIcon } from "@/icons";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuShortcut, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
@@ -20,17 +20,33 @@ export default function UsuariosList() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    carregarUsuarios();
-  }, []);
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const carregarUsuarios = () => {
+  useEffect(() => {
+    carregarUsuarios(currentPage);
+  }, [currentPage]);
+
+  const carregarUsuarios = async (page: number = 1) => {
     setLoading(true);
-    apiClient
-      .get("/User")
-      .then((res) => setUsuarios(res.data.result))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    try {
+      const res = await apiClient.get(
+        `/User/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      const data = res.data.result || res.data;
+
+      setUsuarios(data.items || []);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+    } catch (err) {
+      console.error("Erro ao carregar usuários", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditar = (u: Usuario) => {
@@ -44,11 +60,8 @@ export default function UsuariosList() {
   const handleAtivarDesativar = async (u: Usuario) => {
     try {
       const endpoint = u.status ? "/User/Deactivate" : "/User/Activate";
+      await apiClient.patch(`${endpoint}/${u.id}`);
 
-      await apiClient.patch(`${endpoint}/${u.id}`); 
-      // ajuste se sua API espera body diferente (ex: querystring ou param na rota)
-
-      // Atualiza localmente o estado sem precisar reload de toda a lista
       setUsuarios((prev) =>
         prev.map((usr) =>
           usr.id === u.id ? { ...usr, status: !usr.status } : usr
@@ -60,10 +73,10 @@ export default function UsuariosList() {
   };
 
   const columns = [
-    { label: "nome", key: "userName" },
-    { label: "email", key: "email" },
-    { label: "telefone", key: "phone" },
-    { label: "cargo", key: "role" },
+    { label: "Nome", key: "userName" },
+    { label: "Email", key: "email" },
+    { label: "Telefone", key: "phone" },
+    { label: "Cargo", key: "role" },
     {
       key: "status",
       label: "Status",
@@ -117,20 +130,55 @@ export default function UsuariosList() {
     <>
       <PageMeta title="Usuários" description="Lista de Usuários" />
       <PageBreadcrumb
-          items={[
-            { label: "Início", path: "/" },
-            { label: "Membros", path: "/membros" },
-          ]}
-        />
+        items={[
+          { label: "Início", path: "/" },
+          { label: "Membros", path: "/membros" },
+        ]}
+      />
+
       <div className="space-y-6">
         <ComponentCard title="Lista de Usuários">
-          <Button
-            onClick={() => (window.location.href = "/membros/criar")}
-            className="flex flex-wrap items-center justify-between gap-3 mb-6"
-          >
-            Novo Usuário
-          </Button>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div className="flex gap-2">
+              <Button
+                onClick={() => (window.location.href = "/membros/criar")}
+              >
+                Novo Usuário
+              </Button>
+
+              <Button
+                onClick={() => (window.location.href = "/membros/importar")}
+                variant="outline"
+              >
+                Importar Usuários
+              </Button>
+            </div>
+          </div>
+
           <GenericTable columns={columns} data={usuarios} />
+
+          {/* Paginação */}
+          <div className="flex items-center justify-between mt-4">
+            <p className="text-sm text-gray-600">
+              Página {currentPage} de {totalPages} — Total: {totalCount}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+              >
+                Anterior
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+              >
+                Próxima
+              </Button>
+            </div>
+          </div>
         </ComponentCard>
       </div>
     </>

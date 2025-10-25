@@ -25,24 +25,44 @@ import {
 import { Button } from "@/components/ui/button";
 import { AccountPayable } from "@/types/AccountPayable/AccountPayable";
 import Badge from "@/components/ui/badge/Badge";
+import NoData from "@/components/no-data";
 
 export default function AccountPayableList() {
   const [accounts, setAccounts] = useState<AccountPayable[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
-  const [filterCnpj, setFilterCnpj] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 5;
 
   const navigate = useNavigate();
 
+  const fetchAccounts = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get(
+        `/AccountPayable/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      const data = res.data;
+
+      setAccounts(data.items || []);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+    } catch (error) {
+      console.error("Erro ao carregar contas:", error);
+      showErrorToast("Erro ao carregar contas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get("/AccountPayable")
-      .then((res) => setAccounts(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchAccounts(currentPage);
+  }, [currentPage]);
 
   const handleEditar = (u: AccountPayable) => {
     navigate(`/fornecedores/editar/${u.id}`);
@@ -58,8 +78,10 @@ export default function AccountPayableList() {
     }
   };
 
-  // --- Novo: mudança de status ---
-  const handleToggleStatus = async (account: AccountPayable, newStatus: string) => {
+  const handleToggleStatus = async (
+    account: AccountPayable,
+    newStatus: string
+  ) => {
     try {
       await apiClient.patch(`/AccountPayable/${account.guid}/status/${newStatus}`);
       showEditedSuccessfullyToast(`Status alterado para ${newStatus}`);
@@ -74,104 +96,89 @@ export default function AccountPayableList() {
   };
 
   const columns = [
-  { key: "description", label: "Descrição" },
-  { key: "dueDate", label: "Data de vencimento" },
-  { key: "amount", label: "Valor" },
-  {
-    key: "paymentDate",
-    label: "Data de pagamento",
-    render: (c: AccountPayable) =>
-      c.paymentDate
-        ? new Date(c.paymentDate).toLocaleDateString()
-        : "-",
-  },
-  { key: "costCenterName", label: "Centro de Custo" },
-  {
-    key: "accountStatus",
-    label: "Status",
-    render: (c: AccountPayable) => {
-      const statusMap: Record<string, { color: string; label: string }> = {
-        Pendente: { color: "warning", label: "Pendente" },
-        Paga: { color: "success", label: "Paga" },
-        Atrasada: { color: "error", label: "Atrasada" },
-        Parcial: { color: "info", label: "Parcial" },
-        Cancelada: { color: "secondary", label: "Cancelada" },
-      };
-
-      const status = statusMap[c.accountStatus] ?? {
-        color: "default",
-        label: c.accountStatus,
-      };
-
-      return (
-        <Badge size="sm" color={status.color}>
-          {status.label}
-        </Badge>
-      );
+    { key: "description", label: "Descrição" },
+    { key: "dueDate", label: "Data de vencimento" },
+    { key: "amount", label: "Valor" },
+    {
+      key: "paymentDate",
+      label: "Data de pagamento",
+      render: (c: AccountPayable) =>
+        c.paymentDate ? new Date(c.paymentDate).toLocaleDateString() : "-",
     },
-  },
-  {
-    label: "Ações",
-    render: (u: AccountPayable) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
-            <MoreDotIcon />
-          </button>
-        </DropdownMenuTrigger>
+    { key: "costCenterName", label: "Centro de Custo" },
+    {
+      key: "accountStatus",
+      label: "Status",
+      render: (c: AccountPayable) => {
+        const statusMap: Record<string, { color: string; label: string }> = {
+          Pendente: { color: "warning", label: "Pendente" },
+          Paga: { color: "success", label: "Paga" },
+          Atrasada: { color: "error", label: "Atrasada" },
+          Parcial: { color: "info", label: "Parcial" },
+          Cancelada: { color: "secondary", label: "Cancelada" },
+        };
 
-        <DropdownMenuContent align="end" className="w-44">
-          <DropdownMenuItem
-            disabled={u.accountStatus === "Paga"}
-            onClick={() => handleEditar(u)}
-          >
-            Editar
-          </DropdownMenuItem>
+        const status = statusMap[c.accountStatus] ?? {
+          color: "default",
+          label: c.accountStatus,
+        };
 
-          {u.accountStatus != "Paga" && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-44">
-                {["Paga", "Atrasada", "Parcial", "Cancelada"].map(
-                  (s) => (
+        return (
+          <Badge size="sm" color={status.color}>
+            {status.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      label: "Ações",
+      render: (u: AccountPayable) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+              <MoreDotIcon />
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem
+              disabled={u.accountStatus === "Paga"}
+              onClick={() => handleEditar(u)}
+            >
+              Editar
+            </DropdownMenuItem>
+
+            {u.accountStatus != "Paga" && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-44">
+                  {["Paga", "Atrasada", "Parcial", "Cancelada"].map((s) => (
                     <DropdownMenuItem
                       key={s}
                       onClick={() => handleToggleStatus(u, s)}
                     >
                       {s}
                     </DropdownMenuItem>
-                  )
-                )}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          )}
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            )}
 
-          <DropdownMenuSeparator />
+            <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            onClick={() => handleExcluir(u)}
-            disabled={u.accountStatus === "Paga"}
-            className="text-destructive focus:text-destructive"
-          >
-            <span>Excluir</span>
-            <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-];
-
-
-  const contasFiltradas = accounts.filter((c) => {
-    return (
-      c.description.toLowerCase().includes(filterNome.toLowerCase()) &&
-      c.guid.toLowerCase().includes(filterCnpj.toLowerCase()) &&
-      (filterStatus === "" ||
-        (filterStatus === "ativo" && c.accountStatus) ||
-        (filterStatus === "inativo" && !c.accountStatus))
-    );
-  });
+            <DropdownMenuItem
+              onClick={() => handleExcluir(u)}
+              disabled={u.accountStatus === "Paga"}
+              className="text-destructive focus:text-destructive"
+            >
+              <span>Excluir</span>
+              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
+    },
+  ];
 
   if (loading) return <p>Carregando...</p>;
 
@@ -188,9 +195,7 @@ export default function AccountPayableList() {
         <ComponentCard title="Lista de Contas a Pagar">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
-              <Button
-                onClick={() => (window.location.href = "/contas-a-pagar/criar")}
-              >
+              <Button onClick={() => navigate("/contas-a-pagar/criar")}>
                 Nova conta a pagar
               </Button>
               <Button
@@ -223,7 +228,36 @@ export default function AccountPayableList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={contasFiltradas} />
+          {accounts.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={accounts} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

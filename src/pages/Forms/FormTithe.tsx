@@ -6,6 +6,8 @@ import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { useAuth } from "@/context/AuthContext";
 import { TitheDTO} from "@/types/Tithe/TitheDTO";
+import useGoBack from "@/hooks/useGoBack";
+
 
 type Props = {
   onSubmit: (data: TitheDTO) => Promise<void>;
@@ -13,6 +15,8 @@ type Props = {
 
 export default function FormTithe({ onSubmit }: Props) {
   const { user } = useAuth();
+  const goBack = useGoBack();
+  const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<{ value: string; label: string }[]>([]);
   const [formData, setFormData] = useState<TitheDTO>({
     userId: "",
@@ -39,6 +43,7 @@ export default function FormTithe({ onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (!formData.userId || !formData.amount) return;
     await onSubmit(formData);
   };
@@ -78,7 +83,12 @@ export default function FormTithe({ onSubmit }: Props) {
         />
       </div>
 
-      <Button type="submit">Registrar Dízimo</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

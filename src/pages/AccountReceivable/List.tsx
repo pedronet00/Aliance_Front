@@ -25,24 +25,44 @@ import {
 import { Button } from "@/components/ui/button";
 import { AccountReceivable } from "@/types/AccountReceivable/AccountReceivable";
 import Badge from "@/components/ui/badge/Badge";
+import NoData from "@/components/no-data";
 
 export default function AccountReceivableList() {
   const [accounts, setAccounts] = useState<AccountReceivable[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
-  const [filterCnpj, setFilterCnpj] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 5;
 
   const navigate = useNavigate();
 
+  const fetchAccounts = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get(
+        `/AccountReceivable/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      const data = res.data;
+
+      setAccounts(data.items || []);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+    } catch (error) {
+      console.error("Erro ao carregar contas:", error);
+      showErrorToast("Erro ao carregar contas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get("/AccountReceivable")
-      .then((res) => setAccounts(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchAccounts(currentPage);
+  }, [currentPage]);
 
   const handleEditar = (u: AccountReceivable) => {
     navigate(`/fornecedores/editar/${u.id}`);
@@ -58,7 +78,6 @@ export default function AccountReceivableList() {
     }
   };
 
-  // --- Novo: mudança de status ---
   const handleToggleStatus = async (account: AccountReceivable, newStatus: string) => {
     try {
       await apiClient.patch(`/AccountReceivable/${account.guid}/status/${newStatus}`);
@@ -114,26 +133,21 @@ export default function AccountReceivableList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-44">
-            
-            <DropdownMenuItem disabled={u.accountStatus === "Paga"}  onClick={() => handleEditar(u)}>
+            <DropdownMenuItem disabled={u.accountStatus === "Paga"} onClick={() => handleEditar(u)}>
               Editar
             </DropdownMenuItem>
 
-            {/* Submenu de Status */}
-            {u.accountStatus != "Paga" && (
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-44">
-                {["Pendente", "Paga", "Atrasada", "Parcial", "Cancelada"].map((s) => (
-                  <DropdownMenuItem 
-                    key={s}
-                    onClick={() => handleToggleStatus(u, s)}
-                  >
-                    {s}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+            {u.accountStatus !== "Paga" && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-44">
+                  {["Pendente", "Paga", "Atrasada", "Parcial", "Cancelada"].map((s) => (
+                    <DropdownMenuItem key={s} onClick={() => handleToggleStatus(u, s)}>
+                      {s}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
             )}
 
             <DropdownMenuSeparator />
@@ -154,7 +168,6 @@ export default function AccountReceivableList() {
   const contasFiltradas = accounts.filter((c) => {
     return (
       c.description.toLowerCase().includes(filterNome.toLowerCase()) &&
-      c.guid.toLowerCase().includes(filterCnpj.toLowerCase()) &&
       (filterStatus === "" ||
         (filterStatus === "ativo" && c.accountStatus) ||
         (filterStatus === "inativo" && !c.accountStatus))
@@ -172,19 +185,15 @@ export default function AccountReceivableList() {
           { label: "Contas a Receber", path: "/contas-a-receber" },
         ]}
       />
+
       <div className="space-y-6">
         <ComponentCard title="Lista de Contas a Receber">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
-              <Button
-                onClick={() => (window.location.href = "/contas-a-receber/criar")}
-              >
+              <Button onClick={() => navigate("/contas-a-receber/criar")}>
                 Nova conta a receber
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => setShowFilters((prev) => !prev)}
-              >
+              <Button variant="secondary" onClick={() => setShowFilters((prev) => !prev)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>
             </div>
@@ -211,7 +220,36 @@ export default function AccountReceivableList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={contasFiltradas} />
+          {accounts.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={accounts} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

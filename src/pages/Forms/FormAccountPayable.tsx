@@ -7,6 +7,7 @@ import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
 import { AccountPayableDTO } from "@/types/AccountPayable/AccountPayableDTO";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: AccountPayableDTO;
@@ -21,6 +22,10 @@ type FormState = Omit<AccountPayableDTO, "costCenterId"> & {
 
 export default function FormAccountPayable({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
+
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormState>(() => ({
     description: initialData?.description ?? "",
@@ -53,6 +58,7 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if (!formData.costCenterId) {
       alert("Selecione um Centro de Custo.");
@@ -148,7 +154,12 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
         </div>
       )}
 
-      <Button type="submit">Salvar</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

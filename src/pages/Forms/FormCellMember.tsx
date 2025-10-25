@@ -5,6 +5,7 @@ import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { useParams } from "react-router-dom";
 import { CellMemberDTO } from "@/types/Cell/CellMemberDTO";
+import useGoBack from "@/hooks/useGoBack";
 
 export type CellMemberFormData = CellMemberDTO;
 
@@ -14,6 +15,9 @@ type Props = {
 
 export default function FormCellMember({ onSubmit }: Props) {
   const { cellGuid } = useParams(); // obtém o guid da célula pela URL
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<{ value: string; label: string }[]>([]);
   const [formData, setFormData] = useState<CellMemberFormData>({
     memberGuid: "",
@@ -39,6 +43,7 @@ export default function FormCellMember({ onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (!formData.cellGuid || !formData.memberGuid) return;
 
     await onSubmit(formData);
@@ -59,7 +64,12 @@ export default function FormCellMember({ onSubmit }: Props) {
         />
       </div>
 
-      <Button type="submit">Adicionar Membro</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

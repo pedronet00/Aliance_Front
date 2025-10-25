@@ -5,6 +5,7 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { EventDTO } from "@/types/Event/EventDTO";
 import apiClient from "@/api/apiClient";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: EventDTO;
@@ -14,6 +15,7 @@ type Props = {
 export default function FormEvent({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
 
+  const goBack = useGoBack();
   const [formData, setFormData] = useState<EventDTO>(
     initialData ?? {
       name: "",
@@ -36,17 +38,17 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
   const fetchData = async () => {
     try {
       const [locsRes, costCentersRes] = await Promise.all([
-        apiClient.get("/Location"),
-        apiClient.get("/CostCenter"),
+        apiClient.get("/Location/paged?pageNumber=1&pageSize=1000"),
+        apiClient.get("/CostCenter/paged?pageNumber=1&pageSize=1000"),
       ]);
 
       // trata ambos os formatos (objeto com "result" e array direto)
       const locationData = Array.isArray(locsRes.data)
         ? locsRes.data
-        : locsRes.data.result ?? [];
+        : locsRes.data.result.items ?? [];
 
-      const costCenterData = Array.isArray(costCentersRes.data)
-        ? costCentersRes.data
+      const costCenterData = Array.isArray(costCentersRes.data.items)
+        ? costCentersRes.data.items
         : costCentersRes.data.result ?? [];
 
       const locationList = locationData.map((l: any) => ({
@@ -178,9 +180,12 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
         </select>
       </div>
 
-      <Button type="submit" disabled={loading}>
-        Salvar
-      </Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

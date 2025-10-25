@@ -20,6 +20,7 @@ import {
 } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import { Income } from "@/types/Income/Income";
+import NoData from "@/components/no-data";
 
 export default function IncomeList() {
   const [incomes, setIncomes] = useState<Income[]>([]);
@@ -27,15 +28,36 @@ export default function IncomeList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterDescription, setFilterDescription] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   const navigate = useNavigate();
 
+  const fetchIncomes = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get(
+        `/Income/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      const data = res.data.result || res.data; // suporta ambos formatos
+
+      setIncomes(data.items || []);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+    } catch (error) {
+      showErrorToast("Erro ao carregar entradas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get("/Income")
-      .then((res) => setIncomes(res.data))
-      .catch((err) => showErrorToast("Erro ao carregar entradas: " + err))
-      .finally(() => setLoading(false));
-  }, []);
+    fetchIncomes(currentPage);
+  }, [currentPage]);
 
   const handleEditar = (income: Income) => {
     navigate(`/financeiro/entradas/editar/${income.guid}`);
@@ -45,7 +67,7 @@ export default function IncomeList() {
     try {
       await apiClient.delete(`/Income/${income.guid}`);
       showDeletedToast();
-      setIncomes((prev) => prev.filter((i) => i.guid !== income.guid));
+      fetchIncomes(currentPage);
     } catch (error) {
       showErrorToast("Erro ao deletar entrada: " + error);
     }
@@ -151,7 +173,36 @@ export default function IncomeList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={filteredIncomes} />
+          {filteredIncomes.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={filteredIncomes} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

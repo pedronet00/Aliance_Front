@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { PastoralVisit } from "@/types/PastoralVisit/PastoralVisit";
 import VisitDescriptionModal from "./DescriptionModal";
+import NoData from "@/components/no-data";
 
 export default function PastoralVisitList() {
   const [visits, setVisits] = useState<PastoralVisit[]>([]);
@@ -30,14 +31,37 @@ export default function PastoralVisitList() {
   const [filterStatus, setFilterStatus] = useState("");
   const [selectedVisit, setSelectedVisit] = useState<PastoralVisit | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   const navigate = useNavigate();
 
+  const fetchVisits = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get(
+        `/PastoralVisit/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+
+      const data = res.data;
+      setVisits(data.items || []);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+
+      if (currentPage !== data.currentPage) {
+        setCurrentPage(data.currentPage);
+      }
+    } catch (error) {
+      showErrorToast("Erro ao carregar visitas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get("/PastoralVisit")
-      .then((res) => setVisits(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchVisits(1);
   }, []);
 
   const handleEditar = (visit: PastoralVisit) => {
@@ -195,7 +219,36 @@ export default function PastoralVisitList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={filteredVisits} />
+          {filteredVisits.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={filteredVisits} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

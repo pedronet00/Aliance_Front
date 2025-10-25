@@ -5,6 +5,7 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import { ExpenseDTO } from "@/types/Expense/ExpenseDTO";
+import useGoBack from "@/hooks/useGoBack";
 
 export type ExpenseFormData = ExpenseDTO;
 
@@ -15,6 +16,8 @@ type Props = {
 
 export default function FormExpense({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
+  const goBack = useGoBack();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<ExpenseDTO>({
     description: "",
     amount: 0,
@@ -36,6 +39,7 @@ export default function FormExpense({ initialData, onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     await onSubmit(formData);
   };
 
@@ -97,7 +101,12 @@ export default function FormExpense({ initialData, onSubmit }: Props) {
         />
       </div>
 
-      <Button type="submit">Salvar</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

@@ -63,6 +63,15 @@ import EventCreate from "./pages/Event/Create";
 import EventEdit from "./pages/Event/Edit";
 import TitheList from "./pages/Tithe/List";
 import TitheCreate from "./pages/Tithe/Create";
+import ServiceCreate from "./pages/Service/Create";
+import ServiceList from "./pages/Service/List";
+import ServiceRoleCreate from "./pages/ServiceRole/Create";
+import ServiceRoleList from "./pages/ServiceRole/List";
+import ServiceEdit from "./pages/Service/Edit";
+import LocationList from "./pages/Location/List";
+import LocationCreate from "./pages/Location/Create";
+import DefinePassword from "./pages/AuthPages/DefinePassword";
+import UsuariosImport from "./pages/Usuarios/Import";
 
 export default function App() {
   return (
@@ -74,6 +83,7 @@ export default function App() {
           <Route path="/login" element={<SignIn />} />
           <Route path="/registrar" element={<SignUp />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/definir-senha" element={<DefinePassword />} />
 
           {/* Rotas privadas */}
           <Route element={<PrivateRoute />}>
@@ -81,10 +91,17 @@ export default function App() {
               <Route index path="/" element={<Home />} />
               <Route path="/dizimos" element={<TitheList />} />
               <Route path="/dizimos/criar" element={<TitheCreate />} />
+              <Route path="/cultos" element={<ServiceList />} />
+              <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
+              <Route path="/cultos/:serviceGuid/escalas/criar" element={<ServiceRoleCreate />} />
+              <Route path="/cultos/criar" element={<ServiceCreate />} />
+              <Route path="/cultos/editar/:guid" element={<ServiceEdit />} />
               <Route path="/eventos" element={<EventList />} />
               <Route path="/eventos/criar" element={<EventCreate />} />
               <Route path="/eventos/editar/:guid" element={<EventEdit />} />
               <Route path="/celulas" element={<CellList />} />
+              <Route path="/locais" element={<LocationList />} />
+              <Route path="/locais/criar" element={<LocationCreate />} />
               <Route path="/celulas/criar" element={<CellCreate />} />
               <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
               <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
@@ -109,6 +126,7 @@ export default function App() {
               <Route path="/patrimonios" element={<PatrimonyList />} />
               <Route path="/membros" element={<UsuariosList />} />
               <Route path="/membros/criar" element={<UsuariosCreate />} />
+              <Route path="/membros/importar" element={<UsuariosImport />} />
               <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
               <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />
               <Route path="/visitas-pastorais/editar/:guid" element={<PastoralVisitEdit />} />

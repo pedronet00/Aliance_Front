@@ -41,19 +41,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Função base: limpa estado e redireciona
-  const baseLogout = (toastType: "logoff" | "sessionExpired") => {
+  const baseLogout = (toastType: "sessionExpired" | null) => {
     localStorage.removeItem("token");
     setUser(null);
 
-    // Marca o tipo de toast que deve aparecer após reload
-    localStorage.setItem("toastType", toastType);
+    // Apenas salva o toast de sessão expirada
+    if (toastType === "sessionExpired") {
+      localStorage.setItem("toastType", "sessionExpired");
+    } else {
+      localStorage.removeItem("toastType");
+    }
 
     window.location.href = "/login";
   };
 
-  // Logout manual → usado pelo usuário ao clicar em "sair"
+  // Logout manual → sem exibir toast
   const manualLogout = () => {
-    baseLogout("logoff");
+    baseLogout(null);
   };
 
   // Interceptor para capturar 401 e deslogar automaticamente

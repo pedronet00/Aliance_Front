@@ -8,6 +8,7 @@ import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { BudgetDTO } from "@/types/Budget/BudgetDTO";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: BudgetDTO;
@@ -17,6 +18,9 @@ type Props = {
 export default function FormBudget({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
 
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<BudgetDTO>(() => {
     if (initialData) {
       return {
@@ -47,12 +51,11 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
     { value: string; label: string }[]
   >([]);
 
-  // Carrega os centros de custo e ajusta o formData se estiver editando
   useEffect(() => {
     apiClient
-      .get<CostCenter[]>("/CostCenter")
+      .get<CostCenter[]>("/CostCenter/paged?&pageNumber=1&pageSize=1000")
       .then((res) => {
-        const options = res.data.map((f) => ({
+        const options = res.data.items.map((f) => ({
           value: String(f.id),
           label: f.name,
         }));
@@ -71,6 +74,7 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     await onSubmit(formData);
   };
 
@@ -150,7 +154,12 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
         />
       </div>
 
-      <Button type="submit">Salvar</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }

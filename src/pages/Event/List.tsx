@@ -23,6 +23,7 @@ import {
 } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import { Event } from "@/types/Event/Event";
+import NoData from "@/components/no-data";
 
 export default function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -30,15 +31,35 @@ export default function EventList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+
   const navigate = useNavigate();
 
+  const fetchEvents = async (page: number = 1) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get(
+        `/Event/paged?pageNumber=${page}&pageSize=${pageSize}`
+      );
+      const data = res.data;
+      setEvents(data.items || []);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
+      setTotalCount(data.totalCount);
+    } catch (error) {
+      showErrorToast("Erro ao carregar eventos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get("/Event")
-      .then((res) => setEvents(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchEvents(currentPage);
+  }, [currentPage]);
 
   const handleEditar = (ev: Event) => {
     navigate(`/eventos/editar/${ev.guid}`);
@@ -48,19 +69,17 @@ export default function EventList() {
     try {
       await apiClient.delete(`/Event/${ev.guid}`);
       showDeletedToast();
-      setEvents((prev) => prev.filter((e) => e.guid !== ev.guid));
+      fetchEvents(currentPage);
     } catch (error) {
       showErrorToast("Erro ao deletar evento: " + error);
     }
   };
 
-  // agora aceita qualquer status (Completado, Adiado, Cancelado etc.)
   const handleStatusChange = async (ev: Event, newStatus: string) => {
     try {
       await apiClient.patch(`/Event/${ev.guid}/status/${newStatus}`);
-      const response = await apiClient.get("/Event");
-      setEvents(response.data);
       showEditedSuccessfullyToast();
+      fetchEvents(currentPage);
     } catch (error) {
       showErrorToast("Erro ao atualizar status do evento: " + error);
     }
@@ -113,8 +132,8 @@ export default function EventList() {
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={() => handleEditar(e)}>
               Ver participantes
-            </DropdownMenuItem> 
-            {e.status != "Completado" && ( 
+            </DropdownMenuItem>
+            {e.status !== "Completado" && (
               <>
                 <DropdownMenuItem onClick={() => handleEditar(e)}>
                   Editar
@@ -140,7 +159,6 @@ export default function EventList() {
                   </DropdownMenuSubContent>
                 </DropdownMenuSub>
                 <DropdownMenuSeparator />
-                
                 <DropdownMenuItem
                   onClick={() => handleExcluir(e)}
                   className="text-destructive focus:text-destructive"
@@ -157,8 +175,7 @@ export default function EventList() {
 
   const filteredEvents = events.filter((e) => {
     const matchName = e.name.toLowerCase().includes(filterName.toLowerCase());
-    const matchStatus =
-      filterStatus === "" ? true : e.status === filterStatus;
+    const matchStatus = filterStatus === "" ? true : e.status === filterStatus;
     return matchName && matchStatus;
   });
 
@@ -177,7 +194,7 @@ export default function EventList() {
         <ComponentCard title="Lista de Eventos">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
-              <Button onClick={() => (window.location.href = "/eventos/criar")}>
+              <Button onClick={() => navigate("/eventos/criar")}>
                 Novo evento
               </Button>
               <Button
@@ -212,7 +229,36 @@ export default function EventList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={filteredEvents} />
+          {filteredEvents.length > 0 ? (
+            <>
+              <GenericTable columns={columns} data={filteredEvents} />
+
+              {/* Paginação */}
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <NoData />
+          )}
         </ComponentCard>
       </div>
     </>

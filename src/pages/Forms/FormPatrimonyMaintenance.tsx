@@ -8,6 +8,7 @@ import apiClient from "@/api/apiClient";
 import { PatrimonyMaintenanceDTO } from "@/types/PatrimonyMaintenance/PatrimonyMaintenanceDTO";
 import { Patrimony } from "@/types/Patrimony/Patrimony";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
+import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
   initialData?: PatrimonyMaintenanceDTO;
@@ -16,6 +17,9 @@ type Props = {
 
 export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Props) {
   const { user } = useAuth();
+  const goBack = useGoBack();
+
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<PatrimonyMaintenanceDTO>(() => {
     if (initialData) {
@@ -49,9 +53,9 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
   // Carrega patrimônios
   useEffect(() => {
     apiClient
-      .get<Patrimony[]>("/Patrimony")
+      .get<Patrimony[]>("/Patrimony/paged?pageNumber=1&pageSize=1000")
       .then((res) => {
-        const options = res.data.map((f) => ({
+        const options = res.data.items.map((f) => ({
           value: String(f.id),
           label: f.name,
         }));
@@ -70,9 +74,9 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
   // Carrega centros de custo
   useEffect(() => {
     apiClient
-      .get<CostCenter[]>("/CostCenter")
+      .get<CostCenter[]>("/CostCenter/paged?pageNumber=1&pageSize=1000")
       .then((res) => {
-        const options = res.data.map((cc) => ({
+        const options = res.data.items.map((cc) => ({
           value: String(cc.id),
           label: cc.name,
         }));
@@ -100,6 +104,8 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    setLoading(true);
 
     if (!formData.patrimonyId) {
       alert("Selecione um patrimônio.");
@@ -195,7 +201,12 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
         />
       </div>
 
-      <Button type="submit">Salvar</Button>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div className="flex items-center gap-4">
+          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
+          <Button type="submit" disabled={loading}>Salvar</Button>
+        </div>
+      </div>
     </form>
   );
 }
