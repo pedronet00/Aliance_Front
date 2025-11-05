@@ -1,30 +1,31 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Label from "@/components/form/Label";
+import Input from "@/components/form/input/InputField";
 import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
-import { useParams } from "react-router-dom";
-import { CellMemberDTO } from "@/types/Cell/CellMemberDTO";
+import { useAuth } from "@/context/AuthContext";
+import { MissionCampaignDonationDTO} from "@/types/MissionCampaignDonation/MissionCampaignDonationDTO";
 import useGoBack from "@/hooks/useGoBack";
+import { useParams } from "react-router";
 
-export type CellMemberFormData = CellMemberDTO;
 
 type Props = {
-  onSubmit: (data: CellMemberFormData) => Promise<void>;
+  onSubmit: (data: MissionCampaignDonationDTO) => Promise<void>;
 };
 
-export default function FormCellMember({ onSubmit }: Props) {
-  const { cellGuid } = useParams(); // obtém o guid da célula pela URL
+export default function FormMissionCampaignDonation({ onSubmit }: Props) {
+  const { user } = useAuth();
+  const {campaignGuid} = useParams<{campaignGuid: string}>();
   const goBack = useGoBack();
-
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<{ value: string; label: string }[]>([]);
-  const [formData, setFormData] = useState<CellMemberFormData>({
-    memberGuid: "",
-    cellGuid: cellGuid ?? "",
+  const [formData, setFormData] = useState<MissionCampaignDonationDTO>({
+    userId: "",
+    campaignGuid: campaignGuid,
+    amount: 0,
   });
 
-  // 🔹 Carrega lista de usuários disponíveis
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -44,8 +45,7 @@ export default function FormCellMember({ onSubmit }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    if (!formData.cellGuid || !formData.memberGuid) return;
-
+    if (!formData.userId || !formData.amount) return;
     await onSubmit(formData);
   };
 
@@ -56,11 +56,22 @@ export default function FormCellMember({ onSubmit }: Props) {
         <Select
           options={members}
           placeholder="Selecione o membro"
-          value={formData.memberGuid}
+          value={formData.userId}
           onChange={(val: any) => {
             const value = typeof val === "object" ? val.value : val;
-            setFormData({ ...formData, memberGuid: value });
+            setFormData({ ...formData, userId: value });
           }}
+        />
+      </div>
+
+      <div>
+        <Label>Valor</Label>
+        <Input
+          type="number"
+          value={formData.amount}
+          onChange={(e) =>
+            setFormData({ ...formData, amount: parseFloat(e.target.value) })
+          }
         />
       </div>
 

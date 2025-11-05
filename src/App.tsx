@@ -72,6 +72,22 @@ import LocationList from "./pages/Location/List";
 import LocationCreate from "./pages/Location/Create";
 import DefinePassword from "./pages/AuthPages/DefinePassword";
 import UsuariosImport from "./pages/Usuarios/Import";
+import WorshipTeamList from "./pages/WorshipTeam/List";
+import WorshipTeamCreate from "./pages/WorshipTeam/Create";
+import WorshipTeamEdit from "./pages/WorshipTeam/Edit";
+import WorshipTeamMemberList from "./pages/WorshipTeamMember/List";
+import WorshipTeamMemberCreate from "./pages/WorshipTeamMember/Create";
+import WorshipTeamRehearsalCreate from "./pages/WorshipTeamRehearsal/Create";
+import WorshipTeamRehearsalList from "./pages/WorshipTeamRehearsal/List";
+import WorshipTeamRehearsalEdit from "./pages/WorshipTeamRehearsal/Edit";
+import MissionCampaignList from "./pages/MissionCampaign/List";
+import MissionCampaignCreate from "./pages/MissionCampaign/Create";
+import MissionCampaignEdit from "./pages/MissionCampaign/Edit";
+import MissionCampaignDonationCreate from "./pages/MissionCampaignDonation/Create";
+import MissionCampaignDonationList from "./pages/MissionCampaignDonation/List";
+import AutomaticAccountsList from "./pages/AutomaticAccounts/List";
+import AutomaticAccountsCreate from "./pages/AutomaticAccounts/Create";
+import AutomaticAccountsEdit from "./pages/AutomaticAccounts/Edit";
 
 export default function App() {
   return (
@@ -101,6 +117,11 @@ export default function App() {
               <Route path="/eventos/editar/:guid" element={<EventEdit />} />
               <Route path="/celulas" element={<CellList />} />
               <Route path="/locais" element={<LocationList />} />
+              <Route path="/campanhas-de-missoes/:campaignGuid/doacoes" element={<MissionCampaignDonationList />} />
+              <Route path="/campanhas-de-missoes/:campaignGuid/doacoes/criar" element={<MissionCampaignDonationCreate />} />
+              <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
+              <Route path="/campanhas-de-missoes/criar" element={<MissionCampaignCreate />} />
+              <Route path="/campanhas-de-missoes/editar/:guid" element={<MissionCampaignEdit />} />
               <Route path="/locais/criar" element={<LocationCreate />} />
               <Route path="/celulas/criar" element={<CellCreate />} />
               <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
@@ -112,6 +133,14 @@ export default function App() {
               <Route path="/centros-de-custo" element={<CostCenterList />} />
               <Route path="/centros-de-custo/criar" element={<CostCenterCreate />} />
               <Route path="/centros-de-custo/editar/:id" element={<CostCenterEdit />} />
+              <Route path="/grupos-de-louvor" element={<WorshipTeamList />} />
+              <Route path="/grupos-de-louvor/:guidEquipe/ensaios" element={<WorshipTeamRehearsalList />} />
+              <Route path="/grupos-de-louvor/:guidEquipe/ensaios/criar" element={<WorshipTeamRehearsalCreate />} />
+              <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:guidEnsaio/editar" element={<WorshipTeamRehearsalEdit />} />
+              <Route path="/grupos-de-louvor/:teamGuid/membros" element={<WorshipTeamMemberList />} />
+              <Route path="/grupos-de-louvor/:teamGuid/membros/criar" element={<WorshipTeamMemberCreate />} />
+              <Route path="/grupos-de-louvor/criar" element={<WorshipTeamCreate />} />
+              <Route path="/grupos-de-louvor/editar/:guid" element={<WorshipTeamEdit />} />
               <Route path="/departamentos" element={<DepartmentList />} />
               <Route path="/departamentos/criar" element={<DepartmentCreate />} />
               <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
@@ -119,6 +148,9 @@ export default function App() {
               <Route path="/financeiro/entradas/criar" element={<IncomeCreate />} />
               <Route path="/financeiro/saidas" element={<ExpenseList />} />
               <Route path="/financeiro/saidas/criar" element={<ExpenseCreate />} />
+              <Route path="/contas-automaticas" element={<AutomaticAccountsList />} />
+              <Route path="/contas-automaticas/criar" element={<AutomaticAccountsCreate />} />
+              <Route path="/contas-automaticas/editar/:guid" element={<AutomaticAccountsEdit />} />
               <Route path="/contas-a-pagar" element={<AccountPayableList />} />
               <Route path="/contas-a-pagar/criar" element={<AccountPayableCreate />} />
               <Route path="/contas-a-receber" element={<AccountReceivableList />} />

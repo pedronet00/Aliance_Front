@@ -1,42 +1,36 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
-import { AccountPayableDTO } from "@/types/AccountPayable/AccountPayableDTO";
+import { AutomaticAccountsDTO } from "@/types/AutomaticAccounts/AutomaticAccountsDTO";
 import useGoBack from "@/hooks/useGoBack";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
-  initialData?: AccountPayableDTO;
-  onSubmit: (data: AccountPayableDTO) => Promise<void>;
+  initialData?: AutomaticAccountsDTO;
+  onSubmit: (data: AutomaticAccountsDTO) => Promise<void>;
 };
 
-// Estado do form usa costCenterId como string para evitar problemas de tipo com Select
-type FormState = Omit<AccountPayableDTO, "costCenterId"> & {
+type FormState = Omit<AutomaticAccountsDTO, "costCenterId"> & {
   costCenterId: string;
-  isPaid: boolean;
 };
 
-export default function FormAccountPayable({ initialData, onSubmit }: Props) {
-  const { user } = useAuth();
-
+export default function FormAutomaticAccount({ initialData, onSubmit }: Props) {
   const goBack = useGoBack();
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<FormState>(() => ({
     description: initialData?.description ?? "",
     amount: initialData?.amount ?? 0,
-    dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : new Date(),
-    paymentDate: initialData?.paymentDate
-      ? new Date(initialData.paymentDate)
-      : new Date(),
-    accountStatus: initialData?.accountStatus ?? "Pendente",
+    dueDay: initialData?.dueDay ?? 1,
+    accountType: initialData?.accountType ?? "payable",
     costCenterId: initialData?.costCenterId ? String(initialData.costCenterId) : "",
-    isPaid: initialData?.paymentDate ? true : false, // define flag automaticamente se já existir data
+    churchId: user?.churchId
   }));
 
   const [costCenterOptions, setCostCenterOptions] = useState<
@@ -65,20 +59,23 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
       return;
     }
 
-    const payload: AccountPayableDTO = {
+    const payload: AutomaticAccountsDTO = {
       description: formData.description,
       amount: formData.amount,
-      dueDate: formData.dueDate,
-      paymentDate: formData.isPaid ? formData.paymentDate : null, // envia nulo se não estiver pago
-      accountStatus: formData.isPaid ? "Paga" : "Pendente",
+      dueDay: formData.dueDay,
+      accountType: formData.accountType,
       costCenterId: Number(formData.costCenterId),
+      churchId: formData.churchId
     };
 
     await onSubmit(payload);
+
+    setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+
       <div>
         <Label>Descrição</Label>
         <Input
@@ -103,12 +100,28 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
       </div>
 
       <div>
-        <Label>Data de Vencimento</Label>
+        <Label>Dia de Vencimento</Label>
         <Input
-          type="date"
-          value={formData.dueDate.toISOString().substring(0, 10)}
+          type="number"
+          min={1}
+          max={31}
+          value={formData.dueDay}
           onChange={(e) =>
-            setFormData({ ...formData, dueDate: new Date(e.target.value) })
+            setFormData({ ...formData, dueDay: Number(e.target.value) })
+          }
+        />
+      </div>
+
+      <div>
+        <Label>Tipo da Conta</Label>
+        <Select
+          options={[
+            { value: "receivable", label: "A Receber" },
+            { value: "payable", label: "A Pagar" },
+          ]}
+          value={formData.accountType}
+          onChange={(val: any) =>
+            setFormData({ ...formData, accountType: val?.value ?? val })
           }
         />
       </div>
@@ -119,46 +132,19 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
           options={costCenterOptions}
           placeholder="Selecione um centro de custo"
           value={formData.costCenterId}
-          onChange={(val: any) => {
-            const newVal =
-              typeof val === "string" ? val : (val?.value ?? "");
-            setFormData((prev) => ({ ...prev, costCenterId: newVal }));
-          }}
-        />
-      </div>
-
-      {/* Flag de conta paga */}
-      <div className="flex items-center space-x-2">
-        <input
-          id="isPaid"
-          type="checkbox"
-          checked={formData.isPaid}
-          onChange={(e) =>
-            setFormData({ ...formData, isPaid: e.target.checked })
+          onChange={(val: any) =>
+            setFormData({ ...formData, costCenterId: val?.value ?? val })
           }
         />
-        <Label htmlFor="isPaid">Conta já foi paga</Label>
       </div>
 
-      {/* Campo condicional */}
-      {formData.isPaid && (
-        <div>
-          <Label>Data de Pagamento</Label>
-          <Input
-            type="date"
-            value={formData.paymentDate.toISOString().substring(0, 10)}
-            onChange={(e) =>
-              setFormData({ ...formData, paymentDate: new Date(e.target.value) })
-            }
-          />
-        </div>
-      )}
-
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div className="flex items-center gap-4">
-          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
-          <Button type="submit" disabled={loading}>Salvar</Button>
-        </div>
+      <div className="flex items-center gap-4">
+        <Button type="button" variant="secondary" onClick={() => goBack()}>
+          Cancelar
+        </Button>
+        <Button type="submit" disabled={loading}>
+          Salvar
+        </Button>
       </div>
     </form>
   );

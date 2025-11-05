@@ -1,5 +1,4 @@
 import PageMeta from "../../components/common/PageMeta";
-import AuthLayout from "./AuthPageLayout";
 import SignInForm from "../../components/auth/SignInForm";
 
 export default function SignIn() {
@@ -7,11 +6,14 @@ export default function SignIn() {
     <>
       <PageMeta
         title="Aliance | ERP para igrejas"
-        description="Essa é a página de login do sistema Aliance ERP para igrejas."
+        description="Página de login do sistema Aliance ERP."
       />
-      <AuthLayout>
-        <SignInForm />
-      </AuthLayout>
+
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#dcdcdc" }}>
+        <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
+          <SignInForm />
+        </div>
+      </div>
     </>
   );
 }

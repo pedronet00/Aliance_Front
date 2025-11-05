@@ -56,6 +56,11 @@ const navItems: NavItem[] = [
     name: "Dashboard",
     path: '/'
   },
+  // {
+  //   icon: <LayoutDashboard />,
+  //   name: "Calendário da Igreja",
+  //   path: '/calendar'
+  // },
   {
     name: "Administração & Gestão",
     icon: <SquareChartGantt />,
@@ -71,10 +76,10 @@ const navItems: NavItem[] = [
     name: "Serviço eclesiástico",
     icon: <Church />,
     subItems: [
-      { name: "Batismos", path: "/batismos" },
-      { name: "Corais", path: "/corais" },
+      // { name: "Batismos", path: "/batismos" },
+      // { name: "Corais", path: "/corais" },
       { name: "Cultos", path: "/cultos" },
-      { name: "Louvor", path: "/louvor" },
+      { name: "Louvor", path: "/grupos-de-louvor" },
     ]
   },
   {
@@ -89,7 +94,7 @@ const navItems: NavItem[] = [
     name: "Eventos & Missões",
     icon: <Calendar />,
     subItems: [
-      { name: "Campanhas de Missões", path: "/campanhas-missoes" },
+      { name: "Campanhas de Missões", path: "/campanhas-de-missoes" },
       { name: "Eventos", path: "/eventos" },
       { name: "Missões", path: "/missoes" },
     ]
@@ -98,6 +103,7 @@ const navItems: NavItem[] = [
     name: "Financeiro",
     icon: <DollarSign />,
     subItems: [
+      { name: "Contas Automáticas", path: "/contas-automaticas" },
       { name: "Contas a Pagar", path: "/contas-a-pagar" },
       { name: "Contas a Receber", path: "/contas-a-receber" },
       { name: "Dízimos", path: "/dizimos" },
@@ -361,12 +367,22 @@ const navItems: NavItem[] = [
               />
             </>
           ) : (
+            <>
             <img
+              className="dark:hidden"
               src="/images/logo/PNG PRETO.png"
               alt="Logo"
               width={50}
               height={32}
             />
+            <img
+              className="hidden dark:block"
+              src="/images/logo/PNG BRANCO.png"
+              alt="Logo"
+              width={50}
+              height={32}
+            />
+            </>
           )}
         </Link>
       </div>
@@ -381,11 +397,7 @@ const navItems: NavItem[] = [
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
-                ) : (
-                  <Ellipsis className="size-6" />
-                )}
+                
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
@@ -397,11 +409,6 @@ const navItems: NavItem[] = [
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  " "
-                ) : (
-                  <Ellipsis />
-                )}
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>

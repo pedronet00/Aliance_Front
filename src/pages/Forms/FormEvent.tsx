@@ -87,8 +87,10 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
 
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
     await onSubmit(formData);
+    setLoading(false);
   };
 
   return (

@@ -5,6 +5,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
+import { AppWindow, AxeIcon, Banknote, ChurchIcon, CircleDollarSign, Construction, Diamond, DollarSign, FolderClosed, HandCoins, Music, Podcast, Receipt, Settings, SpotlightIcon, UserIcon } from "lucide-react";
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -38,11 +39,21 @@ const AppHeader: React.FC = () => {
 
 
   const modules = [
-  { name: "Clientes", route: "/clientes" },
-  { name: "Fornecedores", route: "/fornecedores" },
-  { name: "Vendas", route: "/vendas" },
-  { name: "Produtos", route: "/produtos" },
-  { name: "Visitas Técnicas", route: "/visitas-tecnicas" },
+  {icon: <Podcast/>, name: "Células", route: "/celulas" },
+  {icon: <UserIcon/>, name: "Membros", route: "/membros" },
+  {icon: <CircleDollarSign/>, name: "Contas a Pagar", route: "/contas-a-pagar" },
+  {icon: <Banknote/>, name: "Contas a Receber", route: "/contas-a-receber" },
+  {icon: <ChurchIcon/>, name: "Cultos", route: "/cultos" },
+  {icon: <SpotlightIcon/>, name: "Eventos", route: "/eventos" },
+  {icon: <DollarSign/>, name: "Entradas", route: "/entradas" },
+  {icon: <Receipt/>, name: "Saídas", route: "/saidas" },
+  {icon: <AxeIcon/>, name: "Orçamentos", route: "/orcamentos" },
+  {icon: <HandCoins/>, name: "Dízimos", route: "/dizimos" },
+  {icon: <Music/>, name: "Louvor", route: "/grupos-de-louvor" },
+  {icon: <FolderClosed/>, name: "Centros de Custo", route: "/centros-de-custo" },
+  {icon: <AppWindow/>, name: "Departamentos", route: "/departamentos" },
+  {icon: <Settings/>, name: "Patrimônios", route: "/patrimonios" },
+  {icon: <Construction/>, name: "Manutenções Patrimoniais", route: "/manutencoes-patrimonios" },
 ];
 
 
@@ -174,21 +185,20 @@ const AppHeader: React.FC = () => {
                         {suggestions.map((mod) => (
                           <li
                             key={mod.route}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
                             onClick={() => {
                               setSearch("");
                               setSuggestions([]);
-                              window.location.href = mod.route; // ou useNavigate(mod.route)
+                              window.location.href = mod.route;
                             }}
                           >
-                            {mod.name}
+                            {mod.icon}
+                            <span>{mod.name}</span>
                           </li>
                         ))}
                       </ul>
                     )}
-                  </div>
-
-                
+                </div>
                 <button className="absolute right-2.5 top-1/2 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
                   <span> ⌘ </span>
                   <span> K </span>

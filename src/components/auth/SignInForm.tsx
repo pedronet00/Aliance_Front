@@ -29,33 +29,25 @@ export default function SignInForm() {
     }
   };
 
-  useEffect(() => {
-  const toastType = localStorage.getItem("toastType");
-  if (toastType) {
-    setTimeout(() => {
-      if (toastType === "sessionExpired") {
-        showSessionExpiredToast();
-      } else if (toastType === "logoff") {
-        showLogoffToast();
-      }
-      localStorage.removeItem("toastType");
-    }, 100); // espera o provider montar
-  }
-}, []);
-
-
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+  <div className="w-full">
+    <div className="mb-5">
         <div>
-          <div className="mb-5 sm:mb-8">
-            <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Faça o login
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Insira o seu email e senha para acessar sua conta.
-            </p>
-          </div>
+          <div className="mb-5 sm:mb-8 flex flex-col items-center text-center">
+          <Link to="/" className="flex items-center">
+            <img src="/images/logo/PNG PRETO.png" alt="Logo" width={80} />
+          </Link>
+
+          <h1 className="mt-3 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+            Faça o login
+          </h1>
+
+          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 max-w-[280px]">
+            Insira o seu email e senha para acessar sua conta.
+          </p>
+        </div>
+
+
           <div>
             {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
               <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">

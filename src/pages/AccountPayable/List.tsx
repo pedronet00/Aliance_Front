@@ -97,14 +97,9 @@ export default function AccountPayableList() {
 
   const columns = [
     { key: "description", label: "Descrição" },
-    { key: "dueDate", label: "Data de vencimento" },
-    { key: "amount", label: "Valor" },
-    {
-      key: "paymentDate",
-      label: "Data de pagamento",
-      render: (c: AccountPayable) =>
-        c.paymentDate ? new Date(c.paymentDate).toLocaleDateString() : "-",
-    },
+    { key: "dueDate", label: "Vencimento", render: (c: AccountPayable) => c.dueDate ? new Date(c.dueDate).toLocaleDateString() : "-", },
+    { key: "amount", label: "Valor", render: (c: AccountPayable) => "R$ " + c.amount},
+    { key: "paymentDate", label: "Pagamento", render: (c: AccountPayable) => c.paymentDate ? new Date(c.paymentDate).toLocaleDateString() : "-"},
     { key: "costCenterName", label: "Centro de Custo" },
     {
       key: "accountStatus",

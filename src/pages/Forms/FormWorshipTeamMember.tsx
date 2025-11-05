@@ -4,27 +4,26 @@ import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import { useParams } from "react-router-dom";
-import { CellMemberDTO } from "@/types/Cell/CellMemberDTO";
+import { WorshipTeamMemberDTO } from "@/types/WorshipTeamMember/WorshipTeamMemberDTO";
 import useGoBack from "@/hooks/useGoBack";
 
-export type CellMemberFormData = CellMemberDTO;
+export type WorshipTeamMemberFormData = WorshipTeamMemberDTO;
 
 type Props = {
-  onSubmit: (data: CellMemberFormData) => Promise<void>;
+  onSubmit: (data: WorshipTeamMemberFormData) => Promise<void>;
 };
 
-export default function FormCellMember({ onSubmit }: Props) {
-  const { cellGuid } = useParams(); // obtém o guid da célula pela URL
+export default function FormWorshipTeamMember({ onSubmit }: Props) {
+  const { teamGuid } = useParams(); // obtém o guid da célula pela URL
   const goBack = useGoBack();
 
   const [loading, setLoading] = useState(false);
   const [members, setMembers] = useState<{ value: string; label: string }[]>([]);
-  const [formData, setFormData] = useState<CellMemberFormData>({
-    memberGuid: "",
-    cellGuid: cellGuid ?? "",
+  const [formData, setFormData] = useState<WorshipTeamMemberFormData>({
+    userId: "",
+    teamGuid: teamGuid ?? "",
   });
 
-  // 🔹 Carrega lista de usuários disponíveis
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -44,9 +43,8 @@ export default function FormCellMember({ onSubmit }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    if (!formData.cellGuid || !formData.memberGuid) return;
-
     await onSubmit(formData);
+    setLoading(false);
   };
 
   return (
@@ -56,10 +54,10 @@ export default function FormCellMember({ onSubmit }: Props) {
         <Select
           options={members}
           placeholder="Selecione o membro"
-          value={formData.memberGuid}
+          value={formData.userId}
           onChange={(val: any) => {
             const value = typeof val === "object" ? val.value : val;
-            setFormData({ ...formData, memberGuid: value });
+            setFormData({ ...formData, userId: value });
           }}
         />
       </div>

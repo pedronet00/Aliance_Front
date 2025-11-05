@@ -44,9 +44,9 @@ export default function FormAccountReceivable({ initialData, onSubmit }: Props) 
 
   useEffect(() => {
     apiClient
-      .get<CostCenter[]>("/CostCenter")
+      .get<CostCenter[]>("/CostCenter/paged?pageNumber=1&pageSize=1000")
       .then((res) => {
-        const options = res.data.map((cc) => ({
+        const options = res.data.items.map((cc) => ({
           value: String(cc.id),
           label: cc.name,
         }));

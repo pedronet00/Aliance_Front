@@ -30,8 +30,8 @@ export default function FormServiceRole() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await apiClient.get("/User");
-        const list = res.data.result.map((u: any) => ({
+        const res = await apiClient.get("/User/paged?pageNumber=1&pageSize=1000");
+        const list = res.data.result.items.map((u: any) => ({
           value: u.id,
           label: u.userName,
         }));

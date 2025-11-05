@@ -45,16 +45,16 @@ export default function FormCell({ initialData, onSubmit }: Props) {
     const fetchData = async () => {
       try {
         const [usersRes, locsRes] = await Promise.all([
-          apiClient.get("/User"),
-          apiClient.get("/Location"),
+          apiClient.get("/User/paged?pageNumber=1&pageSize=1000"),
+          apiClient.get("/Location/paged?pageNumber=1&pageSize=1000"),
         ]);
 
-        const userList = usersRes.data.result.map((u: any) => ({
+        const userList = usersRes.data.result.items.map((u: any) => ({
           value: u.id, // GUID string
           label: u.userName,
         }));
 
-        const locationList = locsRes.data.result.map((l: any) => ({
+        const locationList = locsRes.data.result.items.map((l: any) => ({
           value: Number(l.id), // número
           label: l.name,
         }));

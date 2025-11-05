@@ -96,9 +96,9 @@ export default function BudgetList() {
   const columns = [
     { key: "name", label: "Nome" },
     { key: "description", label: "Descrição" },
-    { key: "totalAmount", label: "Total" },
-    { key: "startDate", label: "Data de lançamento" },
-    { key: "endDate", label: "Prazo" },
+    { key: "totalAmount", label: "Total", render: ((b: Budget) => "R$ " + b.totalAmount) },
+    { key: "startDate", label: "Lançamento",render: (c: Budget) => c.startDate ? new Date(c.startDate).toLocaleDateString() : "-" },
+    { key: "endDate", label: "Prazo",render: (c: Budget) => c.endDate ? new Date(c.endDate).toLocaleDateString() : "-" },
     {
       key: "status",
       label: "Status",

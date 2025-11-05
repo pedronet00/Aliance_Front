@@ -63,9 +63,9 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
   // Carrega membros
   useEffect(() => {
     apiClient
-      .get("/User")
+      .get("/User/paged?pageNumber=1&pageSize=1000")
       .then((res) => {
-        const options = res.data.result.map((m: any) => ({
+        const options = res.data.result.items.map((m: any) => ({
           value: m.id,
           label: m.userName,
         }));
