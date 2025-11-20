@@ -81,3 +81,21 @@ export const showErrorToast = (message: string) => {
         </div>
     );
 };
+
+export const showLoadingToast = (message: string) => {
+    toast.info(
+        <div>
+          <p><b>Carregando...</b></p>
+          <p>{message}</p>
+        </div>
+    );
+};
+
+export const showSuccessToast = (message: string) => {
+    toast.success(
+        <div>
+          <p><b>Sucesso!</b></p>
+          <p>{message}</p>
+        </div>
+    );
+};

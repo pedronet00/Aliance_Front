@@ -152,7 +152,9 @@ export default function AccountReceivableList() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
+              
+            <DropdownMenuItem 
+              disabled={u.accountStatus === "Paga"} 
               onClick={() => handleExcluir(u)}
               className="text-destructive focus:text-destructive"
             >

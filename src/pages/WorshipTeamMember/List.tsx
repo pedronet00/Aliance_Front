@@ -8,6 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreDotIcon } from "@/icons";
@@ -17,6 +20,7 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import {
   showDeletedToast,
+  showEditedSuccessfullyToast,
   showErrorToast,
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
@@ -29,34 +33,40 @@ export default function WorshipTeamMemberList() {
   const { teamGuid } = useParams<{ teamGuid: string }>();
   const navigate = useNavigate();
 
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient.get(`/WorshipTeamMember/${teamGuid}`);
+      const membersData = res.data.items || res.data;
+      setMembers(membersData);
+    } catch (err) {
+      showErrorToast("Erro ao carregar dados: " + err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!teamGuid) return;
-
-    const loadData = async () => {
-      try {
-        // Busca membros da célula
-        const [membersRes] = await Promise.all([
-          apiClient.get(`/WorshipTeamMember/${teamGuid}`)
-        ]);
-
-        const membersData = membersRes.data.items || membersRes.data;
-        setMembers(membersData);
-
-      } catch (err) {
-        showErrorToast("Erro ao carregar dados: " + err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
+    fetchMembers();
   }, [teamGuid]);
+
 
   const handleDelete = async (member: WorshipTeamMember) => {
     try {
       await apiClient.delete(`/WorshipTeamMember/${teamGuid}/member/${member.userId}`);
       showDeletedToast();
-      setMembers((prev) => prev.filter((m) => m.guid !== member.guid));
+      fetchMembers();
+    } catch (error) {
+      showErrorToast("Erro ao remover membro: " + error);
+    }
+  };
+
+  const handleStatus = async (member: WorshipTeamMember) => {
+    try {
+      await apiClient.patch(`/WorshipTeamMember/${teamGuid}/member/${member.userId}/status`);
+      showEditedSuccessfullyToast();
+      fetchMembers();
     } catch (error) {
       showErrorToast("Erro ao remover membro: " + error);
     }
@@ -92,6 +102,14 @@ export default function WorshipTeamMemberList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-40">
+                <DropdownMenuItem onClick={() => handleStatus(m)}>
+                    {m.status ? "Desativar" : "Ativar"}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleDelete(m)}
@@ -122,7 +140,7 @@ export default function WorshipTeamMemberList() {
       <div className="space-y-6">
         <ComponentCard title="Lista de Membros">
           <div className="flex justify-between items-center mb-4">
-            <Button variant={"secondary"} onClick={() => navigate(-1)}>
+            <Button variant={"secondary"} onClick={() => navigate('/grupos-de-louvor')}>
               Voltar
             </Button>
             <Button onClick={() => navigate(`/grupos-de-louvor/${teamGuid}/membros/criar`)}>

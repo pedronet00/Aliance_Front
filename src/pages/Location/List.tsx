@@ -52,7 +52,7 @@ export default function LocationList() {
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
     } catch (error) {
-      showErrorToast("Erro ao carregar locais");
+      showErrorToast(`Erro ao carregar locais: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -62,11 +62,11 @@ export default function LocationList() {
     fetchLocations(currentPage);
   }, [currentPage]);
 
-  const handleEditar = (l: Location) => navigate(`/locais/editar/${l.id}`);
+  const handleEditar = (l: Location) => navigate(`/locais/editar/${l.guid}`);
 
   const handleExcluir = async (l: Location) => {
     try {
-      await apiClient.delete(`/Location/${l.id}`);
+      await apiClient.delete(`/Location/${l.guid}`);
       showDeletedToast();
       fetchLocations(currentPage);
     } catch (error) {
@@ -74,11 +74,9 @@ export default function LocationList() {
     }
   };
 
-  const handleStatus = async (l: Location, action: "activate" | "deactivate") => {
+  const handleStatus = async (l: Location) => {
     try {
-      const endpoint =
-        action === "activate" ? `Location/activate/${l.id}` : `Location/deactivate/${l.id}`;
-      await apiClient.patch(endpoint);
+      await apiClient.patch(`Location/${l.guid}/status`);
       showEditedSuccessfullyToast();
       fetchLocations(currentPage);
     } catch (error) {
@@ -113,15 +111,9 @@ export default function LocationList() {
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-40">
-                {l.status ? (
-                  <DropdownMenuItem onClick={() => handleStatus(l, "deactivate")}>
-                    Desativar
+                  <DropdownMenuItem onClick={() => handleStatus(l)}>
+                   {l.status ? "Desativar" : "Ativar"}
                   </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={() => handleStatus(l, "activate")}>
-                    Ativar
-                  </DropdownMenuItem>
-                )}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
 

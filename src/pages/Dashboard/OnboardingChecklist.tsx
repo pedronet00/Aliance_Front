@@ -43,7 +43,7 @@ export default function OnboardingChecklist({ totalEvents, totalBudgets, totalMe
       {/* Imagem à esquerda */}
       <div className="flex-shrink-0 w-full md:w-1/2 flex justify-center">
         <img
-          src="https://static.vecteezy.com/system/resources/previews/014/433/044/non_2x/achievements-business-achievement-awards-or-competitions-illustration-png.png"
+          src="/images/vectors/champion.png"
           alt="Onboarding Illustration"
           className="max-w-xs w-full h-auto object-contain"
         />

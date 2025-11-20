@@ -47,8 +47,6 @@ export default function Home() {
       if(res.data.totalBudgets > 0 && res.data.totalEvents > 0 && res.data.totalPatrimonies > 0 && res.data.totalUsers > 0) {
         setShowDashboard(false);
       }
-
-      console.log("show dashboard: ", showDashboard);
     } catch (error) {
       console.error("Erro ao carregar dashboard:", error);
     } finally {

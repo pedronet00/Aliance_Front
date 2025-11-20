@@ -8,6 +8,9 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreDotIcon } from "@/icons";
@@ -17,18 +20,12 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import {
   showDeletedToast,
+  showEditedSuccessfullyToast,
   showErrorToast,
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
+import { CellMember } from "@/types/CellMember/CellMember";
 
-type CellMember = {
-  id: number;
-  guid: string;
-  cellGuid: string;
-  userId: string;
-  userName?: string;
-  status?: boolean;
-};
 
 export default function CellMemberList() {
   const [members, setMembers] = useState<CellMember[]>([]);
@@ -37,30 +34,25 @@ export default function CellMemberList() {
   const { cellGuid } = useParams<{ cellGuid: string }>();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const loadData = async () => {
     if (!cellGuid) return;
 
-    const loadData = async () => {
-      try {
-        // Busca membros da célula
-        const [membersRes, cellRes] = await Promise.all([
-          apiClient.get(`/CellMember/${cellGuid}`),
-          apiClient.get(`/Cell/${cellGuid}`),
-        ]);
+    try {
+      const [membersRes, cellRes] = await Promise.all([
+        apiClient.get(`/CellMember/${cellGuid}`),
+        apiClient.get(`/Cell/${cellGuid}`),
+      ]);
 
-        const membersData = membersRes.data.result || membersRes.data;
-        setMembers(membersData);
+      setMembers(membersRes.data.result || membersRes.data);
+      setLeaderId(cellRes.data.result?.leaderId || cellRes.data?.leaderId);
+    } catch (err) {
+      showErrorToast("Erro ao carregar dados: " + err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        // Armazena o líder
-        const leader = cellRes.data.result?.leaderId || cellRes.data?.leaderId;
-        setLeaderId(leader);
-      } catch (err) {
-        showErrorToast("Erro ao carregar dados: " + err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     loadData();
   }, [cellGuid]);
 
@@ -68,17 +60,29 @@ export default function CellMemberList() {
     try {
       const response = await apiClient.delete(`/CellMember/${cellGuid}/member/${member.userId}`);
       const result = response.data;
+
       if (result?.hasNotifications && result.notifications.length > 0) {
-        
         result.notifications.forEach((n: string) => showErrorToast(n));
-        return; // não navega, pois houve notificações
+        return;
       }
+
       showDeletedToast();
-      setMembers((prev) => prev.filter((m) => m.guid !== member.guid));
+      await loadData(); // ← Recarrega lista
     } catch (error) {
       showErrorToast("Erro ao remover membro: " + error);
     }
   };
+
+  const handleStatus = async (member: CellMember) => {
+    try {
+      await apiClient.patch(`/CellMember/${cellGuid}/member/${member.userId}/status`);
+      showEditedSuccessfullyToast();
+      await loadData(); // ← Recarrega lista
+    } catch (error) {
+      showErrorToast("Erro ao alterar status: " + error);
+    }
+  };
+
 
   const columns = [
     {
@@ -115,21 +119,20 @@ export default function CellMemberList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem
-              onClick={() =>
-                navigate(`/celulas/${cellGuid}/membros/editar/${m.guid}`)
-              }
-            >
-              Editar
-            </DropdownMenuItem>
-
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-40">
+                <DropdownMenuItem onClick={() => handleStatus(m)}>
+                    {m.status ? "Inativar" : "Ativar"}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleDelete(m)}
               className="text-destructive focus:text-destructive"
             >
               <span>Remover</span>
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -153,7 +156,7 @@ export default function CellMemberList() {
       <div className="space-y-6">
         <ComponentCard title="Lista de Membros">
           <div className="flex justify-between items-center mb-4">
-            <Button variant={"secondary"} onClick={() => navigate(-1)}>
+            <Button variant={"secondary"} onClick={() => navigate('/celulas')}>
               Voltar
             </Button>
             <Button onClick={() => navigate(`/celulas/${cellGuid}/membros/criar`)}>

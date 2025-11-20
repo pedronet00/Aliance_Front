@@ -88,6 +88,18 @@ import MissionCampaignDonationList from "./pages/MissionCampaignDonation/List";
 import AutomaticAccountsList from "./pages/AutomaticAccounts/List";
 import AutomaticAccountsCreate from "./pages/AutomaticAccounts/Create";
 import AutomaticAccountsEdit from "./pages/AutomaticAccounts/Edit";
+import SundaySchoolClassroomList from "./pages/SundaySchoolClassroom/List";
+import SundaySchoolClassroomCreate from "./pages/SundaySchoolClassroom/Create";
+import UsuariosEdit from "./pages/Usuarios/Edit";
+import DepartmentMemberList from "./pages/DepartmentMember/List";
+import DepartmentMemberCreate from "./pages/DepartmentMember/Create";
+import SubscriptionDetails from "./pages/AsaasPanel/SubscriptionDetails";
+import TitheReceiptPage from "./components/tithe/titheReceiptPage";
+import SundaySchoolClassList from "./pages/SundaySchoolClass/List";
+import SundaySchoolClassCreate from "./pages/SundaySchoolClass/Create";
+import SundaySchoolClassEdit from "./pages/SundaySchoolClass/Edit";
+import LocationEdit from "./pages/Location/Edit";
+import SundaySchoolClassroomEdit from "./pages/SundaySchoolClassroom/Edit";
 
 export default function App() {
   return (
@@ -105,8 +117,15 @@ export default function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
+              <Route path="/aulas-ebd" element={<SundaySchoolClassList />} />
+              <Route path="/aulas-ebd/criar" element={<SundaySchoolClassCreate />} />
+              <Route path="/aulas-ebd/editar/:guid" element={<SundaySchoolClassEdit />} />
+              <Route path="/dizimos/:guid/comprovante" element={<TitheReceiptPage />} />
               <Route path="/dizimos" element={<TitheList />} />
               <Route path="/dizimos/criar" element={<TitheCreate />} />
+              <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
+              <Route path="/classes-ebd/criar" element={<SundaySchoolClassroomCreate />} />
+              <Route path="/classes-ebd/editar/:guid" element={<SundaySchoolClassroomEdit />} />
               <Route path="/cultos" element={<ServiceList />} />
               <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
               <Route path="/cultos/:serviceGuid/escalas/criar" element={<ServiceRoleCreate />} />
@@ -114,17 +133,21 @@ export default function App() {
               <Route path="/cultos/editar/:guid" element={<ServiceEdit />} />
               <Route path="/eventos" element={<EventList />} />
               <Route path="/eventos/criar" element={<EventCreate />} />
+              <Route path="/detalhes-assinatura" element={<SubscriptionDetails />} />
               <Route path="/eventos/editar/:guid" element={<EventEdit />} />
               <Route path="/celulas" element={<CellList />} />
               <Route path="/locais" element={<LocationList />} />
+              <Route path="/locais/criar" element={<LocationCreate />} />
+              <Route path="/locais/editar/:guid" element={<LocationEdit />} />
               <Route path="/campanhas-de-missoes/:campaignGuid/doacoes" element={<MissionCampaignDonationList />} />
               <Route path="/campanhas-de-missoes/:campaignGuid/doacoes/criar" element={<MissionCampaignDonationCreate />} />
               <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
               <Route path="/campanhas-de-missoes/criar" element={<MissionCampaignCreate />} />
               <Route path="/campanhas-de-missoes/editar/:guid" element={<MissionCampaignEdit />} />
-              <Route path="/locais/criar" element={<LocationCreate />} />
               <Route path="/celulas/criar" element={<CellCreate />} />
               <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
+              <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
+              <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
               <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
               <Route path="/celulas/:cellGuid/membros/criar" element={<CellMemberCreate/>} />
               <Route path="/celulas/:guid/encontros" element={<CellMeetingList/>} />
@@ -158,6 +181,7 @@ export default function App() {
               <Route path="/patrimonios" element={<PatrimonyList />} />
               <Route path="/membros" element={<UsuariosList />} />
               <Route path="/membros/criar" element={<UsuariosCreate />} />
+              <Route path="/membros/editar/:id" element={<UsuariosEdit />} />
               <Route path="/membros/importar" element={<UsuariosImport />} />
               <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
               <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />

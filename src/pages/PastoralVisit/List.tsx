@@ -131,12 +131,12 @@ export default function PastoralVisitList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => handleEditar(v)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem disabled={v.status == "Completado" || v.status == "Cancelado"} onClick={() => handleEditar(v)}>Editar</DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSelectedVisit(v)}>
               Ver detalhes
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
 
+            {v.status != "Completado" && v.status != "Cancelado" && (
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-44">
@@ -151,9 +151,10 @@ export default function PastoralVisitList() {
                 ))}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
-
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
+              disabled={v.status == "Completado" || v.status == "Cancelado"} 
               onClick={() => handleExcluir(v)}
               className="text-destructive focus:text-destructive"
             >

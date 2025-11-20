@@ -39,6 +39,9 @@ export default function EventList() {
 
   const navigate = useNavigate();
 
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
+
   const fetchEvents = async (page: number = 1) => {
     setLoading(true);
     try {
@@ -130,9 +133,9 @@ export default function EventList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => handleEditar(e)}>
+            {/* <DropdownMenuItem onClick={() => handleEditar(e)}>
               Ver participantes
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             {e.status !== "Completado" && (
               <>
                 <DropdownMenuItem onClick={() => handleEditar(e)}>

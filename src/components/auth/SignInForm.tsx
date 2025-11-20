@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Button from "../ui/button/Button";
+import { Button } from "../ui/button";
 import { useAuth } from "../../context/AuthContext";
 import { showSuccessfulLogininToast, showErrorLogininToast, showSessionExpiredToast, showLogoffToast } from "../toast/Toasts";
 
@@ -33,19 +33,24 @@ export default function SignInForm() {
   <div className="w-full">
     <div className="mb-5">
         <div>
-          <div className="mb-5 sm:mb-8 flex flex-col items-center text-center">
-          <Link to="/" className="flex items-center">
-            <img src="/images/logo/PNG PRETO.png" alt="Logo" width={80} />
-          </Link>
+          <div className="mb-5 sm:mb-8 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+  {/* Logo */}
+  <Link to="/" className="flex-shrink-0 flex items-center justify-center sm:justify-start">
+    <img src="/images/logo/PNG PRETO.png" alt="Logo" width={80} />
+  </Link>
 
-          <h1 className="mt-3 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-            Faça o login
-          </h1>
+  {/* Textos */}
+  <div>
+    <h1 className="mt-3 sm:mt-0 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
+      Faça o login
+    </h1>
 
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 max-w-[280px]">
-            Insira o seu email e senha para acessar sua conta.
-          </p>
-        </div>
+    <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+      Insira o seu email e senha para acessar sua conta.
+    </p>
+  </div>
+</div>
+
 
 
           <div>
@@ -127,7 +132,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button disabled={loading} className="w-full" size="sm">
+                  <Button disabled={loading} className="w-full h-12 text-base mt-2" size="sm">
                     Entrar
                   </Button>
                 </div>

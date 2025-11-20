@@ -10,7 +10,7 @@ export default function SignIn() {
       />
 
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#dcdcdc" }}>
-        <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
+        <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200">
           <SignInForm />
         </div>
       </div>

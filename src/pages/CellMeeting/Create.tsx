@@ -14,7 +14,7 @@ export default function CellMeetingCreate() {
 
   return (
     <div className="p-6">
-      <h1 className="text-xl font-semibold mb-4">Cadastrar saída financeira</h1>
+      <h1 className="text-xl font-semibold mb-4">Cadastrar encontro de célula</h1>
       <FormCellMeeting onSubmit={handleSubmit} />
     </div>
   );

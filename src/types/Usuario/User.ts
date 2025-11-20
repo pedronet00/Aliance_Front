@@ -1,9 +1,9 @@
-export type Usuario = 
+export type User = 
 {
     id: string;
     userName: string;
     email: string;
     status: boolean;
     role: string;
-    phone: string;
+    phoneNumber: string;
 }

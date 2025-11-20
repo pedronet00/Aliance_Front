@@ -8,17 +8,24 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
-import { Usuario } from "@/types/Usuario/Usuario";
+import { User } from "@/types/Usuario/User";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
+import Badge from "@/components/ui/badge/Badge";
+import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast, showSuccessToast } from "@/components/toast/Toasts";
 
 export default function UsuariosList() {
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuarios, setUsuarios] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,47 +56,62 @@ export default function UsuariosList() {
     }
   };
 
-  const handleEditar = (u: Usuario) => {
-    console.log("Editar", u);
+  const handleEditar = (u: User) => {
+    navigate(`/membros/editar/${u.id}`);
   };
 
-  const handleExcluir = (u: Usuario) => {
-    console.log("Excluir", u);
-  };
-
-  const handleAtivarDesativar = async (u: Usuario) => {
+  const handleExcluir = async (u: User) => {
     try {
-      const endpoint = u.status ? "/User/Deactivate" : "/User/Activate";
-      await apiClient.patch(`${endpoint}/${u.id}`);
+      await apiClient.delete(`/User/${u.id}`);
+
+      showDeletedToast();
+    } catch (err) {
+      showErrorToast("Houve um erro ao excluir o usuário.");
+    }
+  };
+
+  const handlePasswordDefinition = async (u: User) => {
+    try {
+      await apiClient.post(`/User/PasswordDefinitionMail/${u.id}`);
+
+      showSuccessToast("Email enviado ao usuário com o link para redefinir a senha.");
+    } catch (err) {
+      showErrorToast("Houve um erro ao enviar o email de redefinição de senha.");
+    }
+  };
+
+  const handleStatus = async (u: User) => {
+    try {
+      await apiClient.patch(`/User/status/${u.id}`);
 
       setUsuarios((prev) =>
         prev.map((usr) =>
           usr.id === u.id ? { ...usr, status: !usr.status } : usr
         )
       );
+
+      showEditedSuccessfullyToast();
     } catch (err) {
       console.error("Erro ao alterar status do usuário", err);
     }
   };
 
   const columns = [
-    { label: "Nome", key: "userName" },
+    { label: "Nome", key: "fullName" },
     { label: "Email", key: "email" },
-    { label: "Telefone", key: "phone" },
+    { label: "Telefone", key: "phoneNumber" },
     { label: "Cargo", key: "role" },
     {
       key: "status",
       label: "Status",
-      render: (c: Usuario) =>
-        c.status ? (
-          <span className="text-green-600">Ativo</span>
-        ) : (
-          <span className="text-red-600">Inativo</span>
-        ),
+      render: (c: User) =>
+        <Badge size="sm" color={c.status ? "success" : "error"}>
+          {c.status ? "Ativo" : "Inativo"}
+        </Badge>
     },
     {
       label: "Ações",
-      render: (u: Usuario) => (
+      render: (u: User) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -101,15 +123,20 @@ export default function UsuariosList() {
             <DropdownMenuItem onClick={() => handleEditar(u)}>
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
+            <DropdownMenuItem onClick={() => handlePasswordDefinition(u)}>
               Redefinir senha
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
+            {/* <DropdownMenuItem onClick={() => handleEditar(u)}>
               Ver escalas
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleAtivarDesativar(u)}>
-              {u.status ? "Desativar" : "Ativar"}
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-40">
+                  <DropdownMenuItem onClick={() => handleStatus(u)}>
+                    {u.status ? "Desativar" : "Ativar"}
+                  </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(u)}

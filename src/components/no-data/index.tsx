@@ -12,8 +12,7 @@ export default function NoData() {
         Nenhum dado disponível
       </h2>
       <p className="text-gray-400 text-md font-medium dark:text-gray-300">
-        Você ainda não possui dados para exibir nesta página, mas não se preocupe,
-        você pode começar a adicionar novos dados agora mesmo!
+        Você ainda não possui dados para exibir nesta página;
       </p>
     </div>
   );

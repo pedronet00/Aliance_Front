@@ -59,9 +59,6 @@ export default function ExpenseList() {
     fetchExpenses(currentPage);
   }, [currentPage]);
 
-  const handleEditar = (expense: Expense) => {
-    navigate(`/financeiro/entradas/editar/${expense.guid}`);
-  };
 
   const handleExcluir = async (expense: Expense) => {
     try {
@@ -97,14 +94,6 @@ export default function ExpenseList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem
-              disabled={i.category === "ContaPagar"}
-              onClick={() => handleEditar(i)}
-            >
-              Editar
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(i)}
               disabled={i.category === "ContaPagar"}

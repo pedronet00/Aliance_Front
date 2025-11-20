@@ -3,57 +3,110 @@ import { Button } from "@/components/ui/button";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import apiClient from "@/api/apiClient";
+import { showErrorToast } from "../toast/Toasts";
+
+// =======================
+// DTO COMPLETO
+// =======================
 
 interface NewClientDTO {
   churchName: string;
   churchEmail: string;
   churchPhone: string;
+  churchPostalCode: string;
+  churchCNPJ: string;
+
   churchAddress: string;
+  churchAddressNumber: string;
   churchCity: string;
   churchState: string;
   churchCountry: string;
-  churchCNPJ: string;
+
   userName: string;
   userEmail: string;
   userPhone: string;
+
   plan: string;
   paymentMethod: string;
 }
 
+// =======================
+// UI HELPERS
+// =======================
+
+const InputField = ({ label, value, onChange, type = "text" }: any) => (
+  <div className="space-y-1">
+    <Label>{label}</Label>
+    <Input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className="h-11 w-full"
+    />
+  </div>
+);
+
+const InputFieldRaw = ({ label, value, onChange, readOnly = false }: any) => (
+  <div className="space-y-1">
+    <Label>{label}</Label>
+    <input
+      value={value}
+      readOnly={readOnly}
+      onChange={onChange}
+      className={`h-11 w-full rounded-lg border px-4 text-sm shadow-sm dark:bg-gray-800 dark:text-white 
+      ${readOnly ? "bg-gray-100 dark:bg-gray-700 cursor-not-allowed" : ""}`}
+    />
+  </div>
+);
+
+// =======================
+// MAIN COMPONENT
+// =======================
+
 export default function SignUpForm() {
   const [step, setStep] = useState(1);
+  const [loadingCEP, setLoadingCEP] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState<NewClientDTO>({
     churchName: "",
     churchEmail: "",
     churchPhone: "",
+    churchPostalCode: "",
+    churchCNPJ: "",
+
     churchAddress: "",
+    churchAddressNumber: "",
     churchCity: "",
     churchState: "",
-    churchCountry: "",
-    churchCNPJ: "",
+    churchCountry: "Brasil",
+
     userName: "",
     userEmail: "",
     userPhone: "",
+
     plan: "",
-    paymentMethod: "",
+    paymentMethod: "CREDIT_CARD",
   });
 
   const handleChange = (field: keyof NewClientDTO, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  // === Máscara e formatação de telefone ===
+  // ========================
+  // Masks
+  // ========================
+
   const formatPhone = (value: string) => {
     value = value.replace(/\D/g, "").slice(0, 11);
-    if (value.length <= 2) return `(${value}`;
+
+    if (value.length <= 2) return `${value}`;
     if (value.length <= 7)
       return `(${value.slice(0, 2)}) ${value.slice(2, 3)} ${value.slice(3)}`;
-    if (value.length <= 11)
-      return `(${value.slice(0, 2)}) ${value.slice(2, 3)} ${value.slice(
-        3,
-        7
-      )}-${value.slice(7)}`;
-    return value;
+    return `(${value.slice(0, 2)}) ${value.slice(2, 3)} ${value.slice(
+      3,
+      7
+    )}-${value.slice(7)}`;
   };
 
   const handlePhoneChange = (
@@ -65,279 +118,269 @@ export default function SignUpForm() {
     e.target.value = formatPhone(e.target.value);
   };
 
-  // === Máscara de CNPJ ===
   const formatCNPJ = (value: string) => {
     value = value.replace(/\D/g, "");
-    if (value.length <= 2) return value;
-    if (value.length <= 5) return `${value.slice(0, 2)}.${value.slice(2)}`;
-    if (value.length <= 8)
-      return `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(5)}`;
-    if (value.length <= 12)
-      return `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(
-        5,
-        8
-      )}/${value.slice(8)}`;
-    return `${value.slice(0, 2)}.${value.slice(2, 5)}.${value.slice(
-      5,
-      8
-    )}/${value.slice(8, 12)}-${value.slice(12, 14)}`;
+    return value
+      .replace(/^(\d{2})(\d)/, "$1.$2")
+      .replace(/^(\d{2}\.\d{3})(\d)/, "$1.$2")
+      .replace(/^(\d{2}\.\d{3}\.\d{3})(\d)/, "$1/$2")
+      .replace(/^(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, "$1-$2")
+      .slice(0, 18);
   };
 
   const handleCNPJChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^\d]/g, "");
+    const raw = e.target.value.replace(/[^\d]/g, "").slice(0, 14);
     handleChange("churchCNPJ", raw);
     e.target.value = formatCNPJ(e.target.value);
   };
 
+  const formatCEP = (value: string) => {
+    value = value.replace(/\D/g, "").slice(0, 8);
+    if (value.length <= 5) return value;
+    return `${value.slice(0, 5)}-${value.slice(5)}`;
+  };
+
+  const handleCEPChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "").slice(0, 8);
+    handleChange("churchPostalCode", raw);
+    e.target.value = formatCEP(e.target.value);
+
+    if (raw.length === 8) {
+      setLoadingCEP(true);
+
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${raw}/json/`);
+        const data = await res.json();
+
+        if (data.erro) {
+          showErrorToast("CEP não encontrado.");
+          return;
+        }
+
+        handleChange("churchAddress", data.logradouro);
+        handleChange("churchCity", data.localidade);
+        handleChange("churchState", data.uf);
+        handleChange("churchCountry", "Brasil");
+      } catch {
+        showErrorToast("Erro ao buscar CEP.");
+      } finally {
+        setLoadingCEP(false);
+      }
+    }
+  };
+
   const validateStep = () => {
     if (step === 1) {
-      const requiredFields = [
+      return [
         "churchName",
         "churchEmail",
         "churchPhone",
-        "churchAddress",
-        "churchCity",
-        "churchState",
-        "churchCountry",
+        "churchPostalCode",
         "churchCNPJ",
-      ];
-      return requiredFields.every(
-        (field) => form[field as keyof NewClientDTO] !== ""
-      );
+        "churchAddressNumber",
+      ].every((f) => form[f as keyof NewClientDTO] !== "");
     }
-
     if (step === 2) {
-      const requiredFields = ["userName", "userEmail", "userPhone"];
-      return requiredFields.every(
-        (field) => form[field as keyof NewClientDTO] !== ""
+      return ["userName", "userEmail", "userPhone"].every(
+        (f) => form[f as keyof NewClientDTO] !== ""
       );
     }
-
-    if (step === 3) {
-      return form.plan !== "" && form.paymentMethod !== "";
-    }
-
     return true;
   };
 
   const nextStep = () => {
-    if (validateStep()) setStep((s) => s + 1);
-    else alert("Por favor, preencha todos os campos obrigatórios.");
+    if (!validateStep())
+      return showErrorToast("Preencha todos os campos obrigatórios.");
+    setStep((s) => s + 1);
   };
 
   const prevStep = () => setStep((s) => s - 1);
 
+  // ========================
+  // Submit
+  // ========================
+
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const response = await apiClient.post("/register/new-client", form);
-      const data = response.data;
-      const asaasCustomerId = data.asaasCustomerId;
-      const checkoutUrl = data.checkoutUrl;
-
-      if (!asaasCustomerId || !checkoutUrl) {
-        alert("Erro ao obter dados do cliente ou link de checkout.");
-        return;
-      }
-
+      const { checkoutUrl } = response.data;
+      setLoading(false);
       window.location.href = checkoutUrl;
     } catch (error: any) {
-      console.error(error);
-      if (error.response?.data?.errors)
-        alert(error.response.data.errors[0]);
-      else if (error.response?.data?.message)
-        alert(error.response.data.message);
-      else alert("Erro inesperado ao registrar o cliente.");
+      setLoading(false);
+      showErrorToast(error.response?.data?.message || "Erro inesperado.");
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 border border-gray-200 rounded-lg p-6 shadow-md dark:border-gray-700">
-      {/* === Etapa 1 === */}
-      {step === 1 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium mb-3">Informações da Igreja</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
+      <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
-          {/* Nome */}
-          <div>
-            <Label>Nome da Igreja</Label>
-            <Input
-              maxLength={80}
-              value={form.churchName}
-              onChange={(e) => handleChange("churchName", e.target.value)}
-            />
-          </div>
-
-          {/* Email, Telefone e CNPJ */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label>Email da Igreja</Label>
-              <Input
-                type="email"
-                maxLength={50}
-                value={form.churchEmail}
-                onChange={(e) => handleChange("churchEmail", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Telefone</Label>
-              <input
-                type="text"
-                maxLength={16}
-                defaultValue={formatPhone(form.churchPhone)}
-                onChange={(e) => handlePhoneChange("churchPhone", e)}
-                className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-              />
-            </div>
-
-            <div>
-              <Label>CNPJ da Igreja</Label>
-              <input
-                type="text"
-                value={formatCNPJ(form.churchCNPJ)}
-                onChange={handleCNPJChange}
-                maxLength={18}
-                className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"
-              />
-            </div>
-          </div>
-
-          {/* Endereço */}
-          <div>
-            <Label>Endereço</Label>
-            <Input
-              maxLength={100}
-              value={form.churchAddress}
-              onChange={(e) => handleChange("churchAddress", e.target.value)}
-            />
-          </div>
-
-          {/* Cidade, Estado, País */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label>Cidade</Label>
-              <Input
-                maxLength={50}
-                value={form.churchCity}
-                onChange={(e) => handleChange("churchCity", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Estado</Label>
-              <Input
-                maxLength={50}
-                value={form.churchState}
-                onChange={(e) => handleChange("churchState", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>País</Label>
-              <Input
-                maxLength={50}
-                value={form.churchCountry}
-                onChange={(e) => handleChange("churchCountry", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <Button onClick={nextStep} className="w-full mt-6">
-            Próximo
-          </Button>
+        {/* LEFT */}
+        <div className="space-y-6">
+          <img src="/images/logo/PNG PRETO.png" alt="Logo" className="w-40" />
+          <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+            Organize, gerencie e cuide da sua igreja.
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Administração completa de membros, finanças e muito mais.
+          </p>
         </div>
-      )}
 
-      {/* === Etapa 2 === */}
-      {step === 2 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium mb-3">Informações do Usuário</h2>
+        {/* RIGHT */}
+        <div className="bg-white shadow-lg rounded-2xl p-8 border">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Nome do Usuário</Label>
-              <Input
-                maxLength={80}
-                value={form.userName}
-                onChange={(e) => handleChange("userName", e.target.value)}
+          {/* STEP 1 */}
+          {step === 1 && (
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium border-b pb-1">
+                Informações da Igreja
+              </h2>
+
+                <InputField
+                  label="Nome da Igreja"
+                  value={form.churchName}
+                  onChange={(e: any) =>
+                    handleChange("churchName", e.target.value)
+                  }
+                />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputFieldRaw
+                  label="Telefone"
+                  value={formatPhone(form.churchPhone)}
+                  onChange={(e: any) => handlePhoneChange("churchPhone", e)}
+                />
+
+                <InputFieldRaw
+                  label="CNPJ da Igreja"
+                  value={formatCNPJ(form.churchCNPJ)}
+                  onChange={handleCNPJChange}
+                />
+              </div>
+
+                <InputField
+                  label="Email"
+                  type="email"
+                  value={form.churchEmail}
+                  onChange={(e: any) =>
+                    handleChange("churchEmail", e.target.value)
+                  }
+                />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* CEP */}
+              <InputFieldRaw
+                label="CEP da igreja"
+                value={formatCEP(form.churchPostalCode)}
+                onChange={handleCEPChange}
               />
-            </div>
-
-            <div>
-              <Label>Email do Usuário</Label>
-              <Input
-                type="email"
-                maxLength={50}
-                value={form.userEmail}
-                onChange={(e) => handleChange("userEmail", e.target.value)}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <Label>Telefone do Usuário</Label>
-              <input
-                type="text"
-                maxLength={16}
-                defaultValue={formatPhone(form.userPhone)}
-                onChange={(e) => handlePhoneChange("userPhone", e)}
-                className="w-full border rounded p-2 bg-white dark:bg-gray-800"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-between mt-4">
-            <Button variant="secondary" onClick={prevStep}>
-              Voltar
-            </Button>
-            <Button onClick={nextStep}>Próximo</Button>
-          </div>
-        </div>
-      )}
-
-      {/* === Etapa 3 === */}
-      {step === 3 && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium mb-3">Plano e Pagamento</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Plano</Label>
-              <select
-                className="w-full border rounded p-2 bg-white dark:bg-gray-800"
-                value={form.plan}
-                onChange={(e) => handleChange("plan", e.target.value)}
-              >
-                <option value="">Selecione...</option>
-                <option value="Essencial">Plano Essencial</option>
-                <option value="Premium">Plano Premium</option>
-                <option value="Basico">Plano Básico</option>
-              </select>
-            </div>
-
-            <div>
-              <Label>Forma de Pagamento</Label>
-              <select
-                className="w-full border rounded p-2 bg-white dark:bg-gray-800"
-                value={form.paymentMethod}
-                onChange={(e) =>
-                  handleChange("paymentMethod", e.target.value)
+              {/* NUMERO */}
+              <InputFieldRaw
+                label="Número do endereço"
+                value={form.churchAddressNumber}
+                onChange={(e: any) =>
+                  handleChange("churchAddressNumber", e.target.value)
                 }
-              >
-                <option value="">Selecione...</option>
-                <option value="CREDIT_CARD">Cartão de Crédito</option>
-                <option value="BOLETO">Boleto Bancário</option>
-              </select>
-            </div>
-          </div>
+              />
+              </div>
+              {/* ENDEREÇO AUTO */}
+              {/* <InputFieldRaw
+                label="Endereço"
+                value={form.churchAddress}
+                readOnly
+              />
 
-          <div className="flex justify-between mt-6">
-            <Button variant="secondary" onClick={prevStep}>
-              Voltar
-            </Button>
-            <Button onClick={handleSubmit}>Finalizar</Button>
-          </div>
+              <div className="grid grid-cols-3 gap-4">
+                <InputFieldRaw
+                  label="Cidade"
+                  value={form.churchCity}
+                  readOnly
+                />
+                <InputFieldRaw
+                  label="Estado"
+                  value={form.churchState}
+                  readOnly
+                />
+                <InputFieldRaw
+                  label="País"
+                  value={form.churchCountry}
+                  readOnly
+                />
+              </div> */}
+
+              
+
+              {/* PLANO */}
+              <div>
+                <Label>Plano</Label>
+                <select
+                  className="h-11 w-full rounded-lg border px-3 shadow-sm dark:bg-gray-800 dark:text-white"
+                  value={form.plan}
+                  onChange={(e) => handleChange("plan", e.target.value)}
+                >
+                  <option value="">Selecione...</option>
+                  <option value="Básico">Básico</option>
+                  <option value="Essencial">Essencial</option>
+                  <option value="Premium">Premium</option>
+                </select>
+              </div>
+
+              <Button onClick={nextStep} className="w-full h-12 text-base mt-2">
+                Próximo
+              </Button>
+            </div>
+          )}
+
+          {/* STEP 2 */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium border-b pb-1">
+                Informações do Usuário Principal
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputField
+                  label="Nome do Usuário"
+                  value={form.userName}
+                  onChange={(e: any) =>
+                    handleChange("userName", e.target.value)
+                  }
+                />
+                <InputField
+                  label="Email do Usuário"
+                  type="email"
+                  value={form.userEmail}
+                  onChange={(e: any) =>
+                    handleChange("userEmail", e.target.value)
+                  }
+                />
+              </div>
+
+              <InputFieldRaw
+                label="Telefone do Usuário"
+                value={formatPhone(form.userPhone)}
+                onChange={(e: any) => handlePhoneChange("userPhone", e)}
+              />
+
+              <div className="flex justify-between mt-6">
+                <Button variant="secondary" onClick={prevStep} className="h-11 px-6">
+                  Voltar
+                </Button>
+                <Button
+                  disabled={loading}
+                  onClick={handleSubmit}
+                  className="h-11 px-6 !bg-green-600 hover:bg-green-700"
+                >
+                  Finalizar Cadastro
+                </Button>
+              </div>
+            </div>
+          )}
+
         </div>
-      )}
+      </div>
     </div>
   );
 }

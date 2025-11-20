@@ -31,7 +31,7 @@ export default function FormTithe({ onSubmit }: Props) {
         const res = await apiClient.get("/User/paged?pageNumber=1&pageSize=1000");
         const list = res.data.result.items.map((u: any) => ({
           value: u.id,
-          label: u.userName,
+          label: u.fullName,
         }));
         setMembers(list);
       } catch (err) {

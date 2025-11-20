@@ -29,12 +29,12 @@ export default function WorshipTeamEdit() {
 
   return (
     <>
-        <PageMeta title="Editar Departamento" description="Editar Departamento" />
+        <PageMeta title="Editar Grupo de Louvor" description="Editar Grupo de Louvor" />
         <PageBreadcrumb
           items={[
             { label: "Início", path: "/" },
             { label: "Grupos de Louvor", path: "/grupos-de-louvor" },
-            { label: "Editar Departamento", path: `/grupos-de-louvor/editar/${guid}` },
+            { label: "Editar Grupo de Louvor", path: `/grupos-de-louvor/editar/${guid}` },
           ]}
         />
             <div className="space-y-6">

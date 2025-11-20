@@ -59,10 +59,6 @@ export default function IncomeList() {
     fetchIncomes(currentPage);
   }, [currentPage]);
 
-  const handleEditar = (income: Income) => {
-    navigate(`/financeiro/entradas/editar/${income.guid}`);
-  };
-
   const handleExcluir = async (income: Income) => {
     try {
       await apiClient.delete(`/Income/${income.guid}`);
@@ -97,12 +93,8 @@ export default function IncomeList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(i)}>
-              Editar
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
             <DropdownMenuItem
+              disabled={i.category == "ContaReceber" || i.category == "DoacaoCampanhaMissoes" || i.category == "Dizimo"}
               onClick={() => handleExcluir(i)}
               className="text-destructive focus:text-destructive"
             >

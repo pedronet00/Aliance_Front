@@ -33,6 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const userInfo = {
       email: decoded.email,
       name: decoded.unique_name,
+      subscriptionId: decoded.subscriptionId,
       role: decoded.role,
       churchId: parseInt(decoded.churchId),
     };
@@ -86,6 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userInfo = {
           email: decoded.email,
           role: decoded.role,
+          subscriptionId: decoded.subscriptionId,
           name: decoded.unique_name,
           churchId: parseInt(decoded.churchId),
         };

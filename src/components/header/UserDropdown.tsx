@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "../ui/button";
+import { useNavigate } from "react-router";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
+  const navigate = useNavigate();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -17,7 +18,7 @@ export default function UserDropdown() {
   }
 
   // Inicial do usuário
-  const userInitial = auth.user.name?.[0].toUpperCase() ?? "?";
+  const userInitial = auth?.user?.name?.[0].toUpperCase() ?? "?";
 
   // Cor de fundo aleatória (sorteada apenas na montagem do componente)
   const bgColor = useMemo(() => {
@@ -40,7 +41,7 @@ export default function UserDropdown() {
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
-          {auth.user.name?.toUpperCase() ?? ""}
+          {auth?.user?.name?.toUpperCase() ?? ""}
         </span>
 
         <svg
@@ -70,35 +71,20 @@ export default function UserDropdown() {
       >
         <div className="mb-3">
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            {auth.user.name}
+            {auth?.user?.name} | {auth?.user?.role}
           </span>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            {auth.user.email}
+            {auth?.user?.email}
           </span>
         </div>
 
-        {/* <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/profile"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              Edit profile
-            </DropdownItem>
-          </li>
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              to="/account"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              Account settings
-            </DropdownItem>
-          </li>
-        </ul> */}
+        <Button
+        variant={"outline"}
+          onClick={() => navigate("/detalhes-assinatura")}
+          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
+        >
+          Dados de cobrança
+        </Button>
 
         <Button
           onClick={() => auth.logout()}

@@ -85,11 +85,7 @@ export default function AccountPayableList() {
     try {
       await apiClient.patch(`/AccountPayable/${account.guid}/status/${newStatus}`);
       showEditedSuccessfullyToast(`Status alterado para ${newStatus}`);
-      setAccounts((prev) =>
-        prev.map((c) =>
-          c.guid === account.guid ? { ...c, accountStatus: newStatus } : c
-        )
-      );
+      fetchAccounts();
     } catch (error) {
       showErrorToast("Erro ao alterar status: " + error);
     }

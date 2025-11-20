@@ -108,7 +108,7 @@ export default function DepartmentList() {
 
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate(`/departamentos/${u.id}/membros`)}>
+            <DropdownMenuItem onClick={() => navigate(`/departamentos/${u.guid}/membros`)}>
               Ver membros
             </DropdownMenuItem>
 
@@ -149,7 +149,6 @@ export default function DepartmentList() {
     );
   });
 
-  if (loading) return <p>Carregando...</p>;
 
   return (
     <>

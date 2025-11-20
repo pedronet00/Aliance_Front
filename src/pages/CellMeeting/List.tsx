@@ -7,13 +7,16 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
+import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { CellMeeting } from "@/types/Cell/CellMeeting";
@@ -28,16 +31,22 @@ export default function CellMeetingList() {
   const navigate = useNavigate();
   const { guid } = useParams<{ guid: string }>(); // pega o guid da célula na URL
 
-  useEffect(() => {
+   const loadMeetings = async () => {
     if (!guid) return;
-    apiClient
-      .get(`/CellMeeting/cell/${guid}`)
-      .then((res) => setMeetings(res.data))
-      .catch((err) => {
-        console.error(err);
-        showErrorToast("Erro ao carregar encontros da célula.");
-      })
-      .finally(() => setLoading(false));
+    setLoading(true);
+    try {
+      const res = await apiClient.get(`/CellMeeting/cell/${guid}`);
+      setMeetings(res.data);
+    } catch (err) {
+      console.error(err);
+      showErrorToast("Erro ao carregar encontros da célula.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadMeetings();
   }, [guid]);
 
   const handleEditar = (m: CellMeeting) => {
@@ -48,13 +57,25 @@ export default function CellMeetingList() {
     navigate(`/financeiro/saidas/criar?celula=${guid}&data=${m.date}`);
   };
 
-  const handleExcluir = async (m: CellMeeting) => {
+   const handleExcluir = async (m: CellMeeting) => {
     try {
       await apiClient.delete(`/CellMeeting/${m.guid}`);
       showDeletedToast();
-      setMeetings((prev) => prev.filter((x) => x.guid !== m.guid));
+      await loadMeetings();
+      
     } catch (error) {
       showErrorToast("Erro ao deletar encontro: " + error);
+    }
+  };
+
+  const handleToggleStatus = async (m: CellMeeting, s: string) => {
+    try {
+      await apiClient.patch(`/CellMeeting/${m.guid}/status/${s}`);
+      showEditedSuccessfullyToast();
+      await loadMeetings();
+      
+    } catch (error) {
+      showErrorToast("Erro ao alterar status: " + error);
     }
   };
 
@@ -74,20 +95,23 @@ export default function CellMeetingList() {
     {
       key: "status",
       label: "Status",
-      render: (m: CellMeeting) => (
-        <Badge
-          size="sm"
-          color={
-            m.status.toLowerCase() === "agendado"
-              ? "warning"
-              : m.status.toLowerCase() === "realizado"
-              ? "success"
-              : "error"
-          }
-        >
-          {m.status}
-        </Badge>
-      ),
+      render: (m: CellMeeting) => {
+              const conditionMap: Record<string, { color: string; label: string }> = {
+                Completado: { color: "success", label: "Completado" },
+                Agendado: { color: "primary", label: "Agendado" },
+                Adiado: { color: "warning", label: "Adiado" },
+                Cancelado: { color: "error", label: "Cancelado" },
+              };
+              const status = conditionMap[m.status] ?? {
+                color: "default",
+                label: m.status,
+              };
+              return (
+                <Badge size="sm" color={status.color}>
+                  {status.label}
+                </Badge>
+              );
+            },
     },
     {
       label: "Ações",
@@ -100,14 +124,31 @@ export default function CellMeetingList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(m)}>
+            <DropdownMenuItem disabled={m.status == "Cancelado" || m.status == "Completado"} onClick={() => handleEditar(m)}>
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleGenerateAccountPayable(m)}>
+            {m.status != "Completado" && m.status != "Cancelado" && (
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-44">
+                            {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
+                              <DropdownMenuItem
+                                key={s}
+                                onClick={() => handleToggleStatus(m, s)}
+                                disabled={m.status === s}
+                              >
+                                {s}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        )}
+            <DropdownMenuItem disabled={m.status == "Cancelado"} onClick={() => handleGenerateAccountPayable(m)}>
               Lanche pós-encontro
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
+              disabled={m.status == "Cancelado" || m.status == "Completado"}
               onClick={() => handleExcluir(m)}
               className="text-destructive focus:text-destructive"
             >

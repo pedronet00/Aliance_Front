@@ -48,99 +48,125 @@ const othersItems: NavItem[] = [
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
-const { user } = useAuth();
+  const { user } = useAuth();
 
-const navItems: NavItem[] = [
-  {
-    icon: <LayoutDashboard />,
-    name: "Dashboard",
-    path: '/'
-  },
-  // {
-  //   icon: <LayoutDashboard />,
-  //   name: "Calendário da Igreja",
-  //   path: '/calendar'
-  // },
-  {
-    name: "Administração & Gestão",
-    icon: <SquareChartGantt />,
-    subItems: [
-      { name: "Centros de Custo", path: "/centros-de-custo" },
-      { name: "Departamentos", path: "/departamentos" },
-      { name: "Manutenção Patrimonial", path: "/manutencoes-patrimonios" },
-      { name: "Patrimônios", path: "/patrimonios" },
-      // { name: "Recursos", path: "/contas-a-receber" },
-    ]
-  },
-  {
-    name: "Serviço eclesiástico",
-    icon: <Church />,
-    subItems: [
-      // { name: "Batismos", path: "/batismos" },
-      // { name: "Corais", path: "/corais" },
-      { name: "Cultos", path: "/cultos" },
-      { name: "Louvor", path: "/grupos-de-louvor" },
-    ]
-  },
-  {
-    name: "Discipulado & Ensino",
-    icon: <GraduationCap />,
-    subItems: [
-      { name: "Células", path: "/celulas" },
-      { name: "Aulas de EBD", path: "/aulas-ebd" },
-    ]
-  },
-  {
-    name: "Eventos & Missões",
-    icon: <Calendar />,
-    subItems: [
-      { name: "Campanhas de Missões", path: "/campanhas-de-missoes" },
-      { name: "Eventos", path: "/eventos" },
-      { name: "Missões", path: "/missoes" },
-    ]
-  },
-  {
-    name: "Financeiro",
-    icon: <DollarSign />,
-    subItems: [
-      { name: "Contas Automáticas", path: "/contas-automaticas" },
-      { name: "Contas a Pagar", path: "/contas-a-pagar" },
-      { name: "Contas a Receber", path: "/contas-a-receber" },
-      { name: "Dízimos", path: "/dizimos" },
-      { name: "Entradas", path: "/financeiro/entradas" },
-      { name: "Orçamentos", path: "/orcamentos" },
-      { name: "Saídas", path: "/financeiro/saidas" },
-    ]
-  },
-  {
-    name: "Membros & Pastoral",
-    icon: <UsersRound />,
-    subItems: [
-      { name: "Membros", path: "/membros" },
-      ...(user?.role === "Admin" || user?.role === "Pastor" || user?.role === "Department Leader" || user?.role === "Cell Leader"
-      ? [{ name: "Reuniões de Liderança", path: "/reunioes-lideranca" }]
-      : []),
-      { name: "Visitas Pastorais", path: "/visitas-pastorais" },
-    ]
-  },
-  {
-    name: "Outros",
-    icon: <Ellipsis />,
-    subItems: [
-      { name: "Locais", path: "/locais" },
-      { name: "Classes de EBD", path: "/classes-ebd" },
-    ]
-  },
-  
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "Blank Page", path: "/blank", pro: false },
-  //     { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
-];
+  // função utilitária p/ verificar se o usuário possui um dos roles
+  const can = (roles: string[]) => {
+  const userRoles = Array.isArray(user?.role) ? user.role : [user?.role];
+  return userRoles.some((r: string) => roles.includes(r));
+};
+ 
+  const navItems: NavItem[] = [
+    {
+      icon: <LayoutDashboard />,
+      name: "Dashboard",
+      path: '/',
+    },
+
+    {
+      name: "Administração & Gestão",
+      icon: <SquareChartGantt />,
+      subItems: [
+        ...(can(["Admin", "Pastor", "Department Leader", "Cell Leader"])
+          ? [{ name: "Centros de Custo", path: "/centros-de-custo" }]
+          : []),
+
+        { name: "Departamentos", path: "/departamentos" },
+
+        ...(can(["Admin", "Pastor", "Department Leader"])
+          ? [{ name: "Manutenção Patrimonial", path: "/manutencoes-patrimonios" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Department Leader", "Cell Leader"])
+          ? [{ name: "Patrimônios", path: "/patrimonios" }]
+          : []),
+      ],
+    },
+
+    {
+      name: "Serviço eclesiástico",
+      icon: <Church />,
+      subItems: [
+        { name: "Cultos", path: "/cultos" },
+        { name: "Louvor", path: "/grupos-de-louvor" },
+      ],
+    },
+
+    {
+      name: "Discipulado & Ensino",
+      icon: <GraduationCap />,
+      subItems: [
+        { name: "Células", path: "/celulas" },
+        { name: "Aulas de EBD", path: "/aulas-ebd" },
+      ],
+    },
+
+    {
+      name: "Eventos & Missões",
+      icon: <Calendar />,
+      subItems: [
+        { name: "Campanhas de Missões", path: "/campanhas-de-missoes" },
+        { name: "Eventos", path: "/eventos" },
+        { name: "Missões", path: "/missoes" },
+      ],
+    },
+
+    {
+      name: "Financeiro",
+      icon: <DollarSign />,
+      subItems: [
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Contas Automáticas", path: "/contas-automaticas" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Contas a Pagar", path: "/contas-a-pagar" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Contas a Receber", path: "/contas-a-receber" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Dízimos", path: "/dizimos" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Entradas", path: "/financeiro/entradas" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Orçamentos", path: "/orcamentos" }]
+          : []),
+
+        ...(can(["Admin", "Pastor", "Financeiro"])
+          ? [{ name: "Saídas", path: "/financeiro/saidas" }]
+          : []),
+      ],
+    },
+
+    {
+      name: "Membros & Pastoral",
+      icon: <UsersRound />,
+      subItems: [
+        { name: "Membros", path: "/membros" },
+
+        ...(can(["Admin", "Pastor"])
+          ? [{ name: "Visitas Pastorais", path: "/visitas-pastorais" }]
+          : []),
+      ],
+    },
+
+    {
+      name: "Outros",
+      icon: <Ellipsis />,
+      subItems: [
+        { name: "Locais", path: "/locais" },
+        { name: "Classes de EBD", path: "/classes-ebd" },
+      ],
+    },
+  ];
+
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
     index: number;

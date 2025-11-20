@@ -98,7 +98,6 @@ export default function ServiceRoleList() {
               className="text-destructive focus:text-destructive"
             >
               <span>Remover</span>
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

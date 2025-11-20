@@ -30,7 +30,13 @@ export default function BudgetEdit() {
   return (
     <>
         <PageMeta title="Editar Orçamento" description="Editar Orçamento" />
-        <PageBreadcrumb pageTitle="Editar Orçamento" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Orçamentos", path: "/orcamentos" },
+            { label: "Editar Orçamento", path: `/orcamentos/editar/${id}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormBudget initialData={budget} onSubmit={handleSubmit} />

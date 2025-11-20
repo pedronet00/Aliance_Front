@@ -15,18 +15,23 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
 import { Button } from "@/components/ui/button";
 import { Tithe } from "@/types/Tithe/Tithe";
-import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
+import { showDeletedToast, showErrorToast, showLoadingToast, showSuccessToast } from "@/components/toast/Toasts";
 import NoData from "@/components/no-data";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import Error from "../OtherPage/Error";
 
 export default function TitheList() {
   const [tithes, setTithes] = useState<Tithe[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     carregarDizimos(currentPage);
@@ -45,11 +50,54 @@ export default function TitheList() {
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
     } catch (err) {
-      showErrorToast("Erro ao carregar dízimos: " + err);
+      // showErrorToast("Erro ao carregar dízimos: " + err);
+      setError(true);
     } finally {
       setLoading(false);
     }
   };
+
+const handlePdfDownload = async (guid: string) => {
+  
+  const toastId = toast.loading("Gerando comprovante...", {
+    autoClose: false,
+    closeOnClick: false,
+    draggable: false,
+  });
+
+  try {
+    const response = await apiClient.get(
+      `/Tithe/receipt/${guid}/pdf`,
+      { responseType: "blob" }
+    );
+
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `comprovante-${guid}.pdf`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+
+    toast.update(toastId, {
+      render: "Comprovante gerado com sucesso.",
+      type: "success",
+      isLoading: false,
+      autoClose: 2500,
+    });
+  } catch (err) {
+    console.error("Erro ao baixar PDF", err);
+
+    toast.update(toastId, {
+      render: "Erro ao gerar comprovante.",
+      type: "error",
+      isLoading: false,
+      autoClose: 2500,
+    });
+  }
+};
 
   const handleEditar = (t: Tithe) => {
     window.location.href = `/dizimos/editar/${t.guid}`;
@@ -88,11 +136,11 @@ export default function TitheList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(t)}>
-              Editar
+            
+            <DropdownMenuItem onClick={() => handlePdfDownload(t.guid)}>
+              Baixar comprovante
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(t)}
               className="text-destructive focus:text-destructive"
@@ -105,6 +153,8 @@ export default function TitheList() {
       ),
     },
   ];
+
+  if(error) return <Error/>;
 
   if (loading) return <p>Carregando...</p>;
 

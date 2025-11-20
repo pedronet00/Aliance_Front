@@ -9,7 +9,7 @@ export default function CellCreate() {
   const handleSubmit = async (data: CellFormData) => {
     await apiClient.post("/Cell", data);
     showCreatedSuccessfullyToast();
-    navigate("/"); 
+    navigate("/celulas"); 
   };
 
   return (

@@ -9,6 +9,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Badge from "@/components/ui/badge/Badge";
@@ -16,7 +19,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import NoData from "@/components/no-data";
-import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
+import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast } from "@/components/toast/Toasts";
 
 type WorshipTeamRehearsal = {
   id: number;
@@ -34,14 +37,23 @@ export default function WorshipTeamRehearsalList() {
   const navigate = useNavigate();
   const { guidEquipe } = useParams<{ guid: string }>(); // worshipTeam guid
 
-  useEffect(() => {
+  // Função única para carregar os ensaios
+  const loadRehearsals = async () => {
     if (!guidEquipe) return;
+    setLoading(true);
+    try {
+      const res = await apiClient.get(`/WorshipTeamRehearsal/team/${guidEquipe}`);
+      setRehearsals(res.data);
+    } catch (error) {
+      showErrorToast("Erro ao carregar ensaios do grupo de louvor.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    apiClient
-      .get(`/WorshipTeamRehearsal/team/${guidEquipe}`)
-      .then((res) => setRehearsals(res.data))
-      .catch(() => showErrorToast("Erro ao carregar ensaios do grupo de louvor."))
-      .finally(() => setLoading(false));
+  // Carrega ensaios ao montar o componente ou quando guidEquipe mudar
+  useEffect(() => {
+    loadRehearsals();
   }, [guidEquipe]);
 
   const handleEditar = (r: WorshipTeamRehearsal) => {
@@ -52,9 +64,19 @@ export default function WorshipTeamRehearsalList() {
     try {
       await apiClient.delete(`/WorshipTeamRehearsal/${r.guid}`);
       showDeletedToast();
-      setRehearsals((prev) => prev.filter((x) => x.guid !== r.guid));
+      await loadRehearsals(); // recarrega a lista do backend
     } catch (error) {
       showErrorToast("Erro ao deletar ensaio: " + error);
+    }
+  };
+
+  const handleToggleStatus = async (m: WorshipTeamRehearsal, s: string) => {
+    try {
+      await apiClient.patch(`/WorshipTeamRehearsal/${m.guid}/status/${s}`);
+      showEditedSuccessfullyToast();
+      await loadRehearsals(); // recarrega a lista do backend
+    } catch (error) {
+      showErrorToast("Erro ao alterar status: " + error);
     }
   };
 
@@ -71,20 +93,23 @@ export default function WorshipTeamRehearsalList() {
     {
       key: "status",
       label: "Status",
-      render: (r: WorshipTeamRehearsal) => (
-        <Badge
-          size="sm"
-          color={
-            r.status.toLowerCase() === "agendado"
-              ? "warning"
-              : r.status.toLowerCase() === "realizado"
-              ? "success"
-              : "error"
-          }
-        >
-          {r.status}
-        </Badge>
-      ),
+      render: (m: WorshipTeamRehearsal) => {
+              const conditionMap: Record<string, { color: string; label: string }> = {
+                Completado: { color: "success", label: "Completado" },
+                Agendado: { color: "primary", label: "Agendado" },
+                Adiado: { color: "warning", label: "Adiado" },
+                Cancelado: { color: "error", label: "Cancelado" },
+              };
+              const status = conditionMap[m.status] ?? {
+                color: "default",
+                label: m.status,
+              };
+              return (
+                <Badge size="sm" color={status.color}>
+                  {status.label}
+                </Badge>
+              );
+            },
     },
     {
       label: "Ações",
@@ -99,6 +124,22 @@ export default function WorshipTeamRehearsalList() {
             <DropdownMenuItem onClick={() => handleEditar(r)}>
               Editar
             </DropdownMenuItem>
+            {r.status != "Completado" && r.status != "Cancelado" && (
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="w-44">
+                            {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
+                              <DropdownMenuItem
+                                key={s}
+                                onClick={() => handleToggleStatus(r, s)}
+                                disabled={r.status === s}
+                              >
+                                {s}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(r)}

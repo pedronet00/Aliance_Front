@@ -17,7 +17,7 @@ import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { useNavigate } from "react-router-dom";
-import { showDeletedToast, showErrorToast } from "@/components/toast/Toasts";
+import { showDeletedToast, showErrorToast, showSuccessToast } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { Budget } from "@/types/Budget/Budget";
@@ -87,6 +87,7 @@ export default function BudgetList() {
       };
 
       await apiClient.patch(endpointMap[action]);
+      showSuccessToast("Status alterado com sucesso.");
       carregarBudgets(currentPage);
     } catch (error) {
       console.error("Erro ao atualizar status:", error);
@@ -139,12 +140,12 @@ export default function BudgetList() {
             >
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
+            {/* <DropdownMenuItem onClick={() => handleEditar(u)}>
               Enviar email
               <DropdownMenuShortcut>
                 <MailIcon className="h-4 w-4" />
               </DropdownMenuShortcut>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             {u.status !== "Aprovado" &&
               u.status !== "Rejeitado" &&
               u.status !== "Encerrado" && (

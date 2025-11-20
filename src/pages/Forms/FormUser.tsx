@@ -6,17 +6,7 @@ import Label from "@/components/form/Label";
 import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
 import useGoBack from "@/hooks/useGoBack";
-
-type UserDTO = {
-  id?: string;
-  userName: string;
-  email: string;
-  password: string;
-  role: string;
-  phone: string;
-  status: boolean;
-  churchId: number;
-};
+import { UserDTO } from "@/types/Usuario/UserDTO";
 
 type Props = {
   initialData?: UserDTO;
@@ -29,30 +19,61 @@ export default function FormUser({ initialData, onSubmit }: Props) {
 
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState<UserDTO>(() => {
-    if (initialData) {
-      return {
-        ...initialData,
-        churchId: user?.churchId ?? 0,
-      };
+  const [formData, setFormData] = useState<UserDTO>(() => ({
+    fullName: "",
+    email: "",
+    userName: "",
+    password: generateRandomPassword(),
+    role: "",
+    phoneNumber: "",
+    status: true,
+    churchId: user?.churchId ?? 0,
+  }));
+
+  function generateRandomPassword(length: number = 12): string {
+    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lower = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*()-_=+[]{};:,.<>/?";
+
+    const all = upper + lower + numbers + symbols;
+
+    let password = "";
+
+    // Garante pelo menos 1 de cada tipo
+    password += upper[Math.floor(Math.random() * upper.length)];
+    password += lower[Math.floor(Math.random() * lower.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += symbols[Math.floor(Math.random() * symbols.length)];
+
+    // Preenche o restante
+    for (let i = password.length; i < length; i++) {
+      password += all[Math.floor(Math.random() * all.length)];
     }
-    return {
-      userName: "",
-      email: "",
-      password: "",
-      role: "",
-      phone: "",
-      status: true,
-      churchId: user?.churchId ?? 0,
-    };
-  });
+
+    // Embaralha a senha
+    return password
+      .split("")
+      .sort(() => Math.random() - 0.5)
+      .join("");
+  }
+
 
   const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        churchId: user?.churchId ?? initialData.churchId ?? 0,
+      });
+    }
+  }, [initialData, user?.churchId]);
 
   // Carregar roles da API
   useEffect(() => {
     apiClient
-      .get<string[]>("/Roles") // endpoint que deve devolver a lista de roles
+      .get<string[]>("/Roles")
       .then((res) => {
         const options = res.data.map((r) => ({
           value: r,
@@ -63,19 +84,11 @@ export default function FormUser({ initialData, onSubmit }: Props) {
       .catch((err) => console.error("Erro ao carregar roles", err));
   }, []);
 
-  useEffect(() => {
-    if (user?.churchId) {
-      setFormData((prev) => ({
-        ...prev,
-        churchId: user.churchId,
-      }));
-    }
-  }, [user]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     await onSubmit(formData);
+    setLoading(false);
   };
 
   return (
@@ -84,8 +97,8 @@ export default function FormUser({ initialData, onSubmit }: Props) {
         <Label>Nome de Usuário</Label>
         <Input
           type="text"
-          value={formData.userName}
-          onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
+          value={formData.fullName}
+          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
         />
       </div>
 
@@ -98,28 +111,17 @@ export default function FormUser({ initialData, onSubmit }: Props) {
         />
       </div>
 
-      {!initialData && (
-        <div>
-          <Label>Senha</Label>
-          <Input
-            type="password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          />
-        </div>
-      )}
-
       <div>
         <Label>Telefone</Label>
         <Input
           type="text"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          value={formData.phoneNumber}
+          onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
         />
       </div>
 
       <div>
-        <Label>Role</Label>
+        <Label>Perfil</Label>
         <Select
           options={roleOptions}
           placeholder="Selecione uma role"
@@ -128,22 +130,14 @@ export default function FormUser({ initialData, onSubmit }: Props) {
         />
       </div>
 
-      <div>
-        <Label>Status</Label>
-        <Select
-          options={[
-            { value: "true", label: "Ativo" },
-            { value: "false", label: "Inativo" },
-          ]}
-          value={formData.status.toString()}
-          onChange={(val) => setFormData({ ...formData, status: val === "true" })}
-        />
-      </div>
-
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div className="flex items-center gap-4">
-          <Button type="button" variant="secondary" onClick={() => goBack()}>Cancelar</Button>
-          <Button type="submit" disabled={loading}>Salvar</Button>
+          <Button type="button" variant="secondary" onClick={() => goBack()}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       </div>
     </form>
