@@ -1,0 +1,39 @@
+name: Deploy-frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout no repositório
+      - uses: actions/checkout@v3
+
+    - name: Deploy via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          cd /var/www/aliance-frontend/Aliance_Front
+
+          git pull origin main
+
+          npm install
+
+          npm run build
+
+          docker build -t aliance-frontend .
+
+          docker stop aliance-frontend || true
+
+          docker rm aliance-frontend || true
+
+          docker run -d -p 3001:80 --name aliance-frontend aliance-frontend
+
+          echo "Deploy concluído com sucesso!"
