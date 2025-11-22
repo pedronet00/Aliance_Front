@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router";
 
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "../context/SidebarContext";
-import { LayoutDashboard, ChevronDown, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, FileArchive } from "lucide-react";
+import { LayoutDashboard, ChevronDown, Calendar, GraduationCap, Clock, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, FileArchive } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -13,36 +13,7 @@ type NavItem = {
 };
 
 
-const othersItems: NavItem[] = [
-  // {
-  //   icon: <PieChartIcon />,
-  //   name: "Charts",
-  //   subItems: [
-  //     { name: "Line Chart", path: "/line-chart", pro: false },
-  //     { name: "Bar Chart", path: "/bar-chart", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <BoxCubeIcon />,
-  //   name: "UI Elements",
-  //   subItems: [
-  //     { name: "Alerts", path: "/alerts", pro: false },
-  //     { name: "Avatar", path: "/avatars", pro: false },
-  //     { name: "Badge", path: "/badge", pro: false },
-  //     { name: "Buttons", path: "/buttons", pro: false },
-  //     { name: "Images", path: "/images", pro: false },
-  //     { name: "Videos", path: "/videos", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <PlugInIcon />,
-  //   name: "Authentication",
-  //   subItems: [
-  //     { name: "Sign In", path: "/signin", pro: false },
-  //     { name: "Sign Up", path: "/signup", pro: false },
-  //   ],
-  // },
-];
+const othersItems: NavItem[] = [];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -168,6 +139,11 @@ const AppSidebar: React.FC = () => {
       icon: <FileArchive />,
       name: "Relatórios",
       path: '/relatorios',
+    },
+    {
+      icon: <Clock />,
+      name: "Logs",
+      path: '/log',
     },
   ];
 

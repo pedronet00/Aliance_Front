@@ -101,6 +101,7 @@ import SundaySchoolClassEdit from "./pages/SundaySchoolClass/Edit";
 import LocationEdit from "./pages/Location/Edit";
 import SundaySchoolClassroomEdit from "./pages/SundaySchoolClassroom/Edit";
 import ReportsList from "./pages/Report/ReportsList";
+import LogList from "./pages/Log/LogList";
 
 export default function App() {
   return (
@@ -118,6 +119,7 @@ export default function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
+              <Route path="/log" element={<LogList />} />
               <Route path="/aulas-ebd" element={<SundaySchoolClassList />} />
               <Route path="/aulas-ebd/criar" element={<SundaySchoolClassCreate />} />
               <Route path="/aulas-ebd/editar/:guid" element={<SundaySchoolClassEdit />} />

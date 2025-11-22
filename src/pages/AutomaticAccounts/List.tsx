@@ -22,7 +22,7 @@ export default function AutomaticAccountsList() {
   const fetchAccounts = async () => {
     try {
       const res = await apiClient.get(`/AutomaticAccounts/paged?pageNumber=1&pageSize=${pageSize}`);
-      setAccounts(res.data.items || []);
+      setAccounts(res.data.result?.items || []);
     } catch (error) {
       showErrorToast("Erro ao carregar contas automáticas");
     } finally {
@@ -57,7 +57,7 @@ export default function AutomaticAccountsList() {
     { key: "costCenterName", label: "Centro de Custo" },
     {
       label: "Ações",
-      render: (e: Event) => (
+      render: (e: AutomaticAccounts) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
