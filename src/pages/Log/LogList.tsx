@@ -68,7 +68,7 @@ export default function LogList() {
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
-          { label: "Logs do Sistema", path: "/logs" },
+          { label: "Logs da igreja", path: "/logs" },
         ]}
       />
 
