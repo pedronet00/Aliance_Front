@@ -10,7 +10,7 @@ export default function AccountReceivableCreate() {
     await apiClient.post("/AccountReceivable", data);
     showCreatedSuccessfullyToast();
     navigate("/contas-a-receber"); 
-  };
+  }; 
 
   return (
     <div className="p-6">
