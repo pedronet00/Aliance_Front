@@ -100,6 +100,7 @@ import SundaySchoolClassCreate from "./pages/SundaySchoolClass/Create";
 import SundaySchoolClassEdit from "./pages/SundaySchoolClass/Edit";
 import LocationEdit from "./pages/Location/Edit";
 import SundaySchoolClassroomEdit from "./pages/SundaySchoolClassroom/Edit";
+import ReportsList from "./pages/Report/ReportsList";
 
 export default function App() {
   return (
@@ -121,6 +122,7 @@ export default function App() {
               <Route path="/aulas-ebd/criar" element={<SundaySchoolClassCreate />} />
               <Route path="/aulas-ebd/editar/:guid" element={<SundaySchoolClassEdit />} />
               <Route path="/dizimos/:guid/comprovante" element={<TitheReceiptPage />} />
+              <Route path="/relatorios" element={<ReportsList />} />
               <Route path="/dizimos" element={<TitheList />} />
               <Route path="/dizimos/criar" element={<TitheCreate />} />
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />

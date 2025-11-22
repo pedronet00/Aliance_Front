@@ -3,8 +3,7 @@ import { Link, useLocation } from "react-router";
 
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "../context/SidebarContext";
-import SidebarWidget from "./SidebarWidget";
-import { LayoutDashboard, ChevronDown, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, Truck, ShoppingCart, CircleUser, DollarSign } from "lucide-react";
+import { LayoutDashboard, ChevronDown, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, FileArchive } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -164,6 +163,11 @@ const AppSidebar: React.FC = () => {
         { name: "Locais", path: "/locais" },
         { name: "Classes de EBD", path: "/classes-ebd" },
       ],
+    },
+    {
+      icon: <FileArchive />,
+      name: "Relatórios",
+      path: '/relatorios',
     },
   ];
 
