@@ -14,7 +14,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import PageMeta from "@/components/common/PageMeta";
 import { Button } from "@/components/ui/button";
-import { Tithe } from "@/types/Tithe/Tithe";
+import { Tithe } from "@/types/Tithe/Tithe"; 
 import { showDeletedToast, showErrorToast, showLoadingToast, showSuccessToast } from "@/components/toast/Toasts";
 import NoData from "@/components/no-data";
 import { useNavigate } from "react-router";
