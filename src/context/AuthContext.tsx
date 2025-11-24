@@ -63,20 +63,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Interceptor para capturar 401 e deslogar automaticamente
   useEffect(() => {
-    const interceptor = apiClient.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response?.status === 401) {
-          baseLogout("sessionExpired");
+  const interceptor = apiClient.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      // Se o 401 veio da rota de login → NÃO executar logout automático
+      if (error.response?.status === 401) {
+        if (error.config?.url?.includes("/Auth/login")) {
+          return Promise.reject(error);
         }
-        return Promise.reject(error);
-      }
-    );
 
-    return () => {
-      apiClient.interceptors.response.eject(interceptor);
-    };
-  }, []);
+        // 401 em qualquer outra request → sessão expirada
+        baseLogout("sessionExpired");
+      }
+
+      return Promise.reject(error);
+    }
+  );
+
+  return () => {
+    apiClient.interceptors.response.eject(interceptor);
+  };
+}, []);
+
 
   // Carregar user se já existir token
   useEffect(() => {

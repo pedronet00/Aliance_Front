@@ -1,11 +1,11 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import { Button } from "../ui/button";
 import { useAuth } from "../../context/AuthContext";
-import { showSuccessfulLogininToast, showErrorLogininToast, showSessionExpiredToast, showLogoffToast } from "../toast/Toasts";
+import { showSuccessfulLogininToast, showErrorToast } from "../toast/Toasts";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +25,7 @@ export default function SignInForm() {
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      showErrorLogininToast();
+      showErrorToast("Erro ao fazer login. Verifique suas credenciais e tente novamente.");
     }
   };
 
