@@ -3,18 +3,6 @@ import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
 import UserProfiles from "./pages/UserProfiles";
-import Videos from "./pages/UiElements/Videos";
-import Images from "./pages/UiElements/Images";
-import Alerts from "./pages/UiElements/Alerts";
-import Badges from "./pages/UiElements/Badges";
-import Avatars from "./pages/UiElements/Avatars";
-import Buttons from "./pages/UiElements/Buttons";
-import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
-import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
-import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
@@ -102,6 +90,7 @@ import LocationEdit from "./pages/Location/Edit";
 import SundaySchoolClassroomEdit from "./pages/SundaySchoolClassroom/Edit";
 import ReportsList from "./pages/Report/ReportsList";
 import LogList from "./pages/Log/LogList";
+import RoleRoute from "./components/auth/RoleRoute";
 
 export default function App() {
   return (
@@ -119,100 +108,117 @@ export default function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
-              <Route path="/log" element={<LogList />} />
               <Route path="/aulas-ebd" element={<SundaySchoolClassList />} />
-              <Route path="/aulas-ebd/criar" element={<SundaySchoolClassCreate />} />
-              <Route path="/aulas-ebd/editar/:guid" element={<SundaySchoolClassEdit />} />
-              <Route path="/dizimos/:guid/comprovante" element={<TitheReceiptPage />} />
-              <Route path="/relatorios" element={<ReportsList />} />
-              <Route path="/dizimos" element={<TitheList />} />
-              <Route path="/dizimos/criar" element={<TitheCreate />} />
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
-              <Route path="/classes-ebd/criar" element={<SundaySchoolClassroomCreate />} />
-              <Route path="/classes-ebd/editar/:guid" element={<SundaySchoolClassroomEdit />} />
               <Route path="/cultos" element={<ServiceList />} />
-              <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
-              <Route path="/cultos/:serviceGuid/escalas/criar" element={<ServiceRoleCreate />} />
-              <Route path="/cultos/criar" element={<ServiceCreate />} />
-              <Route path="/cultos/editar/:guid" element={<ServiceEdit />} />
-              <Route path="/eventos" element={<EventList />} />
-              <Route path="/eventos/criar" element={<EventCreate />} />
-              <Route path="/detalhes-assinatura" element={<SubscriptionDetails />} />
-              <Route path="/eventos/editar/:guid" element={<EventEdit />} />
-              <Route path="/celulas" element={<CellList />} />
               <Route path="/locais" element={<LocationList />} />
-              <Route path="/locais/criar" element={<LocationCreate />} />
-              <Route path="/locais/editar/:guid" element={<LocationEdit />} />
-              <Route path="/campanhas-de-missoes/:campaignGuid/doacoes" element={<MissionCampaignDonationList />} />
-              <Route path="/campanhas-de-missoes/:campaignGuid/doacoes/criar" element={<MissionCampaignDonationCreate />} />
-              <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
-              <Route path="/campanhas-de-missoes/criar" element={<MissionCampaignCreate />} />
-              <Route path="/campanhas-de-missoes/editar/:guid" element={<MissionCampaignEdit />} />
-              <Route path="/celulas/criar" element={<CellCreate />} />
-              <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
-              <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
-              <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
-              <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
-              <Route path="/celulas/:cellGuid/membros/criar" element={<CellMemberCreate/>} />
-              <Route path="/celulas/:guid/encontros" element={<CellMeetingList/>} />
-              <Route path="/celulas/:guid/encontros/criar" element={<CellMeetingCreate/>} />
-              <Route path="/celulas/:guidCelula/encontros/:guidEncontro/editar" element={<CellMeetingEdit/>} />
-              <Route path="/centros-de-custo" element={<CostCenterList />} />
-              <Route path="/centros-de-custo/criar" element={<CostCenterCreate />} />
-              <Route path="/centros-de-custo/editar/:id" element={<CostCenterEdit />} />
-              <Route path="/grupos-de-louvor" element={<WorshipTeamList />} />
-              <Route path="/grupos-de-louvor/:guidEquipe/ensaios" element={<WorshipTeamRehearsalList />} />
-              <Route path="/grupos-de-louvor/:guidEquipe/ensaios/criar" element={<WorshipTeamRehearsalCreate />} />
-              <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:guidEnsaio/editar" element={<WorshipTeamRehearsalEdit />} />
+              <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
+              <Route path="/eventos" element={<EventList />} />
+              <Route path="/celulas" element={<CellList />} />
               <Route path="/grupos-de-louvor/:teamGuid/membros" element={<WorshipTeamMemberList />} />
-              <Route path="/grupos-de-louvor/:teamGuid/membros/criar" element={<WorshipTeamMemberCreate />} />
-              <Route path="/grupos-de-louvor/criar" element={<WorshipTeamCreate />} />
-              <Route path="/grupos-de-louvor/editar/:guid" element={<WorshipTeamEdit />} />
+              <Route path="/grupos-de-louvor" element={<WorshipTeamList />} />
               <Route path="/departamentos" element={<DepartmentList />} />
-              <Route path="/departamentos/criar" element={<DepartmentCreate />} />
-              <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
-              <Route path="/financeiro/entradas" element={<IncomeList />} />
-              <Route path="/financeiro/entradas/criar" element={<IncomeCreate />} />
-              <Route path="/financeiro/saidas" element={<ExpenseList />} />
-              <Route path="/financeiro/saidas/criar" element={<ExpenseCreate />} />
-              <Route path="/contas-automaticas" element={<AutomaticAccountsList />} />
-              <Route path="/contas-automaticas/criar" element={<AutomaticAccountsCreate />} />
-              <Route path="/contas-automaticas/editar/:guid" element={<AutomaticAccountsEdit />} />
-              <Route path="/contas-a-pagar" element={<AccountPayableList />} />
-              <Route path="/contas-a-pagar/criar" element={<AccountPayableCreate />} />
-              <Route path="/contas-a-receber" element={<AccountReceivableList />} />
-              <Route path="/contas-a-receber/criar" element={<AccountReceivableCreate />} />
-              <Route path="/patrimonios" element={<PatrimonyList />} />
+              <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
+              <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
               <Route path="/membros" element={<UsuariosList />} />
-              <Route path="/membros/criar" element={<UsuariosCreate />} />
-              <Route path="/membros/editar/:id" element={<UsuariosEdit />} />
-              <Route path="/membros/importar" element={<UsuariosImport />} />
-              <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
-              <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />
-              <Route path="/visitas-pastorais/editar/:guid" element={<PastoralVisitEdit />} />
-              <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
-              <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
-              <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />
-              <Route path="/manutencoes-patrimonios" element={<PatrimonyMaintenanceList />} />
-              <Route path="/manutencoes-patrimonios/:guid/documentos" element={<PatrimonyMaintenanceDocumentList />} />
-              <Route path="/manutencoes-patrimonios/editar/:guid" element={<PatrimonyMaintenanceEdit />} />
-              <Route path="/manutencoes-patrimonios/criar" element={<PatrimonyMaintenanceCreate />} />
-              <Route path="/orcamentos" element={<BudgetList />} />
-              <Route path="/orcamentos/criar" element={<BudgetCreate />} />
-              <Route path="/orcamentos/editar/:id" element={<BudgetEdit />} />
+              <Route path="/celulas/:guid/encontros" element={<CellMeetingList/>} />
+              <Route path="/grupos-de-louvor/:guidEquipe/ensaios" element={<WorshipTeamRehearsalList />} />
+
+              {/* ADMIN */}
+              <Route element={<RoleRoute roles={["Admin"]} />}>
+                <Route path="/locais/criar" element={<LocationCreate />} />
+                <Route path="/locais/editar/:guid" element={<LocationEdit />} />
+                <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
+                <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
+                <Route path="/log" element={<LogList />} />
+                <Route path="/relatorios" element={<ReportsList />} />
+                <Route path="/detalhes-assinatura" element={<SubscriptionDetails />} />
+              </Route>
+
+              {/* FINANCEIRO */}
+              <Route element={<RoleRoute roles={["Admin", "Financeiro", "Pastor", "Secretaria"]} />}>
+                <Route path="/campanhas-de-missoes/:campaignGuid/doacoes" element={<MissionCampaignDonationList />} />
+                <Route path="/campanhas-de-missoes/:campaignGuid/doacoes/criar" element={<MissionCampaignDonationCreate />} />
+                <Route path="/campanhas-de-missoes/criar" element={<MissionCampaignCreate />} />
+                <Route path="/campanhas-de-missoes/editar/:guid" element={<MissionCampaignEdit />} />
+                <Route path="/patrimonios" element={<PatrimonyList />} />
+                <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
+                <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
+                <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />
+                <Route path="/manutencoes-patrimonios" element={<PatrimonyMaintenanceList />} />
+                <Route path="/manutencoes-patrimonios/:guid/documentos" element={<PatrimonyMaintenanceDocumentList />} />
+                <Route path="/manutencoes-patrimonios/editar/:guid" element={<PatrimonyMaintenanceEdit />} />
+                <Route path="/manutencoes-patrimonios/criar" element={<PatrimonyMaintenanceCreate />} />
+                <Route path="/dizimos" element={<TitheList />} />
+                <Route path="/dizimos/:guid/comprovante" element={<TitheReceiptPage />} />
+                <Route path="/dizimos/criar" element={<TitheCreate />} />
+                <Route path="/centros-de-custo" element={<CostCenterList />} />
+                <Route path="/centros-de-custo/criar" element={<CostCenterCreate />} />
+                <Route path="/departamentos/criar" element={<DepartmentCreate />} />
+                <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
+                <Route path="/centros-de-custo/editar/:id" element={<CostCenterEdit />} />
+                <Route path="/financeiro/entradas" element={<IncomeList />} />
+                <Route path="/financeiro/entradas/criar" element={<IncomeCreate />} />
+                <Route path="/financeiro/saidas" element={<ExpenseList />} />
+                <Route path="/financeiro/saidas/criar" element={<ExpenseCreate />} />
+                <Route path="/contas-automaticas" element={<AutomaticAccountsList />} />
+                <Route path="/contas-automaticas/criar" element={<AutomaticAccountsCreate />} />
+                <Route path="/contas-automaticas/editar/:guid" element={<AutomaticAccountsEdit />} />
+                <Route path="/contas-a-pagar" element={<AccountPayableList />} />
+                <Route path="/contas-a-pagar/criar" element={<AccountPayableCreate />} />
+                <Route path="/contas-a-receber" element={<AccountReceivableList />} />
+                <Route path="/contas-a-receber/criar" element={<AccountReceivableCreate />} />
+                <Route path="/orcamentos" element={<BudgetList />} />
+                <Route path="/orcamentos/criar" element={<BudgetCreate />} />
+                <Route path="/orcamentos/editar/:id" element={<BudgetEdit />} />
+              </Route>
+
+              {/* DISCIPULADO E ENSINO */}
+              <Route element={<RoleRoute roles={["Admin", "Professor", "Pastor", "Secretaria"]} />}>
+                <Route path="/aulas-ebd/criar" element={<SundaySchoolClassCreate />} />
+                <Route path="/aulas-ebd/editar/:guid" element={<SundaySchoolClassEdit />} />
+                <Route path="/classes-ebd/criar" element={<SundaySchoolClassroomCreate />} />
+                <Route path="/classes-ebd/editar/:guid" element={<SundaySchoolClassroomEdit />} />
+                <Route path="/celulas/criar" element={<CellCreate />} />
+                <Route path="/celulas/:cellGuid/membros/criar" element={<CellMemberCreate/>} />
+                <Route path="/celulas/:guid/encontros/criar" element={<CellMeetingCreate/>} />
+                <Route path="/celulas/:guidCelula/encontros/:guidEncontro/editar" element={<CellMeetingEdit/>} />
+                <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
+              </Route>
+              
+              {/* SERVIÇO ECLESIÁSTICO */}
+              <Route element={<RoleRoute roles={["Admin", "Pastor", "Secretaria"]} />}>
+                <Route path="/cultos/:serviceGuid/escalas/criar" element={<ServiceRoleCreate />} />
+                <Route path="/cultos/criar" element={<ServiceCreate />} />
+                <Route path="/cultos/editar/:guid" element={<ServiceEdit />} />
+              </Route>
+
+              {/* EVENTOS */}
+              <Route element={<RoleRoute roles={["Admin", "Eventos", "Pastor", "Secretaria"]} />}>  
+                <Route path="/eventos/criar" element={<EventCreate />} />
+                <Route path="/eventos/editar/:guid" element={<EventEdit />} />
+              </Route>
+
+              {/* MEMBROS E PASTORAL */}
+              <Route element={<RoleRoute roles={["Admin", "Pastor", "Secretaria"]} />}>
+                <Route path="/membros/criar" element={<UsuariosCreate />} />
+                <Route path="/membros/editar/:id" element={<UsuariosEdit />} />
+                <Route path="/membros/importar" element={<UsuariosImport />} />
+                <Route path="/visitas-pastorais" element={<PastoralVisitList />} />
+                <Route path="/visitas-pastorais/criar" element={<PastoralVisitCreate />} />
+                <Route path="/visitas-pastorais/editar/:guid" element={<PastoralVisitEdit />} />
+              </Route>
+
+              {/* LOUVOR */}
+              <Route element={<RoleRoute roles={["Admin", "Musico", "Pastor", "Secretaria"]} />}>
+                <Route path="/grupos-de-louvor/:guidEquipe/ensaios/criar" element={<WorshipTeamRehearsalCreate />} />
+                <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:guidEnsaio/editar" element={<WorshipTeamRehearsalEdit />} />
+                <Route path="/grupos-de-louvor/:teamGuid/membros/criar" element={<WorshipTeamMemberCreate />} />
+                <Route path="/grupos-de-louvor/criar" element={<WorshipTeamCreate />} />
+                <Route path="/grupos-de-louvor/editar/:guid" element={<WorshipTeamEdit />} />
+              </Route>
+              
               <Route path="/profile" element={<UserProfiles />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/blank" element={<Blank />} />
-              <Route path="/form-elements" element={<FormElements />} />
-              <Route path="/basic-tables" element={<BasicTables />} />
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
             </Route>
           </Route>
         </Routes>
