@@ -41,9 +41,9 @@ export default function FormService({ initialData, onSubmit }: Props) {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await apiClient.get("/Location/paged?pageNumber=1&pageSize=1000");
-        const data = Array.isArray(res.data.result.items)
-          ? res.data.result.items
+        const res = await apiClient.get("/Location/active");
+        const data = Array.isArray(res.data)
+          ? res.data
           : res.data.result ?? [];
 
         setLocations(

@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { Patrimony } from "@/types/Patrimony/Patrimony";
 import NoData from "@/components/no-data";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function PatrimonyList() {
   const [patrimonies, setPatrimonies] = useState<Patrimony[]>([]);
@@ -29,6 +31,8 @@ export default function PatrimonyList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [filterDataInicio, setFilterDataInicio] = useState("");
+  const [filterDataFim, setFilterDataFim] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
@@ -152,13 +156,26 @@ export default function PatrimonyList() {
   ];
 
   const filteredPatrimonies = patrimonies.filter((c) => {
-    const matchesName = c.name
-      .toLowerCase()
-      .includes(filterNome.toLowerCase());
-    const matchesStatus =
-      !filterStatus || c.condition?.toLowerCase() === filterStatus.toLowerCase();
-    return matchesName && matchesStatus;
-  });
+  const matchesName = c.name.toLowerCase().includes(filterNome.toLowerCase());
+  const matchesStatus =
+    !filterStatus || c.condition?.toLowerCase() === filterStatus.toLowerCase();
+
+  const data = new Date(c.acquisitionDate);
+
+  const matchesDataInicio =
+    !filterDataInicio || data >= new Date(filterDataInicio);
+
+  const matchesDataFim =
+    !filterDataFim || data <= new Date(filterDataFim + "T23:59:59");
+
+  return (
+    matchesName &&
+    matchesStatus &&
+    matchesDataInicio &&
+    matchesDataFim
+  );
+});
+
 
   if (loading) return <p>Carregando...</p>;
 
@@ -188,26 +205,58 @@ export default function PatrimonyList() {
             </div>
 
             {showFilters && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                <input
-                  type="text"
-                  placeholder="Filtrar por nome"
-                  value={filterNome}
-                  onChange={(e) => setFilterNome(e.target.value)}
-                  className="border p-2 rounded w-full"
-                />
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="border p-2 rounded w-full"
-                >
-                  <option value="">Todas as Condições</option>
-                  <option value="Bom">Bom</option>
-                  <option value="Regular">Regular</option>
-                  <option value="Ruim">Ruim</option>
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+
+                {/* Nome */}
+                <div className="flex flex-col gap-1">
+                  <Label>Nome</Label>
+                  <Input
+                    type="text"
+                    placeholder="Filtrar por nome"
+                    value={filterNome}
+                    onChange={(e) => setFilterNome(e.target.value)}
+                  />
+                </div>
+
+                {/* Condição */}
+                <div className="flex flex-col gap-1">
+                  <Label>Condição</Label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="border p-2 rounded w-full dark:bg-gray-900 dark:border-gray-700"
+                  >
+                    <option value="">Todas</option>
+                    <option value="Bom">Bom</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Ruim">Ruim</option>
+                  </select>
+                </div>
+
+                {/* Data inicial */}
+                <div className="flex flex-col gap-1">
+                  <Label>Adquirido de:</Label>
+                  <Input
+                    type="date"
+                    value={filterDataInicio}
+                    onChange={(e) => setFilterDataInicio(e.target.value)}
+                  />
+                </div>
+
+                {/* Data final */}
+                <div className="flex flex-col gap-1">
+                  <Label>Até:</Label>
+                  <Input
+                    type="date"
+                    value={filterDataFim}
+                    onChange={(e) => setFilterDataFim(e.target.value)}
+                  />
+                </div>
+
               </div>
             )}
+
+
           </div>
 
           {filteredPatrimonies.length > 0 ? (

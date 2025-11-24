@@ -38,14 +38,14 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
   const fetchData = async () => {
     try {
       const [locsRes, costCentersRes] = await Promise.all([
-        apiClient.get("/Location/paged?pageNumber=1&pageSize=1000"),
-        apiClient.get("/CostCenter/paged?pageNumber=1&pageSize=1000"),
+        apiClient.get("/Location/active"),
+        apiClient.get("/CostCenter/active"),
       ]);
 
       // trata ambos os formatos (objeto com "result" e array direto)
       const locationData = Array.isArray(locsRes.data)
         ? locsRes.data
-        : locsRes.data.result.items ?? [];
+        : locsRes.data ?? [];
 
       const costCenterData = Array.isArray(costCentersRes.data.items)
         ? costCentersRes.data.items

@@ -42,12 +42,11 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
     { value: string; label: string }[]
   >([]);
 
-  // Carrega os centros de custo e ajusta o formData se estiver editando
   useEffect(() => {
   apiClient
-    .get<Department[]>("/Department/paged?pageNumber=1&pageSize=100000")
+    .get<Department[]>("/Department/active")
     .then((res) => {
-      const options = res.data.items.map((f) => ({
+      const options = res.data.result.map((f) => ({
         value: String(f.id),
         label: f.name,
       }));

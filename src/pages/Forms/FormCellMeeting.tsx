@@ -38,16 +38,16 @@ export default function FormCellMeeting({ initialData, onSubmit }: Props) {
     const fetchData = async () => {
       try {
         const [usersRes, locsRes] = await Promise.all([
-          apiClient.get("/User/paged?pageNumber=1&pageSize=1000"),
-          apiClient.get("/Location/paged?pageNumber=1&pageSize=1000"),
+          apiClient.get("/User/active"),
+          apiClient.get("/Location/active"),
         ]);
 
-        const userList = usersRes.data.result.items.map((u: any) => ({
+        const userList = usersRes.data.result.map((u: any) => ({
           value: u.guid ?? u.id,
-          label: u.userName,
+          label: u.fullName,
         }));
 
-        const locationList = locsRes.data.result.items.map((l: any) => ({
+        const locationList = locsRes.data.map((l: any) => ({
           value: l.guid,
           label: l.name,
         }));

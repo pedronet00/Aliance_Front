@@ -53,9 +53,9 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
 
   useEffect(() => {
     apiClient
-      .get<CostCenter[]>("/CostCenter/paged?&pageNumber=1&pageSize=1000")
+      .get<CostCenter[]>("/CostCenter/active")
       .then((res) => {
-        const options = res.data.items.map((f) => ({
+        const options = res.data.result.map((f) => ({
           value: String(f.id),
           label: f.name,
         }));

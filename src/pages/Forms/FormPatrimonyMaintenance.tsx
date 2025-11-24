@@ -74,9 +74,9 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
   // Carrega centros de custo
   useEffect(() => {
     apiClient
-      .get<CostCenter[]>("/CostCenter/paged?pageNumber=1&pageSize=1000")
+      .get<CostCenter[]>("/CostCenter/active")
       .then((res) => {
-        const options = res.data.items.map((cc) => ({
+        const options = res.data.result.map((cc) => ({
           value: String(cc.id),
           label: cc.name,
         }));

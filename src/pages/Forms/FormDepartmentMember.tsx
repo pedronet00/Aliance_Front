@@ -27,10 +27,10 @@ export default function FormDepartmentMember({ onSubmit }: Props) {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await apiClient.get("/User/paged?pageNumber=1&pageSize=1000");
-        const list = res.data.result.items.map((u: any) => ({
+        const res = await apiClient.get("/User/active");
+        const list = res.data.result.map((u: any) => ({
           value: u.id,
-          label: u.userName,
+          label: u.fullName,
         }));
         setMembers(list);
       } catch (err) {
