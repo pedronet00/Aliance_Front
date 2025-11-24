@@ -1,5 +1,5 @@
 export type SundaySchoolClassDTO = {
-  guid: string;
+  // guid: string;
   lesson: string;
   teacherId: string;
   sundaySchoolClassroomId: number;

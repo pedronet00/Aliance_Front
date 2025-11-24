@@ -25,14 +25,11 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
   const [classrooms, setClassrooms] = useState<{ value: number; label: string }[]>([]);
 
   const [formData, setFormData] = useState<SundaySchoolClassFormData>({
-  guid: initialData?.guid ?? "",  
   lesson: initialData?.lesson ?? "",
   teacherId: initialData?.teacherId ?? "",
   sundaySchoolClassroomId: initialData?.sundaySchoolClassroomId ?? 0,
 });
 
-
-  // 🔹 Carregar usuários e salas
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,7 +51,6 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
         setTeachers(teachersList);
         setClassrooms(classroomList);
 
-        // Preencher valores se edição
         if (initialData) {
           setFormData((prev) => ({
             ...prev,
@@ -77,7 +73,7 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
     setLoading(true);
 
     await onSubmit({
-      guid: formData.guid,
+      guid: initialData?.guid,
       lesson: formData.lesson.trim(),
       teacherId: formData.teacherId,
       sundaySchoolClassroomId: Number(formData.sundaySchoolClassroomId),
