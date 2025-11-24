@@ -209,7 +209,7 @@ export default function SignUpForm() {
       window.location.href = checkoutUrl;
     } catch (error: any) {
       setLoading(false);
-      showErrorToast(error.response?.data?.message || "Erro inesperado.");
+      showErrorToast("Ocorreu um erro. Verifique se todos os dados estão preenchidos corretamente, ou tente novamente mais tarde.");
     }
   };
 
