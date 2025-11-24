@@ -37,7 +37,6 @@ export default function FormCell({ initialData, onSubmit }: Props) {
     locationId: initialData?.locationId ?? 0,
     leaderId: initialData?.leaderId ?? "",
     meetingDay: initialData?.meetingDay ?? "",
-    cellBanner: initialData?.cellBanner ?? "",
     churchId: user?.churchId ?? 0
   });
 
@@ -87,7 +86,6 @@ export default function FormCell({ initialData, onSubmit }: Props) {
       locationId: Number(formData.locationId),
       leaderId: formData.leaderId, 
       meetingDay: String(formData.meetingDay),
-      cellBanner: formData.cellBanner.trim(),
       churchId: user?.churchId ?? 0
     };
 
@@ -132,34 +130,21 @@ export default function FormCell({ initialData, onSubmit }: Props) {
       </div>
 
       <div>
-  <Label>Localização</Label>
-  <select
-    className="border border-gray-300 rounded p-2 w-full"
-    value={formData.locationId || ""}
-    onChange={(e) =>
-      setFormData({ ...formData, locationId: Number(e.target.value) })
-    }
-  >
-    <option value="">Selecione o local</option>
-    {locations.map((loc) => (
-      <option key={loc.value} value={loc.value}>
-        {loc.label}
-      </option>
-    ))}
-  </select>
-</div>
-
-
-      <div>
-        <Label>Banner da Célula (URL)</Label>
-        <Input
-          type="text"
-          placeholder="https://exemplo.com/imagem.png"
-          value={formData.cellBanner}
+        <Label>Localização</Label>
+        <select
+          className="border border-gray-300 rounded p-2 w-full"
+          value={formData.locationId || ""}
           onChange={(e) =>
-            setFormData({ ...formData, cellBanner: e.target.value })
+            setFormData({ ...formData, locationId: Number(e.target.value) })
           }
-        />
+        >
+          <option value="">Selecione o local</option>
+          {locations.map((loc) => (
+            <option key={loc.value} value={loc.value}>
+              {loc.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">

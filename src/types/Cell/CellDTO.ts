@@ -3,6 +3,5 @@ export type CellDTO = {
     locationId: number;
     leaderId: string;
     meetingDay: string;
-    cellBanner: string;
     churchId: number;
 }
