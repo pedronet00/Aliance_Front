@@ -18,18 +18,30 @@ export default function FormPatrimony({ initialData, onSubmit }: Props) {
     const goBack = useGoBack();
     const [loading, setLoading] = useState(false);
 
+
+    function normalizeDate(date?: string) {
+      if (!date) return "";
+      return date.split("T")[0]; // pega só o YYYY-MM-DD
+    }
+
     const [formData, setFormData] = useState<PatrimonyDTO>(
-        initialData ?? {
-        name: "",
-        description: "",
-        unitValue: 0,
-        quantity: 0,
-        totalValue: 0,
-        acquisitionDate: "",
-        condition: "",
-        churchId: user?.churchId ?? 0
-        }
+      initialData
+        ? {
+            ...initialData,
+            acquisitionDate: normalizeDate(initialData.acquisitionDate)
+          }
+        : {
+            name: "",
+            description: "",
+            unitValue: 0,
+            quantity: 0,
+            totalValue: 0,
+            acquisitionDate: "",
+            condition: "",
+            churchId: user?.churchId ?? 0
+          }
     );
+
 
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
