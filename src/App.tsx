@@ -128,6 +128,8 @@ export default function App() {
               <Route element={<RoleRoute roles={["Admin"]} />}>
                 <Route path="/locais/criar" element={<LocationCreate />} />
                 <Route path="/locais/editar/:guid" element={<LocationEdit />} />
+                <Route path="/departamentos/criar" element={<DepartmentCreate />} />
+                <Route path="/departamentos/editar/:guid" element={<DepartmentEdit />} />
                 <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
                 <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
                 <Route path="/log" element={<LogList />} />
@@ -154,8 +156,6 @@ export default function App() {
                 <Route path="/dizimos/criar" element={<TitheCreate />} />
                 <Route path="/centros-de-custo" element={<CostCenterList />} />
                 <Route path="/centros-de-custo/criar" element={<CostCenterCreate />} />
-                <Route path="/departamentos/criar" element={<DepartmentCreate />} />
-                <Route path="/departamentos/editar/:id" element={<DepartmentEdit />} />
                 <Route path="/centros-de-custo/editar/:id" element={<CostCenterEdit />} />
                 <Route path="/financeiro/entradas" element={<IncomeList />} />
                 <Route path="/financeiro/entradas/criar" element={<IncomeCreate />} />

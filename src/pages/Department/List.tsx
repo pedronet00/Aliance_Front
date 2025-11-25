@@ -61,11 +61,11 @@ export default function DepartmentList() {
     fetchDepartments(currentPage);
   }, [currentPage]);
 
-  const handleEditar = (u: Department) => navigate(`/departamentos/editar/${u.id}`);
+  const handleEditar = (u: Department) => navigate(`/departamentos/editar/${u.guid}`);
 
   const handleExcluir = async (u: Department) => {
     try {
-      await apiClient.delete(`/Department/${u.id}`);
+      await apiClient.delete(`/Department/${u.guid}`);
       showDeletedToast();
       fetchDepartments(currentPage);
     } catch (error) {
@@ -73,10 +73,9 @@ export default function DepartmentList() {
     }
   };
 
-  const handleStatus = async (u: Department, action: "activate" | "deactivate") => {
+  const handleStatus = async (u: Department) => {
     try {
-      const endpoint =
-        action === "activate" ? `Department/activate/${u.id}` : `Department/deactivate/${u.id}`;
+      const endpoint = `Department/ToggleStatus/${u.guid}`;
       await apiClient.patch(endpoint);
       showEditedSuccessfullyToast();
       fetchDepartments(currentPage);
@@ -115,15 +114,10 @@ export default function DepartmentList() {
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-40">
-                {u.status ? (
-                  <DropdownMenuItem onClick={() => handleStatus(u, "deactivate")}>
-                    Desativar
+                
+                  <DropdownMenuItem onClick={() => handleStatus(u)}>
+                    {u.status ? "Desativar" : "Ativar"}
                   </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={() => handleStatus(u, "activate")}>
-                    Ativar
-                  </DropdownMenuItem>
-                )}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
 

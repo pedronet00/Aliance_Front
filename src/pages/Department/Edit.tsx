@@ -9,15 +9,15 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 
 export default function DepartmentEdit() {
-  const { id } = useParams();
+  const { guid } = useParams();
   const navigate = useNavigate();
   const [center, setCenter] = useState<DepartmentFormData | null>(null);
 
   useEffect(() => {
-    apiClient.get(`/Department/${id}`).then((res) => {
+    apiClient.get(`/Department/${guid}`).then((res) => {
       setCenter(res.data.result);
     });
-  }, [id]);
+  }, [guid]);
 
   const handleSubmit = async (data: DepartmentFormData) => {
     await apiClient.put(`/Department`, data);
@@ -34,7 +34,7 @@ export default function DepartmentEdit() {
           items={[
             { label: "Início", path: "/" },
             { label: "Departamentos", path: "/departamentos" },
-            { label: "Editar Departamento", path: `/departamentos/editar/${id}` },
+            { label: "Editar Departamento", path: `/departamentos/editar/${guid}` },
           ]}
         />
             <div className="space-y-6">
