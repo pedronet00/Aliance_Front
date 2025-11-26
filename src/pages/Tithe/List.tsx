@@ -57,47 +57,48 @@ export default function TitheList() {
     }
   };
 
-const handlePdfDownload = async (guid: string) => {
-  
-  const toastId = toast.loading("Gerando comprovante...", {
-    autoClose: false,
-    closeOnClick: false,
-    draggable: false,
-  });
+  const handleHtmlDownload = async (guid: string) => {
 
-  try {
-    const response = await apiClient.get(
-      `/Tithe/receipt/${guid}/pdf`,
-      { responseType: "blob" }
-    );
-
-    const blob = new Blob([response.data], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `comprovante-${guid}.pdf`;
-    link.click();
-
-    URL.revokeObjectURL(url);
-
-    toast.update(toastId, {
-      render: "Comprovante gerado com sucesso.",
-      type: "success",
-      isLoading: false,
-      autoClose: 2500,
+    const toastId = toast.loading("Gerando comprovante...", {
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
     });
-  } catch (err) {
-    console.error("Erro ao baixar PDF", err);
 
-    toast.update(toastId, {
-      render: "Erro ao gerar comprovante.",
-      type: "error",
-      isLoading: false,
-      autoClose: 2500,
-    });
-  }
-};
+    try {
+      const response = await apiClient.get(
+        `/Tithe/receipt/${guid}`,
+        { responseType: "text" }  // <-- HTML puro
+      );
+
+      const blob = new Blob([response.data], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `comprovante-${guid}.html`; // <-- muda para HTML
+      link.click();
+
+      URL.revokeObjectURL(url);
+
+      toast.update(toastId, {
+        render: "Comprovante gerado com sucesso.",
+        type: "success",
+        isLoading: false,
+        autoClose: 2500,
+      });
+    } catch (err) {
+      console.error("Erro ao baixar HTML", err);
+
+      toast.update(toastId, {
+        render: "Erro ao gerar comprovante.",
+        type: "error",
+        isLoading: false,
+        autoClose: 2500,
+      });
+    }
+  };
+
 
   const handleEditar = (t: Tithe) => {
     window.location.href = `/dizimos/editar/${t.guid}`;
@@ -137,7 +138,7 @@ const handlePdfDownload = async (guid: string) => {
 
           <DropdownMenuContent align="end" className="w-40">
             
-            <DropdownMenuItem onClick={() => handlePdfDownload(t.guid)}>
+            <DropdownMenuItem onClick={() => handleHtmlDownload(t.guid)}>
               Baixar comprovante
             </DropdownMenuItem>
 
