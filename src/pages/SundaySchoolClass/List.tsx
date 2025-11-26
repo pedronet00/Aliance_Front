@@ -92,6 +92,10 @@ export default function SundaySchoolClassList() {
               Editar
             </DropdownMenuItem>
 
+            <DropdownMenuItem onClick={() => navigate(`/aulas-ebd/${c.guid}/documentos`)}>
+              Ver documentos
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
 
             <DropdownMenuItem

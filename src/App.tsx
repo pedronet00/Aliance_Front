@@ -91,6 +91,7 @@ import SundaySchoolClassroomEdit from "./pages/SundaySchoolClassroom/Edit";
 import ReportsList from "./pages/Report/ReportsList";
 import LogList from "./pages/Log/LogList";
 import RoleRoute from "./components/auth/RoleRoute";
+import SundaySchoolClassDocumentList from "./pages/SundaySchoolClass/SundaySchoolClassDocumentList";
 
 export default function App() {
   return (
@@ -146,6 +147,7 @@ export default function App() {
                 <Route path="/patrimonios" element={<PatrimonyList />} />
                 <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
                 <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
+                <Route path="/aulas-ebd/:guid/documentos" element={<SundaySchoolClassDocumentList />} />
                 <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />
                 <Route path="/manutencoes-patrimonios" element={<PatrimonyMaintenanceList />} />
                 <Route path="/manutencoes-patrimonios/:guid/documentos" element={<PatrimonyMaintenanceDocumentList />} />
