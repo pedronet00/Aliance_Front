@@ -34,7 +34,13 @@ export default function PatrimonyMaintenanceEdit() {
   return (
     <>
         <PageMeta title="Editar Manutenção" description="Editar Manutenção" />
-        <PageBreadcrumb pageTitle="Editar Manutenção" />
+        <PageBreadcrumb
+          items={[
+            { label: "Início", path: "/" },
+            { label: "Manutenções de Patrimônios", path: "/manutencoes-patrimonios" },
+            { label: "Editar manutenção de patrimônio", path: `/manutencoes-patrimonios/editar/${guid}` },
+          ]}
+        />
             <div className="space-y-6">
                 <ComponentCard title="">
                     <FormPatrimonyMaintenance initialData={maintenance} onSubmit={handleSubmit} />
