@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "@/api/apiClient";
 import { Button } from "@/components/ui/button";
 import PageMeta from "@/components/common/PageMeta";
@@ -7,7 +7,7 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
 import { showErrorToast } from "@/components/toast/Toasts";
 import UploadDocumentModal from "./DocumentUploadModal";
-import { useNavigate } from "react-router-dom";
+
 import {
   Table,
   TableBody,
@@ -15,14 +15,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"; // Importando os componentes do Table
+} from "@/components/ui/table";
 
 interface PatrimonyDocument {
-  id: number;
+  guid: string;
   fileName: string;
-  filePath: string;
-  uploadedAt: string;
   contentType: string;
+  fileUrl: string;
+  uploadedAt: string;
 }
 
 export default function PatrimonyDocumentsList() {
@@ -42,30 +42,64 @@ export default function PatrimonyDocumentsList() {
       .finally(() => setLoading(false));
   }, [guid]);
 
+  const downloadDocument = async (doc: PatrimonyDocument) => {
+    try {
+      const response = await apiClient.get(doc.fileUrl, {
+        responseType: "blob",
+      });
+
+      const blob = new Blob([response.data], { type: doc.contentType });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = doc.fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      showErrorToast("Erro ao baixar documento: " + err);
+    }
+  };
+
   if (loading) return <p>Carregando documentos...</p>;
 
   return (
     <>
-      <PageMeta title="Documentos do Patrimônio" description="Lista de documentos" />
+      <PageMeta
+        title="Documentos do Patrimônio"
+        description="Lista de documentos anexados ao patrimônio"
+      />
+
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
           { label: "Patrimônios", path: "/patrimonios" },
-          { label: "Documentos do Patrimônio", path: `/patrimonios/${guid}/documentos` },
+          {
+            label: "Documentos",
+            path: `/patrimonios/${guid}/documentos`,
+          },
         ]}
       />
+
       {openModal && (
         <UploadDocumentModal
           patrimonyGuid={guid}
           onClose={() => setOpenModal(false)}
         />
       )}
+
       <div className="space-y-6">
         <ComponentCard title="Documentos do Patrimônio">
-            <div className="flex gap-3">
-                <Button variant={"secondary"} onClick={() => navigate(-1)}>Voltar</Button>
-                <Button onClick={() => setOpenModal(true)}>Anexar documento</Button>
-            </div>
+          <div className="flex gap-3 mb-4">
+            <Button variant={"secondary"} onClick={() => navigate(-1)}>
+              Voltar
+            </Button>
+            <Button onClick={() => setOpenModal(true)}>Anexar documento</Button>
+          </div>
+
           {documents.length === 0 ? (
             <p>Nenhum documento encontrado.</p>
           ) : (
@@ -77,14 +111,19 @@ export default function PatrimonyDocumentsList() {
                   <TableHead>Ações</TableHead>
                 </TableRow>
               </TableHeader>
+
               <TableBody>
                 {documents.map((doc) => (
-                  <TableRow key={doc.id}>
+                  <TableRow key={doc.guid}>
                     <TableCell>{doc.fileName}</TableCell>
-                    <TableCell>{new Date(doc.uploadedAt).toLocaleString()}</TableCell>
+
                     <TableCell>
-                      <Button size="sm" onClick={() => window.open(doc.filePath, "_blank")}>
-                        Abrir
+                      {new Date(doc.uploadedAt).toLocaleString()}
+                    </TableCell>
+
+                    <TableCell>
+                      <Button size="sm" onClick={() => downloadDocument(doc)}>
+                        Baixar
                       </Button>
                     </TableCell>
                   </TableRow>

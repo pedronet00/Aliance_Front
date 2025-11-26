@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { showErrorToast, showEditedSuccessfullyToast } from "@/components/toast/Toasts";
+import { showErrorToast, showCreatedSuccessfullyToast } from "@/components/toast/Toasts";
 import apiClient from "@/api/apiClient";
 
 interface UploadDocumentModalProps {
@@ -21,7 +21,7 @@ const UploadDocumentModal: FC<UploadDocumentModalProps> = ({ maintenanceGuid, on
       await apiClient.post(`/PatrimonyMaintenance/${maintenanceGuid}/documents`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      showEditedSuccessfullyToast();
+      showCreatedSuccessfullyToast();
       onClose();
     } catch (err) {
       showErrorToast("Erro ao enviar documento");
