@@ -14,26 +14,34 @@ export default function ReportsList() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleGenerate = async (reportId: string, endpoint: string) => {
-    try {
-      setLoadingId(reportId);
+  try {
+    setLoadingId(reportId);
 
-      const res = await apiClient.get(endpoint, {
-        responseType: "blob",
-      });
+    // Pegamos o HTML como BLOB (mantém UTF-8)
+    const res = await apiClient.get(endpoint, {
+      responseType: "blob",
+    });
 
-      const blob = new Blob([res.data], { type: "application/pdf" });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-        link.href = url;
-        link.download = `${reportId}.pdf`;
-        link.click();
+    // Converte Blob → texto UTF-8
+    const htmlText = await res.data.text();
 
-    } catch (e) {
-      console.error("Erro ao gerar relatório:", e);
-    } finally {
-      setLoadingId(null);
-    }
-  };
+    // Cria arquivo HTML corretamente configurado
+    const blob = new Blob([htmlText], { type: "text/html;charset=utf-8" });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${reportId}.html`; // <-- AGORA BAIXA HTML
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error("Erro ao gerar relatório:", e);
+  } finally {
+    setLoadingId(null);
+  }
+};
+
 
   const reports: ReportItem[] = [
     {
@@ -43,7 +51,7 @@ export default function ReportsList() {
         "Entradas, saídas, dízimos, saldo e totais consolidados do período.",
       icon: <Wallet className="size-5 text-blue-600 dark:text-blue-400" />,
       action: () =>
-        handleGenerate("relatorio-financeiro", "/FinancialReport/pdf"),
+        handleGenerate("relatorio-financeiro", "/FinancialReport/view"),
     },
     // {
     //   id: "attendance",
