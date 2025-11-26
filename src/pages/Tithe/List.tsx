@@ -66,17 +66,19 @@ export default function TitheList() {
     });
 
     try {
-      const response = await apiClient.get(
-        `/Tithe/receipt/${guid}`,
-        { responseType: "text" }  // <-- HTML puro
-      );
+      const response = await apiClient.get(`/Tithe/receipt/${guid}`, {
+        responseType: "blob"   // <-- RECEBE COMO BLOB (não perde encoding)
+      });
 
-      const blob = new Blob([response.data], { type: "text/html" });
+      // Converte Blob -> texto UTF-8
+      const text = await response.data.text();
+
+      const blob = new Blob([text], { type: "text/html;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const link = document.createElement("a");
       link.href = url;
-      link.download = `comprovante-${guid}.html`; // <-- muda para HTML
+      link.download = `comprovante-${guid}.html`;
       link.click();
 
       URL.revokeObjectURL(url);
@@ -98,6 +100,7 @@ export default function TitheList() {
       });
     }
   };
+
 
 
   const handleEditar = (t: Tithe) => {
