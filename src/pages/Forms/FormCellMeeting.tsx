@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function FormCellMeeting({ initialData, onSubmit }: Props) {
-  const { guidCelula } = useParams<{ guidCelula: string }>();
+  const { guid } = useParams<{ guid: string }>();
 
   const goBack = useGoBack();
 
@@ -30,7 +30,7 @@ export default function FormCellMeeting({ initialData, onSubmit }: Props) {
     status: initialData?.status ?? "Agendado",
     leaderGuid: initialData?.leaderGuid ?? "",
     locationGuid: initialData?.locationGuid ?? "",
-    cellGuid: initialData?.cellGuid ?? guidCelula ?? "",
+    cellGuid: initialData?.cellGuid ?? guid ?? "",
   });
 
   // 🔹 Carrega líderes e locais
@@ -79,15 +79,16 @@ export default function FormCellMeeting({ initialData, onSubmit }: Props) {
 
     setLoading(true);
     const payload: CellMeetingDTO = {
-      guid: formData.guid, // mesmo que vazio, backend decide criar ou atualizar
+      ...(formData.guid ? { guid: formData.guid } : {}), // só manda se existir
+      id: formData.id,
       cellGuid: formData.cellGuid,
       leaderGuid: formData.leaderGuid,
       locationGuid: formData.locationGuid,
       date: formData.date,
       theme: formData.theme,
       status: formData.status,
-      id: formData.id,
     };
+
 
     await onSubmit(payload);
   };

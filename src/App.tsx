@@ -184,7 +184,7 @@ export default function App() {
                 <Route path="/celulas/criar" element={<CellCreate />} />
                 <Route path="/celulas/:cellGuid/membros/criar" element={<CellMemberCreate/>} />
                 <Route path="/celulas/:guid/encontros/criar" element={<CellMeetingCreate/>} />
-                <Route path="/celulas/:guidCelula/encontros/:guidEncontro/editar" element={<CellMeetingEdit/>} />
+                <Route path="/celulas/:guid/encontros/:guidEncontro/editar" element={<CellMeetingEdit/>} />
                 <Route path="/celulas/editar/:guid" element={<CellEdit/>} />
               </Route>
               

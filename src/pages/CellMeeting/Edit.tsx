@@ -10,7 +10,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 
 export default function CellMeetingEdit() {
   const { guidEncontro } = useParams();
-  const { guidCelula } = useParams();
+  const { guid } = useParams();
   const navigate = useNavigate();
   const [meeting, setMeeting] = useState<CellMeetingFormData | null>(null);
 
@@ -23,7 +23,7 @@ export default function CellMeetingEdit() {
   const handleSubmit = async (data: CellMeetingFormData) => {
     await apiClient.put(`/CellMeeting`, data);
     showEditedSuccessfullyToast();
-    navigate(`/celulas/${guidCelula}/encontros`);
+    navigate(`/celulas/${guid}/encontros`);
   };
 
    if (!meeting) return <LoadingSpinner/>;
@@ -35,8 +35,8 @@ export default function CellMeetingEdit() {
         items={[
           { label: "Início", path: "/" },
           { label: "Células", path: "/celulas" },
-          { label: "Encontros da Célula", path: `/celulas/${guidCelula}/encontros` },
-          { label: "Editar Encontro da Célula", path: `/celulas/${guidCelula}/encontros/${guidEncontro}/editar` },
+          { label: "Encontros da Célula", path: `/celulas/${guid}/encontros` },
+          { label: "Editar Encontro da Célula", path: `/celulas/${guid}/encontros/${guidEncontro}/editar` },
         ]}
       />
             <div className="space-y-6">

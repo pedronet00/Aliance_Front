@@ -9,7 +9,7 @@ export default function CellMeetingCreate() {
   const handleSubmit = async (data: CellMeetingFormData) => {
     await apiClient.post("/CellMeeting", data);
     showCreatedSuccessfullyToast();
-    navigate("/"); 
+    navigate("/celulas"); 
   };
 
   return (
