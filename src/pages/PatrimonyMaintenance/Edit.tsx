@@ -23,7 +23,8 @@ export default function PatrimonyMaintenanceEdit() {
     var response = await apiClient.put(`/PatrimonyMaintenance`, data);
     if(response.data.notifications.length > 0){
       //mostrar toast de erro
-      showErrorToast(response.data.notifications[0].message);
+      showErrorToast(response.data.notifications[0]);
+      return;
     }
     showEditedSuccessfullyToast();
     navigate("/manutencoes-patrimonios");

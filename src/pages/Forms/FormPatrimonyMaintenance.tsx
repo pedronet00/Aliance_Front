@@ -107,21 +107,12 @@ export default function FormPatrimonyMaintenance({ initialData, onSubmit }: Prop
 
     setLoading(true);
 
-    if (!formData.patrimonyId) {
-      alert("Selecione um patrimônio.");
-      return;
-    }
-
-    if (!formData.costCenterId) {
-      alert("Selecione um centro de custo.");
-      return;
-    }
-
     await onSubmit({
       ...formData,
       patrimonyId: Number(formData.patrimonyId),
       costCenterId: Number(formData.costCenterId),
     });
+    setLoading(false);
   };
 
   return (
