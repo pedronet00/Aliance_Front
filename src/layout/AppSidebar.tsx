@@ -52,16 +52,6 @@ const AppSidebar: React.FC = () => {
           : []),
       ],
     },
-
-    {
-      name: "Serviço eclesiástico",
-      icon: <Church />,
-      subItems: [
-        { name: "Cultos", path: "/cultos" },
-        { name: "Louvor", path: "/grupos-de-louvor" },
-      ],
-    },
-
     {
       name: "Discipulado & Ensino",
       icon: <GraduationCap />,
@@ -114,7 +104,6 @@ const AppSidebar: React.FC = () => {
           : []),
       ],
     },
-
     {
       name: "Membros & Pastoral",
       icon: <UsersRound />,
@@ -126,13 +115,20 @@ const AppSidebar: React.FC = () => {
           : []),
       ],
     },
-
+    {
+      name: "Serviço eclesiástico",
+      icon: <Church />,
+      subItems: [
+        { name: "Cultos", path: "/cultos" },
+        { name: "Louvor", path: "/grupos-de-louvor" },
+      ],
+    },
     {
       name: "Outros",
       icon: <Ellipsis />,
       subItems: [
-        { name: "Locais", path: "/locais" },
         { name: "Classes de EBD", path: "/classes-ebd" },
+        { name: "Locais", path: "/locais" },
       ],
     },
     {
