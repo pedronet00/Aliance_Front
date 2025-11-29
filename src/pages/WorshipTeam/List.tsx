@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { WorshipTeam } from "@/types/WorshipTeam/WorshipTeam";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function WorshipTeamList() {
   const [teams, setTeams] = useState<WorshipTeam[]>([]);
@@ -37,6 +38,7 @@ export default function WorshipTeamList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -107,13 +109,15 @@ export default function WorshipTeamList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/grupos-de-louvor/${u.guid}/membros`)}>
               Ver membros
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/grupos-de-louvor/${u.guid}/ensaios`)}>
               Ver ensaios
             </DropdownMenuItem>
+            {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
+              <>
+            <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
 
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
@@ -137,6 +141,8 @@ export default function WorshipTeamList() {
             >
               <span>Excluir</span>
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -167,7 +173,9 @@ export default function WorshipTeamList() {
         <ComponentCard title="Lista de Grupos de Louvor">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
+              {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
               <Button onClick={() => navigate("/grupos-de-louvor/criar")}>Novo grupo</Button>
+              )}
               <Button variant="secondary" onClick={() => setShowFilters((prev) => !prev)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>

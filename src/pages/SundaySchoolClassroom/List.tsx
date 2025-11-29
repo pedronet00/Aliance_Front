@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import NoData from "@/components/no-data";
 import { SundaySchoolClassroom } from "@/types/SundaySchoolClassroom/SundaySchoolClassroom";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SundaySchoolClassroomList() {
   const [classes, setClasses] = useState<SundaySchoolClassroom[]>([]);
@@ -37,6 +38,7 @@ export default function SundaySchoolClassroomList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -106,7 +108,7 @@ export default function SundaySchoolClassroomList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(l)}>Editar</DropdownMenuItem>
 
@@ -133,6 +135,7 @@ export default function SundaySchoolClassroomList() {
               Excluir
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -162,7 +165,9 @@ export default function SundaySchoolClassroomList() {
         <ComponentCard title="Lista de Classes de EBD">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
+              {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
               <Button onClick={() => navigate("/classes-ebd/criar")}>Nova classe</Button>
+              )}
               <Button variant="secondary" onClick={() => setShowFilters((prev) => !prev)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>

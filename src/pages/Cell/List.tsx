@@ -9,21 +9,21 @@ import ComponentCard from "@/components/common/ComponentCard";
 import { useNavigate } from "react-router-dom";
 import { showDeletedToast, showErrorToast} from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
-import Badge from "@/components/ui/badge/Badge";
 import { Cell } from "@/types/Cell/Cell";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CellList() {
   const [cells, setCells] = useState<Cell[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
-  const [filterCnpj, setFilterCnpj] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -77,7 +77,6 @@ export default function CellList() {
     Sabado: "Sábado"
   };
 
-
   const columns = [
     { key: "name", label: "Nome" },
     { key: "locationName", label: "Local" },
@@ -94,23 +93,23 @@ export default function CellList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(u)}>
-              Editar
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/celulas/${u.guid}/membros`)}>
               Ver membros 
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/celulas/${u.guid}/encontros`)}>
               Ver encontros 
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleExcluir(u)}
-              className="text-destructive focus:text-destructive"
-            >
-              <span>Excluir</span>
-              <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+            {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
+            <>
+            <DropdownMenuItem onClick={() => handleEditar(u)}>
+              Editar
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleExcluir(u)} className="text-destructive focus:text-destructive">
+              Excluir
+            </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -139,11 +138,13 @@ export default function CellList() {
         <ComponentCard title="Lista de Células">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
+              {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
               <Button
                 onClick={() => (window.location.href = "/celulas/criar")}
               >
                 Nova célula
               </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}

@@ -20,6 +20,7 @@ import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import NoData from "@/components/no-data";
 import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast } from "@/components/toast/Toasts";
+import { useAuth } from "@/context/AuthContext";
 
 type WorshipTeamRehearsal = {
   id: number;
@@ -35,9 +36,9 @@ export default function WorshipTeamRehearsalList() {
   const [filterStatus, setFilterStatus] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const navigate = useNavigate();
-  const { guidEquipe } = useParams<{ guid: string }>(); // worshipTeam guid
+  const { guidEquipe } = useParams<{ guid: string }>();
+  const {can} = useAuth();
 
-  // Função única para carregar os ensaios
   const loadRehearsals = async () => {
     if (!guidEquipe) return;
     setLoading(true);
@@ -51,7 +52,6 @@ export default function WorshipTeamRehearsalList() {
     }
   };
 
-  // Carrega ensaios ao montar o componente ou quando guidEquipe mudar
   useEffect(() => {
     loadRehearsals();
   }, [guidEquipe]);
@@ -94,22 +94,22 @@ export default function WorshipTeamRehearsalList() {
       key: "status",
       label: "Status",
       render: (m: WorshipTeamRehearsal) => {
-              const conditionMap: Record<string, { color: string; label: string }> = {
-                Completado: { color: "success", label: "Completado" },
-                Agendado: { color: "primary", label: "Agendado" },
-                Adiado: { color: "warning", label: "Adiado" },
-                Cancelado: { color: "error", label: "Cancelado" },
-              };
-              const status = conditionMap[m.status] ?? {
-                color: "default",
-                label: m.status,
-              };
-              return (
-                <Badge size="sm" color={status.color}>
-                  {status.label}
-                </Badge>
-              );
-            },
+        const conditionMap: Record<string, { color: string; label: string }> = {
+          Completado: { color: "success", label: "Completado" },
+          Agendado: { color: "primary", label: "Agendado" },
+          Adiado: { color: "warning", label: "Adiado" },
+          Cancelado: { color: "error", label: "Cancelado" },
+        };
+        const status = conditionMap[m.status] ?? {
+          color: "default",
+          label: m.status,
+        };
+        return (
+          <Badge size="sm" color={status.color}>
+            {status.label}
+          </Badge>
+        );
+      },
     },
     {
       label: "Ações",
@@ -120,26 +120,27 @@ export default function WorshipTeamRehearsalList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
+          {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(r)}>
               Editar
             </DropdownMenuItem>
             {r.status != "Completado" && r.status != "Cancelado" && (
-                        <DropdownMenuSub>
-                          <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-                          <DropdownMenuSubContent className="w-44">
-                            {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
-                              <DropdownMenuItem
-                                key={s}
-                                onClick={() => handleToggleStatus(r, s)}
-                                disabled={r.status === s}
-                              >
-                                {s}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuSubContent>
-                        </DropdownMenuSub>
-                        )}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-44">
+                  {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
+                    <DropdownMenuItem
+                      key={s}
+                      onClick={() => handleToggleStatus(r, s)}
+                      disabled={r.status === s}
+                    >
+                      {s}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => handleExcluir(r)}
@@ -148,6 +149,7 @@ export default function WorshipTeamRehearsalList() {
               Excluir
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -181,9 +183,11 @@ export default function WorshipTeamRehearsalList() {
               <Button variant="secondary" onClick={() => navigate(-1)}>
                 Voltar
               </Button>
+              {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
               <Button onClick={() => navigate(`/grupos-de-louvor/${guidEquipe}/ensaios/criar`)}>
                 Novo Ensaio
               </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}

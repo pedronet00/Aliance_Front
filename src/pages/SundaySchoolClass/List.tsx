@@ -18,9 +18,9 @@ import {
   showErrorToast,
 } from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
-import Badge from "@/components/ui/badge/Badge";
 import NoData from "@/components/no-data";
 import { SundaySchoolClass } from "@/types/SundaySchoolClass/SundayShoolClass";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SundaySchoolClassList() {
   const [classes, setClasses] = useState<SundaySchoolClass[]>([]);
@@ -33,6 +33,7 @@ export default function SundaySchoolClassList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -86,14 +87,14 @@ export default function SundaySchoolClassList() {
             </button>
           </DropdownMenuTrigger>
 
+          <DropdownMenuItem onClick={() => navigate(`/aulas-ebd/${c.guid}/documentos`)}>
+            Ver documentos
+          </DropdownMenuItem>
+          
+          {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
-
             <DropdownMenuItem onClick={() => handleEditar(c)}>
               Editar
-            </DropdownMenuItem>
-
-            <DropdownMenuItem onClick={() => navigate(`/aulas-ebd/${c.guid}/documentos`)}>
-              Ver documentos
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
@@ -104,8 +105,8 @@ export default function SundaySchoolClassList() {
             >
               Excluir
             </DropdownMenuItem>
-
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -133,9 +134,11 @@ export default function SundaySchoolClassList() {
         <ComponentCard title="Lista de Aulas de EBD">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
+              {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
               <Button onClick={() => navigate("/aulas-ebd/criar")}>
                 Nova aula
               </Button>
+              )}
               <Button variant="secondary" onClick={() => setShowFilters(p => !p)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>

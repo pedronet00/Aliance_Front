@@ -1,7 +1,8 @@
 import apiClient from "@/api/apiClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { showCreatedSuccessfullyToast } from "@/components/toast/Toasts";
 import FormUser, { UsuarioDTO } from "../Forms/FormUser";
+import Alert from "@/components/ui/alert/Alert";
 
 export default function UsuariosCreate() {
   const navigate = useNavigate();
@@ -26,7 +27,13 @@ export default function UsuariosCreate() {
 
   return (
     <div className="p-6">
+      <div className="mb-6">
+        <Alert title="Usuário de outra igreja?" message={<>Para cadastrar um usuário que já era de outra igreja utilizadora do Aliance,  
+      clique <Link to="/usuarios/importar" className="underline">aqui</Link>.</>} variant={"info"}/>
+      </div>
       <h1 className="text-xl font-semibold mb-4">Cadastrar Usuário</h1>
+      {/* validacao usuario de outra igreja */}
+
       <FormUser onSubmit={handleSubmit} />
     </div>
   );

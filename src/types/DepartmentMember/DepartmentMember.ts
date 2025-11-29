@@ -3,5 +3,5 @@ export type DepartmentMember = {
     guid: string;
     userId: string;
     status: boolean;
-    userName: string;
+    fullName: string;
 }

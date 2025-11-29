@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import NoData from "@/components/no-data";
 import { MissionCampaign } from "@/types/Mission/MissionCampaign";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MissionCampaignList() {
   const [campaigns, setCampaigns] = useState<MissionCampaign[]>([]);
@@ -33,6 +34,7 @@ export default function MissionCampaignList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -111,7 +113,7 @@ export default function MissionCampaignList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Pastor", "Financeiro","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(c)}>
               Editar
@@ -129,6 +131,7 @@ export default function MissionCampaignList() {
               <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -160,9 +163,11 @@ export default function MissionCampaignList() {
         <ComponentCard title="Campanhas de Missões">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
+              {can(["Admin", "Pastor", "Financeiro","Secretaria"]) && (
               <Button onClick={() => navigate("/campanhas-de-missoes/criar")}>
                 Nova Campanha
               </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}

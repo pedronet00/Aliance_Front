@@ -25,6 +25,7 @@ import {
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
 import { CellMember } from "@/types/CellMember/CellMember";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function CellMemberList() {
@@ -33,6 +34,7 @@ export default function CellMemberList() {
   const [loading, setLoading] = useState(true);
   const { cellGuid } = useParams<{ cellGuid: string }>();
   const navigate = useNavigate();
+  const {can} = useAuth();
 
   const loadData = async () => {
     if (!cellGuid) return;
@@ -118,6 +120,7 @@ export default function CellMemberList() {
             </button>
           </DropdownMenuTrigger>
 
+          {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
@@ -135,6 +138,7 @@ export default function CellMemberList() {
               <span>Remover</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -159,9 +163,11 @@ export default function CellMemberList() {
             <Button variant={"secondary"} onClick={() => navigate('/celulas')}>
               Voltar
             </Button>
+            {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
             <Button onClick={() => navigate(`/celulas/${cellGuid}/membros/criar`)}>
               Adicionar membro
             </Button>
+            )}
           </div>
 
           <GenericTable columns={columns} data={members} />

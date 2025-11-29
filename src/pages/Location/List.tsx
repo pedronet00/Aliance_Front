@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { Location } from "@/types/Location/Location";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LocationList() {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -37,6 +38,7 @@ export default function LocationList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -104,7 +106,7 @@ export default function LocationList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(l)}>Editar</DropdownMenuItem>
 
@@ -125,6 +127,7 @@ export default function LocationList() {
               Excluir
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -154,7 +157,9 @@ export default function LocationList() {
         <ComponentCard title="Lista de Locais">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
+              {can(["Admin", "Secretaria"]) && (
               <Button onClick={() => navigate("/locais/criar")}>Novo local</Button>
+              )}
               <Button variant="secondary" onClick={() => setShowFilters((prev) => !prev)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>

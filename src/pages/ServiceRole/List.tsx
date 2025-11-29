@@ -21,6 +21,7 @@ import {
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 type ServiceRole = {
   id: number;
@@ -36,6 +37,7 @@ export default function ServiceRoleList() {
   const [loading, setLoading] = useState(true);
   const { serviceGuid } = useParams<{ serviceGuid: string }>();
   const navigate = useNavigate();
+  const {can} = useAuth();
 
   useEffect(() => {
     if (!serviceGuid) return;
@@ -91,7 +93,7 @@ export default function ServiceRoleList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Pastor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem
               onClick={() => handleDelete(r)}
@@ -100,6 +102,7 @@ export default function ServiceRoleList() {
               <span>Remover</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -127,9 +130,11 @@ export default function ServiceRoleList() {
             <Button variant={"secondary"} onClick={() => navigate(-1)}>
               Voltar
             </Button>
+            {can(["Admin", "Pastor","Secretaria"]) && (
             <Button onClick={() => navigate(`/cultos/${serviceGuid}/escalas/criar`)}>
               Adicionar Escala
             </Button>
+            )}
           </div>
           {roles.length === 0 ? <NoData/> : <GenericTable columns={columns} data={roles} />}
         </ComponentCard>

@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Event } from "@/types/Event/Event";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -36,11 +37,9 @@ export default function EventList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
-
-  console.log("API URL:", import.meta.env.VITE_API_URL);
-
 
   const fetchEvents = async (page: number = 1) => {
     setLoading(true);
@@ -131,7 +130,7 @@ export default function EventList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Pastor", "Eventos","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-48">
             {/* <DropdownMenuItem onClick={() => handleEditar(e)}>
               Ver participantes
@@ -171,6 +170,7 @@ export default function EventList() {
               </>
             )}
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -197,9 +197,11 @@ export default function EventList() {
         <ComponentCard title="Lista de Eventos">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
+              {can(["Admin", "Pastor", "Eventos","Secretaria"]) && (
               <Button onClick={() => navigate("/eventos/criar")}>
                 Novo evento
               </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}

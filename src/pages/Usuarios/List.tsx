@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import Badge from "@/components/ui/badge/Badge";
 import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast, showSuccessToast } from "@/components/toast/Toasts";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UsuariosList() {
   const [usuarios, setUsuarios] = useState<User[]>([]);
@@ -32,6 +33,7 @@ export default function UsuariosList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   useEffect(() => {
     carregarUsuarios(currentPage);
@@ -119,6 +121,7 @@ export default function UsuariosList() {
             </button>
           </DropdownMenuTrigger>
 
+          {can(["Admin", "Pastor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => handleEditar(u)}>
               Editar
@@ -146,6 +149,7 @@ export default function UsuariosList() {
               <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -167,11 +171,13 @@ export default function UsuariosList() {
         <ComponentCard title="Lista de Usuários">
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div className="flex gap-2">
+              {can(["Admin", "Pastor","Secretaria"]) && (
               <Button
                 onClick={() => (window.location.href = "/membros/criar")}
               >
                 Novo Usuário
               </Button>
+              )}
 
               <Button
                 onClick={() => (window.location.href = "/membros/importar")}

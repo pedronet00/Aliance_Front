@@ -26,6 +26,7 @@ import {
 import Badge from "@/components/ui/badge/Badge";
 import { DepartmentMember } from "@/types/DepartmentMember/DepartmentMember";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function DepartmentMemberList() {
@@ -33,6 +34,7 @@ export default function DepartmentMemberList() {
   const [loading, setLoading] = useState(true);
   const { departmentGuid } = useParams<{ departmentGuid: string }>();
   const navigate = useNavigate();
+  const {can} = useAuth();
 
   const loadData = async () => {
     if (!departmentGuid) return;
@@ -83,11 +85,11 @@ export default function DepartmentMemberList() {
 
   const columns = [
     {
-      key: "userName",
+      key: "fullName",
       label: "Nome do Membro",
       render: (m: DepartmentMember) => (
         <div className="flex items-center gap-2">
-          <span>{m.userName ?? m.userId}</span>
+          <span>{m.fullName ?? m.userId}</span>
         </div>
       ),
     },
@@ -109,7 +111,7 @@ export default function DepartmentMemberList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
@@ -127,6 +129,7 @@ export default function DepartmentMemberList() {
               <span>Remover</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -151,9 +154,11 @@ export default function DepartmentMemberList() {
             <Button variant={"secondary"} onClick={() => navigate('/departamentos')}>
               Voltar
             </Button>
+            {can(["Admin", "Secretaria"]) && (
             <Button onClick={() => navigate(`/departamentos/${departmentGuid}/membros/criar`)}>
               Adicionar membro
             </Button>
+            )}
           </div>
 
           {members.length > 0 ? <GenericTable columns={columns} data={members} /> : <NoData/>} 

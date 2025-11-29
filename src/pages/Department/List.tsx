@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { Department } from "@/types/Department/Department";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function DepartmentList() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -37,6 +38,7 @@ export default function DepartmentList() {
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -106,18 +108,18 @@ export default function DepartmentList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate(`/departamentos/${u.guid}/membros`)}>
               Ver membros
             </DropdownMenuItem>
-
+            {can(["Admin", "Secretaria"]) && (
+            <>
+            <DropdownMenuItem onClick={() => handleEditar(u)}>Editar</DropdownMenuItem>
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-40">
-                
-                  <DropdownMenuItem onClick={() => handleStatus(u)}>
-                    {u.status ? "Desativar" : "Ativar"}
-                  </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatus(u)}>
+                  {u.status ? "Desativar" : "Ativar"}
+                </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
 
@@ -128,6 +130,8 @@ export default function DepartmentList() {
             >
               <span>Excluir</span>
             </DropdownMenuItem>
+            </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -157,7 +161,9 @@ export default function DepartmentList() {
         <ComponentCard title="Lista de Departamentos">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
+              {can(["Admin", "Secretaria"]) && (
               <Button onClick={() => navigate("/departamentos/criar")}>Novo departamento</Button>
+              )}
               <Button variant="secondary" onClick={() => setShowFilters((prev) => !prev)}>
                 {showFilters ? "Esconder Filtros" : "Mostrar Filtros"}
               </Button>

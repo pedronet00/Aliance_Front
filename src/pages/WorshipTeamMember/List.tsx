@@ -25,6 +25,7 @@ import {
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
 import { WorshipTeamMember } from "@/types/WorshipTeamMember/WorshipTeamMember";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function WorshipTeamMemberList() {
@@ -32,6 +33,7 @@ export default function WorshipTeamMemberList() {
   const [loading, setLoading] = useState(true);
   const { teamGuid } = useParams<{ teamGuid: string }>();
   const navigate = useNavigate();
+  const {can} = useAuth();
 
   const fetchMembers = async () => {
     try {
@@ -100,7 +102,7 @@ export default function WorshipTeamMemberList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-
+          {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
@@ -119,6 +121,7 @@ export default function WorshipTeamMemberList() {
               <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -143,9 +146,11 @@ export default function WorshipTeamMemberList() {
             <Button variant={"secondary"} onClick={() => navigate('/grupos-de-louvor')}>
               Voltar
             </Button>
+            {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
             <Button onClick={() => navigate(`/grupos-de-louvor/${teamGuid}/membros/criar`)}>
               Adicionar membro
             </Button>
+            )}
           </div>
 
           <GenericTable columns={columns} data={members} />

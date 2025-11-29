@@ -16,7 +16,7 @@ export default function ServiceRoleCreate() {
       return;
     }
     showCreatedSuccessfullyToast();
-    navigate("/");
+    navigate("/cultos");
   };
 
   return (

@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { CellMeeting } from "@/types/Cell/CellMeeting";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CellMeetingList() {
   const [meetings, setMeetings] = useState<CellMeeting[]>([]);
@@ -29,7 +30,8 @@ export default function CellMeetingList() {
   const [filterTheme, setFilterTheme] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const navigate = useNavigate();
-  const { guid } = useParams<{ guid: string }>(); // pega o guid da célula na URL
+  const { guid } = useParams<{ guid: string }>(); 
+  const {can} = useAuth();
 
    const loadMeetings = async () => {
     if (!guid) return;
@@ -96,22 +98,22 @@ export default function CellMeetingList() {
       key: "status",
       label: "Status",
       render: (m: CellMeeting) => {
-              const conditionMap: Record<string, { color: string; label: string }> = {
-                Completado: { color: "success", label: "Completado" },
-                Agendado: { color: "primary", label: "Agendado" },
-                Adiado: { color: "warning", label: "Adiado" },
-                Cancelado: { color: "error", label: "Cancelado" },
-              };
-              const status = conditionMap[m.status] ?? {
-                color: "default",
-                label: m.status,
-              };
-              return (
-                <Badge size="sm" color={status.color}>
-                  {status.label}
-                </Badge>
-              );
-            },
+        const conditionMap: Record<string, { color: string; label: string }> = {
+          Completado: { color: "success", label: "Completado" },
+          Agendado: { color: "primary", label: "Agendado" },
+          Adiado: { color: "warning", label: "Adiado" },
+          Cancelado: { color: "error", label: "Cancelado" },
+        };
+        const status = conditionMap[m.status] ?? {
+          color: "default",
+          label: m.status,
+        };
+        return (
+          <Badge size="sm" color={status.color}>
+            {status.label}
+          </Badge>
+        );
+      },
     },
     {
       label: "Ações",
@@ -123,26 +125,27 @@ export default function CellMeetingList() {
             </button>
           </DropdownMenuTrigger>
 
+          {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem disabled={m.status == "Cancelado" || m.status == "Completado"} onClick={() => handleEditar(m)}>
               Editar
             </DropdownMenuItem>
             {m.status != "Completado" && m.status != "Cancelado" && (
-                        <DropdownMenuSub>
-                          <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-                          <DropdownMenuSubContent className="w-44">
-                            {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
-                              <DropdownMenuItem
-                                key={s}
-                                onClick={() => handleToggleStatus(m, s)}
-                                disabled={m.status === s}
-                              >
-                                {s}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuSubContent>
-                        </DropdownMenuSub>
-                        )}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-44">
+                  {["Agendado", "Completado", "Cancelado", "Adiado"].map((s) => (
+                    <DropdownMenuItem
+                      key={s}
+                      onClick={() => handleToggleStatus(m, s)}
+                      disabled={m.status === s}
+                    >
+                      {s}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            )}
             <DropdownMenuItem disabled={m.status == "Cancelado"} onClick={() => handleGenerateAccountPayable(m)}>
               Lanche pós-encontro
             </DropdownMenuItem>
@@ -155,6 +158,7 @@ export default function CellMeetingList() {
               Excluir
             </DropdownMenuItem>
           </DropdownMenuContent>
+          )}
         </DropdownMenu>
       ),
     },
@@ -187,13 +191,9 @@ export default function CellMeetingList() {
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
               <Button variant={"secondary"} onClick={() => navigate(-1)}>Voltar</Button>
-              <Button
-                onClick={() =>
-                  navigate(`/celulas/${guid}/encontros/criar`)
-                }
-              >
-                Novo Encontro
-              </Button>
+              {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
+              <Button onClick={() =>navigate(`/celulas/${guid}/encontros/criar`)}>Novo Encontro</Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}

@@ -119,6 +119,7 @@ export default function App() {
               <Route path="/grupos-de-louvor/:teamGuid/membros" element={<WorshipTeamMemberList />} />
               <Route path="/grupos-de-louvor" element={<WorshipTeamList />} />
               <Route path="/departamentos" element={<DepartmentList />} />
+              <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
               <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
               <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
               <Route path="/membros" element={<UsuariosList />} />
@@ -126,12 +127,11 @@ export default function App() {
               <Route path="/grupos-de-louvor/:guidEquipe/ensaios" element={<WorshipTeamRehearsalList />} />
 
               {/* ADMIN */}
-              <Route element={<RoleRoute roles={["Admin"]} />}>
+              <Route element={<RoleRoute roles={["Admin", "Secretaria"]} />}>
                 <Route path="/locais/criar" element={<LocationCreate />} />
                 <Route path="/locais/editar/:guid" element={<LocationEdit />} />
                 <Route path="/departamentos/criar" element={<DepartmentCreate />} />
                 <Route path="/departamentos/editar/:guid" element={<DepartmentEdit />} />
-                <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
                 <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
                 <Route path="/log" element={<LogList />} />
                 <Route path="/relatorios" element={<ReportsList />} />

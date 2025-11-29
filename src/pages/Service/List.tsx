@@ -25,6 +25,7 @@ import {
 } from "@/components/toast/Toasts";
 import { Service } from "@/types/Service/Service";
 import NoData from "@/components/no-data";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ServiceList() {
   const [services, setServices] = useState<Service[]>([]);
@@ -36,6 +37,7 @@ export default function ServiceList() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const pageSize = 10;
+  const {can} = useAuth();
 
   const navigate = useNavigate();
 
@@ -132,42 +134,46 @@ export default function ServiceList() {
             </button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="w-48">
-            {s.status != "Completado" && (
-              <DropdownMenuItem onClick={() => handleEditar(s)}>
-                Editar
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem
-              onClick={() => navigate(`/cultos/${s.guid}/escalas`)}
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem
+            onClick={() => navigate(`/cultos/${s.guid}/escalas`)}
             >
-              Escalas
-            </DropdownMenuItem>
-
-            {s.status != "Completado" && (
+            Escalas
+          </DropdownMenuItem>
+            {can(["Admin", "Pastor","Secretaria"]) && (
               <>
-                <DropdownMenuSeparator />
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent className="w-44">
-                    {["Completado", "Cancelado", "Adiado"].map((status) => (
-                      <DropdownMenuItem
-                        key={status}
-                        onClick={() => handleToggleStatus(s, status)}
-                        disabled={s.status === status}
-                      >
-                        {status}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => handleExcluir(s)}
-                  className="text-destructive focus:text-destructive"
-                >
-                  Excluir
+              {s.status != "Completado" && (
+                <DropdownMenuItem onClick={() => handleEditar(s)}>
+                  Editar
                 </DropdownMenuItem>
+              )}
+
+              {s.status != "Completado" && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="w-44">
+                      {["Completado", "Cancelado", "Adiado"].map((status) => (
+                        <DropdownMenuItem
+                          key={status}
+                          onClick={() => handleToggleStatus(s, status)}
+                          disabled={s.status === status}
+                        >
+                          {status}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleExcluir(s)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    Excluir
+                  </DropdownMenuItem>
+                </>
+              )}
               </>
             )}
           </DropdownMenuContent>
@@ -195,9 +201,11 @@ export default function ServiceList() {
         <ComponentCard title="Lista de Cultos">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3">
+              {can(["Admin", "Pastor","Secretaria"]) && (
               <Button onClick={() => navigate("/cultos/criar")}>
                 Novo Culto
               </Button>
+              )}
               <Button
                 variant="secondary"
                 onClick={() => setShowFilters((prev) => !prev)}
