@@ -87,12 +87,14 @@ export default function SundaySchoolClassList() {
             </button>
           </DropdownMenuTrigger>
 
+          <DropdownMenuContent align="end" className="w-40">
+
           <DropdownMenuItem onClick={() => navigate(`/aulas-ebd/${c.guid}/documentos`)}>
             Ver documentos
           </DropdownMenuItem>
           
           {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
-          <DropdownMenuContent align="end" className="w-40">
+            <>
             <DropdownMenuItem onClick={() => handleEditar(c)}>
               Editar
             </DropdownMenuItem>
@@ -105,8 +107,9 @@ export default function SundaySchoolClassList() {
             >
               Excluir
             </DropdownMenuItem>
-          </DropdownMenuContent>
+            </>
           )}
+          </DropdownMenuContent>
         </DropdownMenu>
       ),
     },
