@@ -78,8 +78,7 @@ export default function SundaySchoolClassroomList() {
 
   const handleStatus = async (l: SundaySchoolClassroom, action: "activate" | "deactivate") => {
     try {
-      const endpoint =
-        action === "activate" ? `SundaySchoolClassroom/activate/${l.id}` : `SundaySchoolClassroom/deactivate/${l.guid}`;
+      const endpoint =`SundaySchoolClassroom/${l.guid}/status`;
       await apiClient.patch(endpoint);
       showEditedSuccessfullyToast();
       fetchClasses(currentPage);
