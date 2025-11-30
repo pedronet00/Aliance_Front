@@ -126,6 +126,9 @@ export default function UsuariosList() {
             <DropdownMenuItem onClick={() => handleEditar(u)}>
               Editar
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/usuarios/${u.id}/cargos`)}>
+              Ver cargos
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handlePasswordDefinition(u)}>
               Redefinir senha
             </DropdownMenuItem>

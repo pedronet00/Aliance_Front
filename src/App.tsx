@@ -92,6 +92,7 @@ import ReportsList from "./pages/Report/ReportsList";
 import LogList from "./pages/Log/LogList";
 import RoleRoute from "./components/auth/RoleRoute";
 import SundaySchoolClassDocumentList from "./pages/SundaySchoolClass/SundaySchoolClassDocumentList";
+import MemberRolesListing from "./pages/Usuarios/RoleListing";
 
 export default function App() {
   return (
@@ -131,6 +132,7 @@ export default function App() {
                 <Route path="/locais/criar" element={<LocationCreate />} />
                 <Route path="/locais/editar/:guid" element={<LocationEdit />} />
                 <Route path="/departamentos/criar" element={<DepartmentCreate />} />
+                <Route path="/usuarios/:userId/cargos" element={<MemberRolesListing/>} />
                 <Route path="/departamentos/editar/:guid" element={<DepartmentEdit />} />
                 <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
                 <Route path="/log" element={<LogList />} />
