@@ -6,6 +6,7 @@ interface User {
   email: string;
   role: string | string[];
   churchId: number;
+  subscriptionId?: string;
   name: string;
 }
 
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const userInfo: User = {
       email: decoded.email,
       name: decoded.unique_name,
+      subscriptionId: decoded.subscriptionId,
       role: decoded.role,
       churchId: parseInt(decoded.churchId),
     };
@@ -91,6 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userInfo: User = {
           email: decoded.email,
           role: decoded.role,
+          subscriptionId: decoded.subscriptionId,
           name: decoded.unique_name,
           churchId: parseInt(decoded.churchId),
         };
