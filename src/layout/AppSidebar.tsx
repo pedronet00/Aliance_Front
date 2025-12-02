@@ -131,16 +131,25 @@ const AppSidebar: React.FC = () => {
         { name: "Locais", path: "/locais" },
       ],
     },
+    ...(can(["Admin", "Financeiro", "Pastor"])
+  ? [
     {
       icon: <FileArchive />,
       name: "Relatórios",
       path: '/relatorios',
     },
-    {
-      icon: <Clock />,
-      name: "Logs",
-      path: '/log',
-    },
+    ]
+  : []),
+    ...(can(["Admin", "Pastor"])
+  ? [
+      {
+        icon: <Clock />,
+        name: "Logs",
+        path: "/log",
+      },
+    ]
+  : [])
+
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
