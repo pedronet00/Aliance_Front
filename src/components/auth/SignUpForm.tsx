@@ -214,16 +214,16 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
+    <div className="min-h-screen flex items-center justify-center p-8">
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
         {/* LEFT */}
         <div className="space-y-6">
-          <img src="/images/logo/PNG PRETO.png" alt="Logo" className="w-40" />
-          <h1 className="text-4xl font-bold text-gray-900 leading-tight">
+          <img src="/images/logo/PNG BRANCO.png" alt="Logo" className="w-40" />
+          <h1 className="text-4xl font-bold text-white leading-tight">
             Organize, gerencie e cuide da sua igreja.
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-white text-lg">
             Administração completa de membros, finanças e muito mais.
           </p>
         </div>

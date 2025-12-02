@@ -5,6 +5,7 @@ import apiClient from "@/api/apiClient";
 import { useEffect, useState } from "react";
 import RecentOrders from "../../components/ecommerce/RecentOrders";
 import OnboardingChecklist from "./OnboardingChecklist";
+import { useAuth } from "@/context/AuthContext";
 
 
 interface VendasPorMes {
@@ -34,6 +35,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [year] = useState(new Date().getFullYear());
   const [showDashboard, setShowDashboard] = useState(true);
+  var {can} = useAuth();
 
   useEffect(() => {
     fetchDashboard();
@@ -66,20 +68,26 @@ export default function Home() {
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         <div className="col-span-12 space-y-12 xl:col-span-12">
           {showDashboard == true && (
-        <OnboardingChecklist totalEvents={dashboardData.totalEvents} totalBudgets={dashboardData.totalBudgets} totalMembers={dashboardData.totalUsers} totalPatrimonies={dashboardData.totalPatrimonies} />
+            <OnboardingChecklist 
+            totalEvents={dashboardData.totalEvents} 
+            totalBudgets={dashboardData.totalBudgets} 
+            totalMembers={dashboardData.totalUsers} 
+            totalPatrimonies={dashboardData.totalPatrimonies} />
           )}  
+
         {/* Métricas gerais */}
           <EcommerceMetrics
             totalUsers={dashboardData.totalUsers}
             totalSales={0}
           />
 
-          {/* Gráfico de entradas e saídas */}
+          {can(["Admin", "Pastor","Financeiro","Secretaria"]) && (
           <MonthlySalesChart
             incomes={dashboardData.incomeTotals}
             expenses={dashboardData.expenseTotals}
             year={year}
           />
+          )}
         </div>
 
         <div className="col-span-12 xl:col-span-7">

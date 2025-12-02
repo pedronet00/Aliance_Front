@@ -4,6 +4,8 @@ import type React from "react";
 import { createContext, useState, useContext, useEffect } from "react";
 
 type Theme = "light" | "dark";
+const PUBLIC_ROUTES = ["/login", "/registrar", "/definir-senha"];
+
 
 type ThemeContextType = {
   theme: Theme;
@@ -17,6 +19,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [theme, setTheme] = useState<Theme>("light");
   const [isInitialized, setIsInitialized] = useState(false);
+  const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname);
 
   useEffect(() => {
     // This code will only run on the client side
@@ -28,15 +31,20 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem("theme", theme);
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    if (!isInitialized) return;
+
+    if (isPublicRoute) {
+      document.documentElement.classList.remove("dark");
+      return; // impede aplicar o tema salvo no localStorage
     }
-  }, [theme, isInitialized]);
+
+    // aplicar tema normal
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme, isPublicRoute, isInitialized]);
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
