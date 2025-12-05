@@ -142,7 +142,7 @@ export default function MemberRolesListing() {
       <div className="space-y-6">
         <ComponentCard title="Gerenciar Cargos do Usuário">
           <div className="flex justify-between items-center mb-4">
-            <Button variant="secondary" onClick={() => navigate("/usuarios")}>
+            <Button variant="secondary" onClick={() => navigate("/membros")}>
               Voltar
             </Button>
 
