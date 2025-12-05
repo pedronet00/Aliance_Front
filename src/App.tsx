@@ -93,6 +93,8 @@ import LogList from "./pages/Log/LogList";
 import RoleRoute from "./components/auth/RoleRoute";
 import SundaySchoolClassDocumentList from "./pages/SundaySchoolClass/SundaySchoolClassDocumentList";
 import MemberRolesListing from "./pages/Usuarios/RoleListing";
+import SundaySchoolClassroomMembersList from "./pages/SundaySchoolClassroomMember/List";
+import SundaySchoolClassroomMemberCreate from "./pages/SundaySchoolClassroomMember/Create";
 
 export default function App() {
   return (
@@ -121,6 +123,7 @@ export default function App() {
               <Route path="/grupos-de-louvor" element={<WorshipTeamList />} />
               <Route path="/departamentos" element={<DepartmentList />} />
               <Route path="/departamentos/:departmentGuid/membros" element={<DepartmentMemberList/>} />
+              <Route path="/classes-ebd/:classroomGuid/membros" element={<SundaySchoolClassroomMembersList/>} />
               <Route path="/campanhas-de-missoes" element={<MissionCampaignList />} />
               <Route path="/celulas/:cellGuid/membros" element={<CellMemberList/>} />
               <Route path="/membros" element={<UsuariosList />} />
@@ -135,6 +138,7 @@ export default function App() {
                 <Route path="/usuarios/:userId/cargos" element={<MemberRolesListing/>} />
                 <Route path="/departamentos/editar/:guid" element={<DepartmentEdit />} />
                 <Route path="/departamentos/:departmentGuid/membros/criar" element={<DepartmentMemberCreate/>} />
+                <Route path="/classes-ebd/:classroomGuid/membros/criar" element={<SundaySchoolClassroomMemberCreate/>} />
                 <Route path="/log" element={<LogList />} />
                 <Route path="/relatorios" element={<ReportsList />} />
                 <Route path="/detalhes-assinatura" element={<SubscriptionDetails />} />

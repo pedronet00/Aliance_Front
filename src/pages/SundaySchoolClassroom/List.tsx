@@ -107,34 +107,37 @@ export default function SundaySchoolClassroomList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-          {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={() => handleEditar(l)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate(`/classes-ebd/${l.guid}/membros`)}>Ver Membros</DropdownMenuItem>
+            {can(["Admin", "Pastor", "Professor","Secretaria"]) && (
+              <>
+              <DropdownMenuItem onClick={() => handleEditar(l)}>Editar</DropdownMenuItem>
 
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-40">
-                {l.status ? (
-                  <DropdownMenuItem onClick={() => handleStatus(l, "deactivate")}>
-                    Desativar
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={() => handleStatus(l, "activate")}>
-                    Ativar
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-40">
+                  {l.status ? (
+                    <DropdownMenuItem onClick={() => handleStatus(l, "deactivate")}>
+                      Desativar
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem onClick={() => handleStatus(l, "activate")}>
+                      Ativar
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleExcluir(l)}
-              className="text-destructive focus:text-destructive"
-            >
-              Excluir
-            </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => handleExcluir(l)}
+                className="text-destructive focus:text-destructive"
+              >
+                Excluir
+              </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
-          )}
         </DropdownMenu>
       ),
     },

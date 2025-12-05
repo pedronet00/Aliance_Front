@@ -24,24 +24,24 @@ import {
   showErrorToast,
 } from "@/components/toast/Toasts";
 import Badge from "@/components/ui/badge/Badge";
-import { DepartmentMember } from "@/types/DepartmentMember/DepartmentMember";
+import { SundaySchoolClassroomMember } from "@/types/SundaySchoolClassroomMember/SundaySchoolClassroomMember";
 import NoData from "@/components/no-data";
 import { useAuth } from "@/context/AuthContext";
 
 
-export default function DepartmentMemberList() {
-  const [members, setMembers] = useState<DepartmentMember[]>([]);
+export default function SundaySchoolClassroomMembersList() {
+  const [members, setMembers] = useState<SundaySchoolClassroomMembers[]>([]);
   const [loading, setLoading] = useState(true);
-  const { departmentGuid } = useParams<{ departmentGuid: string }>();
+  const { classroomGuid } = useParams<{ classroomGuid: string }>();
   const navigate = useNavigate();
   const {can} = useAuth();
 
   const loadData = async () => {
-    if (!departmentGuid) return;
+    if (!classroomGuid) return;
 
     try {
       const [membersRes] = await Promise.all([
-        apiClient.get(`/DepartmentMember/${departmentGuid}`),
+        apiClient.get(`/SundaySchoolClassroomMembers/${classroomGuid}`),
       ]);
 
       setMembers(membersRes.data?.items ?? membersRes.data);
@@ -54,11 +54,11 @@ export default function DepartmentMemberList() {
 
   useEffect(() => {
     loadData();
-  }, [departmentGuid]);
+  }, [classroomGuid]);
 
-  const handleDelete = async (member: DepartmentMember) => {
+  const handleDelete = async (member: SundaySchoolClassroomMember) => {
     try {
-      const response = await apiClient.delete(`/DepartmentMember/${departmentGuid}/member/${member.userId}`);
+      const response = await apiClient.delete(`/SundaySchoolClassroomMembers/${classroomGuid}/member/${member.userId}`);
       const result = response.data;
 
       if (result?.hasNotifications && result.notifications.length > 0) {
@@ -73,9 +73,9 @@ export default function DepartmentMemberList() {
     }
   };
 
-  const handleStatus = async (member: DepartmentMember) => {
+  const handleStatus = async (member: SundaySchoolClassroomMember) => {
     try {
-      await apiClient.patch(`/DepartmentMember/${departmentGuid}/member/${member.userId}/status`);
+      await apiClient.patch(`/SundaySchoolClassroomMembers/${classroomGuid}/member/${member.userId}/status`);
       showEditedSuccessfullyToast();
       await loadData(); // ← Recarrega lista
     } catch (error) {
@@ -87,7 +87,7 @@ export default function DepartmentMemberList() {
     {
       key: "fullName",
       label: "Nome do Membro",
-      render: (m: DepartmentMember) => (
+      render: (m: SundaySchoolClassroomMember) => (
         <div className="flex items-center gap-2">
           <span>{m.userName ?? m.userId}</span>
         </div>
@@ -96,7 +96,7 @@ export default function DepartmentMemberList() {
     {
       key: "status",
       label: "Status",
-      render: (c: DepartmentMember) => (
+      render: (c: SundaySchoolClassroomMember) => (
         <Badge size="sm" color={c.status ? "success" : "error"}>
           {c.status ? "Ativo" : "Inativo"}
         </Badge>
@@ -104,14 +104,14 @@ export default function DepartmentMemberList() {
     },
     {
       label: "Ações",
-      render: (m: DepartmentMember) => (
+      render: (m: SundaySchoolClassroomMember) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-          {can(["Admin", "Secretaria"]) && (
+          {can(["Admin", "Professor", "Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
@@ -139,23 +139,23 @@ export default function DepartmentMemberList() {
 
   return (
     <>
-      <PageMeta title="Membros do Departamento" description="Lista de membros do departamento" />
+      <PageMeta title="Membros da Classe de EBD" description="Lista de membros da classe de EBD" />
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
-          { label: "Departamentos", path: "/departamentos" },
-          { label: "Membros do Departamento", path: `/departamentos/${departmentGuid}/membros` },
+          { label: "Classes de EBD", path: "/classes-ebd" },
+          { label: "Membros da Classe de EBD", path: `/classes-ebd/${classroomGuid}/membros` },
         ]}
       />
 
       <div className="space-y-6">
         <ComponentCard title="Lista de Membros">
           <div className="flex justify-between items-center mb-4">
-            <Button variant={"secondary"} onClick={() => navigate('/departamentos')}>
+            <Button variant={"secondary"} onClick={() => navigate('/classes-ebd')}>
               Voltar
             </Button>
             {can(["Admin", "Secretaria"]) && (
-            <Button onClick={() => navigate(`/departamentos/${departmentGuid}/membros/criar`)}>
+            <Button onClick={() => navigate(`/classes-ebd/${classroomGuid}/membros/criar`)}>
               Adicionar membro
             </Button>
             )}
