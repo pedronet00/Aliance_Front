@@ -22,9 +22,9 @@ const AppSidebar: React.FC = () => {
 
   // função utilitária p/ verificar se o usuário possui um dos roles
   const can = (roles: string[]) => {
-  const userRoles = Array.isArray(user?.role) ? user.role : [user?.role];
-  return userRoles.some((r: string) => roles.includes(r));
-};
+    const userRoles = Array.isArray(user?.role) ? user.role : [user?.role];
+    return userRoles.some((r: string) => roles.includes(r));
+  };
  
   const navItems: NavItem[] = [
     {
@@ -129,27 +129,11 @@ const AppSidebar: React.FC = () => {
       subItems: [
         { name: "Classes de EBD", path: "/classes-ebd" },
         { name: "Locais", path: "/locais" },
+        ...(can(["Admin", "Financeiro", "Pastor"])
+          ? [{ name: "Relatórios", path: "/relatorios" }]
+          : []),
       ],
     },
-    ...(can(["Admin", "Financeiro", "Pastor"])
-  ? [
-    {
-      icon: <FileArchive />,
-      name: "Relatórios",
-      path: '/relatorios',
-    },
-    ]
-  : []),
-    ...(can(["Admin", "Pastor"])
-  ? [
-      {
-        icon: <Clock />,
-        name: "Logs",
-        path: "/log",
-      },
-    ]
-  : [])
-
   ];
 
   const [openSubmenu, setOpenSubmenu] = useState<{

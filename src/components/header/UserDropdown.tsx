@@ -7,6 +7,8 @@ import { useNavigate } from "react-router";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
+  const {can} = useAuth();
+
   const navigate = useNavigate();
 
   function toggleDropdown() {
@@ -80,12 +82,24 @@ export default function UserDropdown() {
 
         <Button
         variant={"outline"}
-          onClick={() => navigate("/detalhes-assinatura")}
+          onClick={() => {
+            closeDropdown();
+            navigate("/detalhes-assinatura");
+          }}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
         >
           Dados de cobrança
         </Button>
 
+        {can(["Admin", "Secretaria"]) && (
+        <Button
+        variant={"secondary"}
+          onClick={() => {closeDropdown(); navigate("/log")}}
+          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
+        >
+          Logs
+        </Button>
+        )}
         <Button
           onClick={() => auth.logout()}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
