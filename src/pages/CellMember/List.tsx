@@ -26,6 +26,7 @@ import {
 import Badge from "@/components/ui/badge/Badge";
 import { CellMember } from "@/types/CellMember/CellMember";
 import { useAuth } from "@/context/AuthContext";
+import NoData from "@/components/no-data";
 
 
 export default function CellMemberList() {
@@ -170,7 +171,7 @@ export default function CellMemberList() {
             )}
           </div>
 
-          <GenericTable columns={columns} data={members} />
+          {members.length > 0 ? <GenericTable columns={columns} data={members} /> : <NoData/>}
         </ComponentCard>
       </div>
     </>

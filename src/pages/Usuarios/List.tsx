@@ -22,6 +22,7 @@ import { useNavigate } from "react-router";
 import Badge from "@/components/ui/badge/Badge";
 import { showDeletedToast, showEditedSuccessfullyToast, showErrorToast, showSuccessToast } from "@/components/toast/Toasts";
 import { useAuth } from "@/context/AuthContext";
+import NoData from "@/components/no-data";
 
 export default function UsuariosList() {
   const [usuarios, setUsuarios] = useState<User[]>([]);
@@ -191,7 +192,9 @@ export default function UsuariosList() {
             </div>
           </div>
 
-          <GenericTable columns={columns} data={usuarios} />
+          {usuarios.length > 0  ? (
+          <>
+          <GenericTable columns={columns} data={usuarios} /> 
 
           {/* Paginação */}
           <div className="flex items-center justify-between mt-4">
@@ -215,6 +218,10 @@ export default function UsuariosList() {
               </Button>
             </div>
           </div>
+          </>
+          ) : (
+            <NoData/>
+          )}
         </ComponentCard>
       </div>
     </>
