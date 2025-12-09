@@ -95,6 +95,9 @@ import SundaySchoolClassDocumentList from "./pages/SundaySchoolClass/SundaySchoo
 import MemberRolesListing from "./pages/Usuarios/RoleListing";
 import SundaySchoolClassroomMembersList from "./pages/SundaySchoolClassroomMember/List";
 import SundaySchoolClassroomMemberCreate from "./pages/SundaySchoolClassroomMember/Create";
+import MissionList from "./pages/Mission/List";
+import MissionCreate from "./pages/Mission/Create";
+import MissionEdit from "./pages/Mission/Edit";
 
 export default function App() {
   return (
@@ -116,6 +119,9 @@ export default function App() {
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
               <Route path="/cultos" element={<ServiceList />} />
               <Route path="/locais" element={<LocationList />} />
+              <Route path="/missoes" element={<MissionList />} />
+              <Route path="/missoes/criar" element={<MissionCreate />} />
+              <Route path="/missoes/:guid/editar" element={<MissionEdit />} />
               <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
               <Route path="/eventos" element={<EventList />} />
               <Route path="/celulas" element={<CellList />} />
