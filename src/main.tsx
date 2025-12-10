@@ -9,7 +9,7 @@ import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <AuthProvider>
       <ThemeProvider>
         <AppWrapper>
@@ -17,5 +17,5 @@ createRoot(document.getElementById("root")!).render(
         </AppWrapper>
       </ThemeProvider>
     </AuthProvider>
-  </StrictMode>,
+  // </StrictMode>,
 );

@@ -7,6 +7,7 @@ interface User {
   role: string | string[];
   churchId: number;
   subscriptionId?: string;
+  totalLocations?: number;
   name: string;
 }
 
@@ -16,8 +17,6 @@ interface AuthContextType {
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
-
-  // <<< ADICIONADO
   can: (roles: string[]) => boolean;
 }
 
@@ -37,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const userInfo: User = {
       email: decoded.email,
       name: decoded.unique_name,
+      totalLocations: decoded.totalLocations,
       subscriptionId: decoded.subscriptionId,
       role: decoded.role,
       churchId: parseInt(decoded.churchId),
@@ -93,6 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const userInfo: User = {
           email: decoded.email,
           role: decoded.role,
+          totalLocations: decoded.totalLocations,
           subscriptionId: decoded.subscriptionId,
           name: decoded.unique_name,
           churchId: parseInt(decoded.churchId),

@@ -1,10 +1,16 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate } from "react-router-dom";
 import FormCell, {CellFormData} from "../Forms/FormCell";
-import { showCreatedSuccessfullyToast } from "@/components/toast/Toasts";
+import { showCreatedSuccessfullyToast, showInfoToast } from "@/components/toast/Toasts";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CellCreate() {
   const navigate = useNavigate();
+  const {user} = useAuth();
+  
+  if(user?.totalLocations == 0){
+    showInfoToast("Você ainda não tem locais cadastrados. Cadastre um local antes de criar uma célula.");
+  }
 
   const handleSubmit = async (data: CellFormData) => {
     await apiClient.post("/Cell", data);

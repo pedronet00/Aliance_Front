@@ -10,6 +10,15 @@ export const showToggleStatusToast = () => {
   );
 };
 
+export const showInfoToast = (message: string) => {
+  toast.info(
+    <div>
+      <p><b>Aviso!</b></p>
+      <p>{message}</p>
+    </div>
+  );
+};
+
 export const showCreatedSuccessfullyToast = () => {
   toast.success(
     <div>

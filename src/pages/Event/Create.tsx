@@ -1,10 +1,17 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate } from "react-router-dom";
 import FormEvent, { EventFormData } from "../Forms/FormEvent";
-import { showCreatedSuccessfullyToast, showErrorToast } from "@/components/toast/Toasts";
+import { showCreatedSuccessfullyToast, showErrorToast, showInfoToast } from "@/components/toast/Toasts";
+import { useAuth } from "@/context/AuthContext";
+import Alert from "@/components/ui/alert/Alert";
 
 export default function EventCreate() {
   const navigate = useNavigate();
+  const {user} = useAuth();
+
+  if(user?.totalLocations == 0){
+    showInfoToast("Você ainda não tem locais cadastrados. Cadastre um local antes de criar um evento.");
+  }
 
   const handleSubmit = async (data: EventFormData) => {
     try {
