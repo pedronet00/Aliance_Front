@@ -116,6 +116,7 @@ export default function App() {
             <Route element={<AppLayout />}>
               <Route index path="/" element={<Home />} />
               <Route path="/aulas-ebd" element={<SundaySchoolClassList />} />
+              <Route path="/aulas-ebd/:guid/documentos" element={<SundaySchoolClassDocumentList />} />
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
               <Route path="/cultos" element={<ServiceList />} />
               <Route path="/locais" element={<LocationList />} />
@@ -159,7 +160,6 @@ export default function App() {
                 <Route path="/patrimonios" element={<PatrimonyList />} />
                 <Route path="/patrimonios/criar" element={<PatrimonyCreate />} />
                 <Route path="/patrimonios/editar/:guid" element={<PatrimonyEdit />} />
-                <Route path="/aulas-ebd/:guid/documentos" element={<SundaySchoolClassDocumentList />} />
                 <Route path="/patrimonios/:guid/documentos" element={<PatrimonyDocumentsList />} />
                 <Route path="/manutencoes-patrimonios" element={<PatrimonyMaintenanceList />} />
                 <Route path="/manutencoes-patrimonios/:guid/documentos" element={<PatrimonyMaintenanceDocumentList />} />

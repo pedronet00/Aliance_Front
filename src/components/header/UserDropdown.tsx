@@ -79,7 +79,9 @@ export default function UserDropdown() {
             {auth?.user?.email}
           </span>
         </div>
-
+        
+        {can(["Admin", "Secretaria"]) && (
+        <>
         <Button
         variant={"outline"}
           onClick={() => {
@@ -90,8 +92,6 @@ export default function UserDropdown() {
         >
           Dados de cobrança
         </Button>
-
-        {can(["Admin", "Secretaria"]) && (
         <Button
         variant={"secondary"}
           onClick={() => {closeDropdown(); navigate("/log")}}
@@ -99,6 +99,7 @@ export default function UserDropdown() {
         >
           Logs
         </Button>
+        </>
         )}
         <Button
           onClick={() => auth.logout()}
