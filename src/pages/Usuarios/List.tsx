@@ -182,13 +182,14 @@ export default function UsuariosList() {
                 Novo Usuário
               </Button>
               )}
-
+              {can(["Admin", "Pastor","Secretaria"]) && (
               <Button
                 onClick={() => (window.location.href = "/membros/importar")}
                 variant="outline"
               >
                 Importar Usuários
               </Button>
+              )}
             </div>
           </div>
 
