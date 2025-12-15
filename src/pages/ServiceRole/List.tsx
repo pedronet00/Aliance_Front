@@ -35,6 +35,7 @@ type ServiceRole = {
 export default function ServiceRoleList() {
   const [roles, setRoles] = useState<ServiceRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [serviceStatus, setServiceStatus] = useState<string>();
   const { serviceGuid } = useParams<{ serviceGuid: string }>();
   const navigate = useNavigate();
   const {can} = useAuth();
@@ -45,7 +46,8 @@ export default function ServiceRoleList() {
     const loadData = async () => {
       try {
         const response = await apiClient.get(`/ServiceRole/service/${serviceGuid}`);
-        const data = response.data.result || response.data;
+        const data = response.data.result.serviceRoles || response.data;
+        setServiceStatus(response.data.result.serviceStatus);
         setRoles(data);
       } catch (err) {
         showErrorToast("Erro ao carregar escalas: " + err);
@@ -98,6 +100,7 @@ export default function ServiceRoleList() {
             <DropdownMenuItem
               onClick={() => handleDelete(r)}
               className="text-destructive focus:text-destructive"
+              disabled={serviceStatus == "Cancelado"|| serviceStatus == "Completado"} 
             >
               <span>Remover</span>
             </DropdownMenuItem>
@@ -131,7 +134,7 @@ export default function ServiceRoleList() {
               Voltar
             </Button>
             {can(["Admin", "Pastor","Secretaria"]) && (
-            <Button onClick={() => navigate(`/cultos/${serviceGuid}/escalas/criar`)}>
+            <Button disabled={serviceStatus == "Cancelado"|| serviceStatus == "Completado"} onClick={() => navigate(`/cultos/${serviceGuid}/escalas/criar`)}>
               Adicionar Escala
             </Button>
             )}
