@@ -20,7 +20,9 @@ const formatDateTime = (date: string) =>
   new Date(date).toLocaleString("pt-BR", {
     dateStyle: "short",
     timeStyle: "short",
+    timeZone: "America/Sao_Paulo",
   });
+
 
 export default function FinancialTransactionsList({
   incomes,

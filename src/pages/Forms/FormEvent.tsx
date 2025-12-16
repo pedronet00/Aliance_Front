@@ -121,7 +121,7 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
       <div>
         <Label>Data</Label>
         <Input
-          type="date"
+          type="datetime-local"
           value={
             typeof formData.date === "string"
               ? formData.date
