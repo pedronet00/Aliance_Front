@@ -1,83 +1,94 @@
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  BoxIconLine,
-  GroupIcon,
-} from "../../icons";
-import Badge from "../ui/badge/Badge";
-import { BookMarked } from "lucide-react";
+import { GroupIcon } from "../../icons";
+import { Building2, Target, Music } from "lucide-react";
 
 interface EcommerceMetricsProps {
   totalUsers: number;
-  totalSales: number;
+  totalDeparments: number;
+  totalMissions: number;
+  totalWorshipTeams: number;
 }
 
-export default function EcommerceMetrics({ totalUsers, totalSales }: EcommerceMetricsProps) {
+export default function EcommerceMetrics({
+  totalUsers,
+  totalDeparments,
+  totalMissions,
+  totalWorshipTeams,
+}: EcommerceMetricsProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 md:gap-6">
-      {/* Card 1 */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 p-6 shadow-sm dark:from-gray-900 dark:to-gray-800 dark:border-gray-700">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
-        </div>
-        <div className="flex items-end justify-between mt-5">
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
+
+      {/* Usuários */}
+      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm dark:border-blue-900/40 dark:bg-blue-950/40">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-xl dark:bg-blue-900/40">
+            <GroupIcon className="size-6 text-blue-700 dark:text-blue-300" />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-sm text-blue-700/70 dark:text-blue-300/70">
               Usuários
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <span className="mt-1 font-bold text-blue-900 text-xl dark:text-blue-100">
               {totalUsers}
-            </h4>
-          </div>
-          <Badge color="success">
-            <ArrowUpIcon />
-            11.01%
-          </Badge>
-        </div>
-      </div>
-
-      {/* Card 2 */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 p-6 shadow-sm dark:from-gray-900 dark:to-gray-800 dark:border-gray-700">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <BookMarked className="text-gray-800 size-6 dark:text-white/90" />
-        </div>
-
-        <div className="mt-6">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-            João 3:16
-          </h4>
-          <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300 italic">
-            “Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito,
-            para que todo aquele que nele crê não pereça, mas tenha a vida eterna.”
-          </p>
-        </div>
-
-        <div className="absolute right-4 bottom-4 text-xs text-gray-400 dark:text-gray-500 select-none">
-          ✨ Versículo do Dia
-        </div>
-      </div>
-
-
-      {/* Card 3
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
-        <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-          <BoxIconLine className="text-gray-800 size-6 dark:text-white/90" />
-        </div>
-        <div className="flex items-end justify-between mt-5">
-          <div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Vendas
             </span>
-            <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-              {totalSales}
-            </h4>
           </div>
-          <Badge color="error">
-            <ArrowDownIcon />
-            9.05%
-          </Badge>
         </div>
-      </div> */}
+      </div>
+
+      {/* Departamentos */}
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/40">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-xl dark:bg-emerald-900/40">
+            <Building2 className="size-6 text-emerald-700 dark:text-emerald-300" />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-sm text-emerald-700/70 dark:text-emerald-300/70">
+              Departamentos
+            </span>
+            <span className="mt-1 font-bold text-emerald-900 text-xl dark:text-emerald-100">
+              {totalDeparments}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Missões */}
+      <div className="rounded-2xl border border-violet-200 bg-violet-50 p-6 shadow-sm dark:border-violet-900/40 dark:bg-violet-950/40">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-violet-100 rounded-xl dark:bg-violet-900/40">
+            <Target className="size-6 text-violet-700 dark:text-violet-300" />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-sm text-violet-700/70 dark:text-violet-300/70">
+              Missões
+            </span>
+            <span className="mt-1 font-bold text-violet-900 text-xl dark:text-violet-100">
+              {totalMissions}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Equipes de Louvor */}
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 shadow-sm dark:border-orange-900/40 dark:bg-orange-950/40">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-xl dark:bg-orange-900/40">
+            <Music className="size-6 text-orange-700 dark:text-orange-300" />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-sm text-orange-700/70 dark:text-orange-300/70">
+              Equipes de Louvor
+            </span>
+            <span className="mt-1 font-bold text-orange-900 text-xl dark:text-orange-100">
+              {totalWorshipTeams}
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }

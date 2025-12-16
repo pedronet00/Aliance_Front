@@ -11,6 +11,7 @@ import { showDeletedToast, showErrorToast} from "@/components/toast/Toasts";
 import { Button } from "@/components/ui/button";
 import { Cell } from "@/types/Cell/Cell";
 import NoData from "@/components/no-data";
+import Error from "../OtherPage/Error";
 import { useAuth } from "@/context/AuthContext";
 
 export default function CellList() {
@@ -24,6 +25,7 @@ export default function CellList() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const {can} = useAuth();
+  const [error, setError] = useState(false);
 
   const navigate = useNavigate();
 
@@ -44,6 +46,7 @@ export default function CellList() {
       }
     } catch (error) {
       showErrorToast("Erro ao carregar células");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -123,6 +126,8 @@ export default function CellList() {
   });
 
   if (loading) return <p>Carregando...</p>;
+
+  if(error) return <Error/>;
 
   return (
     <>

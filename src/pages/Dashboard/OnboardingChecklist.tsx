@@ -97,9 +97,9 @@ export default function OnboardingChecklist({ totalEvents, totalBudgets, totalMe
           ))}
         </ul>
 
-        <p className="mt-5 text-sm text-gray-500 dark:text-gray-400 text-center">
+        {/* <p className="mt-5 text-sm text-gray-500 dark:text-gray-400 text-center">
           {completedCount} de {tasks.length} tarefas concluídas
-        </p>
+        </p> */}
       </div>
     </div>
   );

@@ -3,9 +3,10 @@ import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
 import apiClient from "@/api/apiClient";
 import { useEffect, useState } from "react";
-import RecentOrders from "../../components/ecommerce/RecentOrders";
 import OnboardingChecklist from "./OnboardingChecklist";
 import { useAuth } from "@/context/AuthContext";
+import LatestEventsList from "@/components/ecommerce/LatestEventsList";
+import FinancialTransactionsList from "@/components/ecommerce/FinancialTransactionsList";
 
 
 interface VendasPorMes {
@@ -17,21 +18,51 @@ interface VendasPorMes {
 interface DashboardData {
   incomeTotals: { month: number; total: number }[];
   expenseTotals: { month: number; total: number }[];
+  latestEvents: {
+    id: number;
+    name: string;
+    date: string;
+    locationName: string;
+  }[];
+  financialTransactions: {
+    incomes: {
+      id: number;
+      description: string;
+      value: number;
+      date: string;
+    }[];
+    expenses: {
+      id: number;
+      description: string;
+      value: number;
+      date: string;
+    }[];
+  };
   totalUsers: number;
   totalPatrimonies: number;
   totalEvents: number;
+  totalDepartments: number;
+  totalMissions: number;
+  totalWorshipTeams: number;
   totalBudgets: number;
 }
+
 
 export default function Home() {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     incomeTotals: [],
     expenseTotals: [],
+    latestEvents: [],
+    financialTransactions: { incomes: [], expenses: [] },
     totalUsers: 0,
     totalPatrimonies: 0,
     totalEvents: 0,
+    totalDepartments: 0,
+    totalMissions: 0,
+    totalWorshipTeams: 0,
     totalBudgets: 0,
   });
+
   const [loading, setLoading] = useState(true);
   const [year] = useState(new Date().getFullYear());
   const [showDashboard, setShowDashboard] = useState(true);
@@ -66,7 +97,7 @@ export default function Home() {
       />
 
       <div className="grid grid-cols-12 gap-4 md:gap-6">
-        <div className="col-span-12 space-y-12 xl:col-span-12">
+        <div className="col-span-12 space-y-8 xl:col-span-12">
           {showDashboard == true && (
             <OnboardingChecklist 
             totalEvents={dashboardData.totalEvents} 
@@ -78,8 +109,21 @@ export default function Home() {
         {/* Métricas gerais */}
           <EcommerceMetrics
             totalUsers={dashboardData.totalUsers}
-            totalSales={0}
+            totalDeparments={dashboardData.totalDepartments}
+            totalMissions={dashboardData.totalMissions}
+            totalWorshipTeams={dashboardData.totalWorshipTeams}
           />
+
+          {/* Eventos + Movimentações */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <LatestEventsList events={dashboardData.latestEvents} />
+
+            <FinancialTransactionsList
+              incomes={dashboardData.financialTransactions.incomes}
+              expenses={dashboardData.financialTransactions.expenses}
+            />
+          </div>
+
 
           {can(["Admin", "Pastor","Financeiro","Secretaria"]) && (
           <MonthlySalesChart

@@ -24,6 +24,7 @@ import { Patrimony } from "@/types/Patrimony/Patrimony";
 import NoData from "@/components/no-data";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import Error from "../OtherPage/Error";
 
 export default function PatrimonyList() {
   const [patrimonies, setPatrimonies] = useState<Patrimony[]>([]);
@@ -33,7 +34,7 @@ export default function PatrimonyList() {
   const [filterStatus, setFilterStatus] = useState("");
   const [filterDataInicio, setFilterDataInicio] = useState("");
   const [filterDataFim, setFilterDataFim] = useState("");
-
+  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
@@ -58,6 +59,7 @@ export default function PatrimonyList() {
       }
     } catch (error) {
       showErrorToast("Erro ao carregar patrimônios");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -178,6 +180,8 @@ export default function PatrimonyList() {
 
 
   if (loading) return <p>Carregando...</p>;
+
+  if (error) return <Error />;
 
   return (
     <>

@@ -25,10 +25,12 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
 import NoData from "@/components/no-data";
+import Error from "../OtherPage/Error";
 
 export default function CostCenterList() {
   const [centers, setCenters] = useState<CostCenter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -52,6 +54,7 @@ export default function CostCenterList() {
       setCurrentPage(data.currentPage);
     } catch (err) {
       showErrorToast("Erro ao carregar centros de custo");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -150,6 +153,8 @@ export default function CostCenterList() {
   });
 
   if (loading) return <p>Carregando...</p>;
+
+  if(error) return <Error/>;
 
   return (
     <>

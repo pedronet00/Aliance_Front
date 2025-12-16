@@ -21,6 +21,7 @@ import {
   showEditedSuccessfullyToast,
   showErrorToast,
 } from "@/components/toast/Toasts";
+import Error from "../OtherPage/Error";
 import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import { Department } from "@/types/Department/Department";
@@ -33,7 +34,7 @@ export default function DepartmentList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
+  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
@@ -54,6 +55,7 @@ export default function DepartmentList() {
       setCurrentPage(data.currentPage);
     } catch (err) {
       showErrorToast("Erro ao carregar departamentos");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -147,6 +149,9 @@ export default function DepartmentList() {
     );
   });
 
+  if (loading) return <p>Carregando...</p>;
+
+  if(error) return <Error/>;
 
   return (
     <>

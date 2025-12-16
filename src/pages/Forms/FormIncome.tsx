@@ -81,11 +81,11 @@ export default function FormIncome({ initialData, onSubmit }: Props) {
         <Label>Categoria</Label>
         <Select
           options={[
-            { value: "Dizimo", label: "Dízimo" },
             { value: "Oferta", label: "Oferta" },
-            { value: "Doacao", label: "Doação" },
-            { value: "Evento", label: "Evento" },
-            { value: "Outro", label: "Outro" },
+            { value: "Eventos", label: "Eventos" },
+            { value: "Produtos", label: "Produtos" },
+            { value: "Servicos", label: "Serviços" },
+            { value: "Outros", label: "Outros" },
           ]}
           placeholder="Selecione a categoria"
           value={formData.category}

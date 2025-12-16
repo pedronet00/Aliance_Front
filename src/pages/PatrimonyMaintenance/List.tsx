@@ -27,6 +27,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { PatrimonyMaintenance } from "@/types/PatrimonyMaintenance/PatrimonyMaintenance";
 import { toast } from "react-toastify";
 import NoData from "@/components/no-data";
+import Error from "../OtherPage/Error";
 
 export default function PatrimonyMaintenanceList() {
   const [maintenances, setMaintenances] = useState<PatrimonyMaintenance[]>([]);
@@ -34,7 +35,7 @@ export default function PatrimonyMaintenanceList() {
   const [showFilters, setShowFilters] = useState(false);
   const [filterNome, setFilterNome] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
+  const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
@@ -56,6 +57,7 @@ export default function PatrimonyMaintenanceList() {
       setCurrentPage(data.currentPage);
     } catch (error) {
       showErrorToast("Erro ao carregar manutenções");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -215,6 +217,8 @@ export default function PatrimonyMaintenanceList() {
   });
 
   if (loading) return <p>Carregando...</p>;
+
+  if (error) return <Error />;
 
   return (
     <>
