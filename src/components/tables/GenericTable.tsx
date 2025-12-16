@@ -59,9 +59,9 @@ function GenericTable<T extends object>({ columns, data }: GenericTableProps<T>)
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-      <div className="max-w-full overflow-x-auto">
+      <div className="max-w-full overflow-x-auto md:overflow-x-visible">
         <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+          <TableHeader className="hidden md:table-header-group border-b border-gray-100 dark:border-white/[0.05]">
             <TableRow>
               {columns.map((col, i) => {
                 const label = col.label ?? (col.key ? String(col.key) : "");
@@ -76,7 +76,6 @@ function GenericTable<T extends object>({ columns, data }: GenericTableProps<T>)
                     onClick={() => handleSort(col.key)}
                   >
                     {label.toUpperCase()}
-
                     {col.key && (
                       <span className="ml-1 inline-block text-gray-400">
                         {isSorted ? (sortDirection === "asc" ? "▲" : "▼") : "↕"}
@@ -90,15 +89,32 @@ function GenericTable<T extends object>({ columns, data }: GenericTableProps<T>)
 
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             {sortedData.map((row, rowIndex) => (
-              <TableRow key={rowIndex} className="even:bg-muted/50 dark:even:bg-white/5">
-                {columns.map((col, i) => (
-                  <TableCell
-                    key={col.key ? String(col.key) : `cell-${i}`}
-                    className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400"
-                  >
-                    {col.render ? col.render(row) : col.key ? String(row[col.key]) : null}
-                  </TableCell>
-                ))}
+              <TableRow
+                key={rowIndex}
+                className="block md:table-row rounded-lg md:rounded-none p-4 md:p-0 even:bg-muted/50 dark:even:bg-white/5"
+              >
+                {columns.map((col, i) => {
+                  const label = col.label ?? (col.key ? String(col.key) : "");
+
+                  return (
+                    <TableCell
+                      key={col.key ? String(col.key) : `cell-${i}`}
+                      className="flex md:table-cell justify-between md:justify-start gap-4 px-0 md:px-4 py-2 md:py-3 text-gray-500 text-theme-sm dark:text-gray-400"
+                    >
+                      <span className="block md:hidden font-medium text-gray-700 dark:text-gray-300">
+                        {label}
+                      </span>
+
+                      <span className="text-right md:text-left">
+                        {col.render
+                          ? col.render(row)
+                          : col.key
+                          ? String(row[col.key])
+                          : null}
+                      </span>
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))}
           </TableBody>

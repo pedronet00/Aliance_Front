@@ -198,27 +198,29 @@ export default function UsuariosList() {
           <GenericTable columns={columns} data={usuarios} /> 
 
           {/* Paginação */}
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-600">
-              Página {currentPage} de {totalPages} — Total: {totalCount}
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                disabled={currentPage <= 1}
-                onClick={() => setCurrentPage((p) => p - 1)}
-              >
-                Anterior
-              </Button>
-              <Button
-                variant="secondary"
-                disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage((p) => p + 1)}
-              >
-                Próxima
-              </Button>
-            </div>
-          </div>
+          <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p className="text-sm text-gray-600 text-center md:text-left">
+                  Página {currentPage} de {totalPages} — Total: {totalCount}
+                </p>
+
+                <div className="flex justify-center gap-2 md:justify-end">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage <= 1}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                  >
+                    Anterior
+                  </Button>
+
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage >= totalPages}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                  >
+                    Próxima
+                  </Button>
+                </div>
+              </div>
           </>
           ) : (
             <NoData/>

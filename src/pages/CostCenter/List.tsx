@@ -204,22 +204,24 @@ export default function CostCenterList() {
               <GenericTable columns={columns} data={filteredCenters} />
 
               {/* Paginação */}
-              <div className="flex items-center justify-between mt-4">
-                <p className="text-sm text-gray-600">
+              <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p className="text-sm text-gray-600 text-center md:text-left">
                   Página {currentPage} de {totalPages} — Total: {totalCount}
                 </p>
-                <div className="flex gap-2">
+
+                <div className="flex justify-center gap-2 md:justify-end">
                   <Button
                     variant="secondary"
                     disabled={currentPage <= 1}
-                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
                   >
                     Anterior
                   </Button>
+
                   <Button
                     variant="secondary"
                     disabled={currentPage >= totalPages}
-                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
                   >
                     Próxima
                   </Button>
