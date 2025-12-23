@@ -214,7 +214,7 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
         {/* LEFT */}
@@ -226,6 +226,10 @@ export default function SignUpForm() {
           <p className="text-white text-lg">
             Administração completa de membros, finanças e muito mais.
           </p>
+          <small className="text-white">
+            © 2025 <span className="font-semibold">Aliance ERP</span> — Todos os
+          direitos reservados. CNPJ: 59.742.573/0001-33
+          </small>
         </div>
 
         {/* RIGHT */}
@@ -378,7 +382,6 @@ export default function SignUpForm() {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>
