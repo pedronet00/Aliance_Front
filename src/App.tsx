@@ -98,6 +98,7 @@ import SundaySchoolClassroomMemberCreate from "./pages/SundaySchoolClassroomMemb
 import MissionList from "./pages/Mission/List";
 import MissionCreate from "./pages/Mission/Create";
 import MissionEdit from "./pages/Mission/Edit";
+import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 
 export default function App() {
   return (
@@ -108,6 +109,7 @@ export default function App() {
           {/* Rotas públicas - fora do PrivateRoute */}
           <Route path="/login" element={<SignIn />} />
           <Route path="/registrar" element={<SignUp />} />
+          <Route path="/esqueceu-a-senha" element={<ForgotPassword />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/definir-senha" element={<DefinePassword />} />
 

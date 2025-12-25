@@ -134,6 +134,7 @@ export default function PatrimonyMaintenanceList() {
       render: (c: PatrimonyMaintenance) =>
         new Date(c.maintenanceDate).toLocaleDateString(),
     },
+    { key: "maintenanceCost", label: "Valor", render: (c: PatrimonyMaintenance) => 'R$' + c.maintenanceCost },
     { key: "description", label: "Descrição" },
     {
       key: "Status",

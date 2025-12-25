@@ -75,7 +75,7 @@ export default function UsuariosList() {
 
   const handlePasswordDefinition = async (u: User) => {
     try {
-      await apiClient.post(`/User/PasswordDefinitionMail/${u.id}`);
+      await apiClient.post(`/User/PasswordDefinitionMail/${u.email}`);
 
       showSuccessToast("Email enviado ao usuário com o link para redefinir a senha.");
     } catch (err) {

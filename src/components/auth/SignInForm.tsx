@@ -96,7 +96,7 @@ export default function SignInForm() {
                 </div>
                 <div className="flex items-center justify-between">
                   <Link
-                    to="/reset-password"
+                    to="/esqueceu-a-senha"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
                     Esqueceu sua senha?
