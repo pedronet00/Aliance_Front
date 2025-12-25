@@ -171,22 +171,29 @@ export default function SignUpForm() {
 
   const validateStep = () => {
     if (step === 1) {
+      return ["churchName", "churchEmail", "churchPhone"].every(
+        (f) => form[f as keyof NewClientDTO] !== ""
+      );
+    }
+
+    if (step === 2) {
       return [
-        "churchName",
-        "churchEmail",
-        "churchPhone",
-        "churchPostalCode",
         "churchCNPJ",
+        "churchPostalCode",
         "churchAddressNumber",
+        "plan",
       ].every((f) => form[f as keyof NewClientDTO] !== "");
     }
-    if (step === 2) {
+
+    if (step === 3) {
       return ["userName", "userEmail", "userPhone"].every(
         (f) => form[f as keyof NewClientDTO] !== ""
       );
     }
+
     return true;
   };
+
 
   const nextStep = () => {
     if (!validateStep())
@@ -239,88 +246,71 @@ export default function SignUpForm() {
           {step === 1 && (
             <div className="space-y-6">
               <h2 className="text-lg font-medium border-b pb-1">
-                Informações da Igreja
+                Dados da Igreja
               </h2>
 
-                <InputField
-                  label="Nome da Igreja"
-                  value={form.churchName}
-                  onChange={(e: any) =>
-                    handleChange("churchName", e.target.value)
-                  }
-                />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputFieldRaw
-                  label="Telefone"
-                  value={formatPhone(form.churchPhone)}
-                  onChange={(e: any) => handlePhoneChange("churchPhone", e)}
-                />
-
-                <InputFieldRaw
-                  label="CNPJ da Igreja"
-                  value={formatCNPJ(form.churchCNPJ)}
-                  onChange={handleCNPJChange}
-                />
-              </div>
-
-                <InputField
-                  label="Email"
-                  type="email"
-                  value={form.churchEmail}
-                  onChange={(e: any) =>
-                    handleChange("churchEmail", e.target.value)
-                  }
-                />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* CEP */}
-              <InputFieldRaw
-                label="CEP da igreja"
-                value={formatCEP(form.churchPostalCode)}
-                onChange={handleCEPChange}
-              />
-              {/* NUMERO */}
-              <InputFieldRaw
-                label="Número do endereço"
-                value={form.churchAddressNumber}
+              <InputField
+                label="Nome da Igreja"
+                value={form.churchName}
                 onChange={(e: any) =>
-                  handleChange("churchAddressNumber", e.target.value)
+                  handleChange("churchName", e.target.value)
                 }
               />
-              </div>
-              {/* ENDEREÇO AUTO */}
-              {/* <InputFieldRaw
-                label="Endereço"
-                value={form.churchAddress}
-                readOnly
+
+              <InputField
+                label="Email da Igreja"
+                type="email"
+                value={form.churchEmail}
+                onChange={(e: any) =>
+                  handleChange("churchEmail", e.target.value)
+                }
               />
 
-              <div className="grid grid-cols-3 gap-4">
-                <InputFieldRaw
-                  label="Cidade"
-                  value={form.churchCity}
-                  readOnly
-                />
-                <InputFieldRaw
-                  label="Estado"
-                  value={form.churchState}
-                  readOnly
-                />
-                <InputFieldRaw
-                  label="País"
-                  value={form.churchCountry}
-                  readOnly
-                />
-              </div> */}
+              <InputFieldRaw
+                label="Telefone da Igreja"
+                value={formatPhone(form.churchPhone)}
+                onChange={(e: any) => handlePhoneChange("churchPhone", e)}
+              />
 
-              
+              <Button onClick={nextStep} className="w-full h-12">
+                Próximo
+              </Button>
+            </div>
+          )}
+          
+          {/* STEP 2 */}
+          {step === 2 && (
+            <div className="space-y-6">
+              <h2 className="text-lg font-medium border-b pb-1">
+                Informações legais e plano
+              </h2>
 
-              {/* PLANO */}
+              <InputFieldRaw
+                label="CNPJ da Igreja"
+                value={formatCNPJ(form.churchCNPJ)}
+                onChange={handleCNPJChange}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InputFieldRaw
+                  label="CEP"
+                  value={formatCEP(form.churchPostalCode)}
+                  onChange={handleCEPChange}
+                />
+
+                <InputFieldRaw
+                  label="Número"
+                  value={form.churchAddressNumber}
+                  onChange={(e: any) =>
+                    handleChange("churchAddressNumber", e.target.value)
+                  }
+                />
+              </div>
+
               <div>
                 <Label>Plano</Label>
                 <select
-                  className="h-11 w-full rounded-lg border px-3 shadow-sm dark:bg-gray-800 dark:text-white"
+                  className="h-11 w-full rounded-lg border px-3 shadow-sm"
                   value={form.plan}
                   onChange={(e) => handleChange("plan", e.target.value)}
                 >
@@ -331,36 +321,39 @@ export default function SignUpForm() {
                 </select>
               </div>
 
-              <Button onClick={nextStep} className="w-full h-12 text-base mt-2">
-                Próximo
-              </Button>
+              <div className="flex justify-between">
+                <Button variant="secondary" onClick={prevStep}>
+                  Voltar
+                </Button>
+                <Button onClick={nextStep}>
+                  Próximo
+                </Button>
+              </div>
             </div>
           )}
 
-          {/* STEP 2 */}
-          {step === 2 && (
+          {step === 3 && (
             <div className="space-y-6">
               <h2 className="text-lg font-medium border-b pb-1">
-                Informações do Usuário Principal
+                Usuário Administrador
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField
-                  label="Nome do Usuário"
-                  value={form.userName}
-                  onChange={(e: any) =>
-                    handleChange("userName", e.target.value)
-                  }
-                />
-                <InputField
-                  label="Email do Usuário"
-                  type="email"
-                  value={form.userEmail}
-                  onChange={(e: any) =>
-                    handleChange("userEmail", e.target.value)
-                  }
-                />
-              </div>
+              <InputField
+                label="Nome do Usuário"
+                value={form.userName}
+                onChange={(e: any) =>
+                  handleChange("userName", e.target.value)
+                }
+              />
+
+              <InputField
+                label="Email do Usuário"
+                type="email"
+                value={form.userEmail}
+                onChange={(e: any) =>
+                  handleChange("userEmail", e.target.value)
+                }
+              />
 
               <InputFieldRaw
                 label="Telefone do Usuário"
@@ -368,14 +361,14 @@ export default function SignUpForm() {
                 onChange={(e: any) => handlePhoneChange("userPhone", e)}
               />
 
-              <div className="flex justify-between mt-6">
-                <Button variant="secondary" onClick={prevStep} className="h-11 px-6">
+              <div className="flex justify-between">
+                <Button variant="secondary" onClick={prevStep}>
                   Voltar
                 </Button>
                 <Button
                   disabled={loading}
                   onClick={handleSubmit}
-                  className="h-11 px-6 !bg-green-600 hover:bg-green-700"
+                  className="!bg-green-600 hover:bg-green-700"
                 >
                   Finalizar Cadastro
                 </Button>

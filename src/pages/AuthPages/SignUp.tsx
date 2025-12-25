@@ -9,19 +9,13 @@ export default function SignUp() {
         description="Essa é a página de registro do Aliance."
       />
 
-      <div className="flex flex-col max-h-screen" style={{ backgroundImage: `url("./images/backgrounds/fundo.jpg")`, backgroundSize: "cover" }} >
+      <div className="flex flex-col" style={{ backgroundImage: `url("./images/backgrounds/fundo.jpg")`, backgroundSize: "cover" }} >
         {/* === Conteúdo principal centralizado === */}
-        <div className="flex flex-col justify-center max-h-[100vh] items-center flex-grow px-4">
+        <div className="flex flex-col justify-center items-center flex-grow p-4 md:max-h-[100vh]">
           <div className="w-full max-w-7xl">
             <SignUpForm />
           </div>
         </div>
-
-        {/* === Rodapé fixado no fim === */}
-        {/* <footer className="text-center py-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
-          © 2025 <span className="font-semibold">Aliance ERP</span> — Todos os
-          direitos reservados. CNPJ: 59.742.573/0001-33
-        </footer> */}
       </div>
     </>
   );

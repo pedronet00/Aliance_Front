@@ -38,7 +38,7 @@ export default function ResetPasswordForm() {
           <h1 className="mt-3 sm:mt-0 font-semibold text-gray-800 text-title-sm sm:text-title-md">
             Redefinir senha
           </h1>
-          <p className="mt-3 text-sm text-gray-500 max-w-xs">
+          <p className="mt-3 text-sm text-gray-500">
             Informe seu email para receber o link de redefinição de senha.
           </p>
         </div>
