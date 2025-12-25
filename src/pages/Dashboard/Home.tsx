@@ -5,20 +5,14 @@ import apiClient from "@/api/apiClient";
 import { useEffect, useState } from "react";
 import OnboardingChecklist from "./OnboardingChecklist";
 import { useAuth } from "@/context/AuthContext";
-import LatestEventsList from "@/components/ecommerce/LatestEventsList";
+import NextEventsList from "@/components/ecommerce/NextEventsList";
 import FinancialTransactionsList from "@/components/ecommerce/FinancialTransactionsList";
 
-
-interface VendasPorMes {
-  ano: number;
-  mes: number;
-  valorTotal: number;
-}
 
 interface DashboardData {
   incomeTotals: { month: number; total: number }[];
   expenseTotals: { month: number; total: number }[];
-  latestEvents: {
+  nextEvents: {
     id: number;
     name: string;
     date: string;
@@ -52,7 +46,7 @@ export default function Home() {
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     incomeTotals: [],
     expenseTotals: [],
-    latestEvents: [],
+    nextEvents: [],
     financialTransactions: { incomes: [], expenses: [] },
     totalUsers: 0,
     totalPatrimonies: 0,
@@ -116,7 +110,7 @@ export default function Home() {
 
           {/* Eventos + Movimentações */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <LatestEventsList events={dashboardData.latestEvents} />
+            <NextEventsList events={dashboardData.nextEvents} />
 
             <FinancialTransactionsList
               incomes={dashboardData.financialTransactions.incomes}
