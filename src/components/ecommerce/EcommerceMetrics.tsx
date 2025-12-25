@@ -1,5 +1,6 @@
 import { GroupIcon } from "../../icons";
 import { Building2, Target, Music } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface EcommerceMetricsProps {
   totalUsers: number;
@@ -14,11 +15,14 @@ export default function EcommerceMetrics({
   totalMissions,
   totalWorshipTeams,
 }: EcommerceMetricsProps) {
+
+  const navigate = useNavigate();
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
 
       {/* Usuários */}
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm dark:border-blue-900/40 dark:bg-blue-950/40">
+      <div  onClick={() => navigate('/membros')} className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-sm dark:border-blue-900/40 dark:bg-blue-950/40 transition-transform duration-200 ease-out hover:scale-105 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-xl dark:bg-blue-900/40">
             <GroupIcon className="size-6 text-blue-700 dark:text-blue-300" />
@@ -36,7 +40,7 @@ export default function EcommerceMetrics({
       </div>
 
       {/* Departamentos */}
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/40">
+      <div onClick={() => navigate('/departamentos')} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/40 transition-transform duration-200 ease-out hover:scale-105 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-xl dark:bg-emerald-900/40">
             <Building2 className="size-6 text-emerald-700 dark:text-emerald-300" />
@@ -54,7 +58,7 @@ export default function EcommerceMetrics({
       </div>
 
       {/* Missões */}
-      <div className="rounded-2xl border border-violet-200 bg-violet-50 p-6 shadow-sm dark:border-violet-900/40 dark:bg-violet-950/40">
+      <div onClick={() => navigate('/missoes')} className="rounded-2xl border border-violet-200 bg-violet-50 p-6 shadow-sm dark:border-violet-900/40 dark:bg-violet-950/40 transition-transform duration-200 ease-out hover:scale-105 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-violet-100 rounded-xl dark:bg-violet-900/40">
             <Target className="size-6 text-violet-700 dark:text-violet-300" />
@@ -72,7 +76,7 @@ export default function EcommerceMetrics({
       </div>
 
       {/* Equipes de Louvor */}
-      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-6 shadow-sm dark:border-orange-900/40 dark:bg-orange-950/40">
+      <div onClick={() => navigate('/grupos-de-louvor')} className="rounded-2xl border border-orange-200 bg-orange-50 p-6 shadow-sm dark:border-orange-900/40 dark:bg-orange-950/40 transition-transform duration-200 ease-out hover:scale-105 cursor-pointer">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-xl dark:bg-orange-900/40">
             <Music className="size-6 text-orange-700 dark:text-orange-300" />
