@@ -114,6 +114,8 @@ export default function EventList() {
               ? "bg-yellow-100 text-yellow-700"
               : e.status === "Cancelado"
               ? "bg-red-100 text-red-700"
+              : e.status === "Pendente"
+              ? "bg-orange-100 text-orange-700"
               : "bg-gray-100 text-gray-700"
           }`}
         >
