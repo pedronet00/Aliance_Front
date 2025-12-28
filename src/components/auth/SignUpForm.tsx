@@ -4,6 +4,7 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import apiClient from "@/api/apiClient";
 import { showErrorToast } from "../toast/Toasts";
+import { Link } from "react-router";
 
 // =======================
 // DTO COMPLETO
@@ -275,7 +276,20 @@ export default function SignUpForm() {
               <Button onClick={nextStep} className="w-full h-12">
                 Próximo
               </Button>
+
+              <div className="mt-5">
+              <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
+                Já possui uma conta?{" "}
+                <Link
+                  to="/login"
+                  className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
+                >
+                  Faça o login.
+                </Link>
+              </p>
             </div>
+            </div>
+
           )}
           
           {/* STEP 2 */}
