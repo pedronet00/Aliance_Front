@@ -95,10 +95,11 @@ export default function WorshipTeamRehearsalList() {
       label: "Status",
       render: (m: WorshipTeamRehearsal) => {
         const conditionMap: Record<string, { color: string; label: string }> = {
-          Completado: { color: "success", label: "Completado" },
           Agendado: { color: "primary", label: "Agendado" },
-          Adiado: { color: "warning", label: "Adiado" },
+          Completado: { color: "success", label: "Completado" },
           Cancelado: { color: "error", label: "Cancelado" },
+          Pendente: { color: "warning", label: "Pendente" },
+          Adiado: { color: "default", label: "Adiado" },
         };
         const status = conditionMap[m.status] ?? {
           color: "default",
