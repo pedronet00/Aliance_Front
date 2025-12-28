@@ -37,14 +37,14 @@ const getEventBadge = (days: number) => {
   }
 
   if (days <= 5) {
-    return <Badge color="warning">Em 5 dias</Badge>;
+    return <Badge color="warning">Em {days} dias</Badge>;
   }
 
-  if (days <= 10) {
+  if (days = 10) {
     return <Badge color="info">Em 10 dias</Badge>;
   }
 
-  if (days <= 15) {
+  if (days = 15) {
     return <Badge color="success">Em 15 dias</Badge>;
   }
 
@@ -67,7 +67,7 @@ export default function NextEventsList({ events }: NextEventsListProps) {
       <div className="space-y-3 max-h-60 overflow-y-auto no-scrollbar pr-1">
         {sortedEvents.map((event) => {
           const daysUntil = getDaysUntilEvent(event.date);
-
+          console.log("days until:" + daysUntil)
           return (
             <div
               key={event.id}
