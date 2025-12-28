@@ -109,9 +109,10 @@ export default function PastoralVisitList() {
       label: "Status",
       render: (v: PastoralVisit) => {
         const statusMap: Record<string, { color: string; label: string }> = {
-          Agendado: { color: "warning", label: "Agendado" },
+          Agendado: { color: "primary", label: "Agendado" },
           Completado: { color: "success", label: "Completado" },
           Cancelado: { color: "error", label: "Cancelado" },
+          Pendente: { color: "warning", label: "Pendente" },
           Adiado: { color: "default", label: "Adiado" },
         };
 

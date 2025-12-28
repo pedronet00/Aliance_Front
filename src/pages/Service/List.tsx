@@ -112,6 +112,7 @@ export default function ServiceList() {
           Agendado: { color: "primary", label: "Agendado" },
           Completado: { color: "success", label: "Completado" },
           Cancelado: { color: "error", label: "Cancelado" },
+          Pendente: { color: "warning", label: "Pendente" },
         };
         const status = statusMap[s.status] ?? {
           color: "default",

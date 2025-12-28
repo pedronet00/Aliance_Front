@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Event } from "@/types/Event/Event";
 import NoData from "@/components/no-data";
 import { useAuth } from "@/context/AuthContext";
+import Badge from "@/components/ui/badge/Badge";
 
 export default function EventList() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -105,23 +106,23 @@ export default function EventList() {
     {
       key: "status",
       label: "Status",
-      render: (e: Event) => (
-        <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            e.status === "Completado"
-              ? "bg-green-100 text-green-700"
-              : e.status === "Adiado"
-              ? "bg-yellow-100 text-yellow-700"
-              : e.status === "Cancelado"
-              ? "bg-red-100 text-red-700"
-              : e.status === "Pendente"
-              ? "bg-orange-100 text-orange-700"
-              : "bg-gray-100 text-gray-700"
-          }`}
-        >
-          {e.status}
-        </span>
-      ),
+      render: (e: Event) => {
+        const statusMap: Record<string, { color: string; label: string }> = {
+          Agendado: { color: "primary", label: "Agendado" },
+          Completado: { color: "success", label: "Completado" },
+          Cancelado: { color: "error", label: "Cancelado" },
+          Pendente: { color: "warning", label: "Pendente" },
+        };
+        const status = statusMap[e.status] ?? {
+          color: "default",
+          label: e.status,
+        };
+        return (
+          <Badge size="sm" color={status.color}>
+            {status.label}
+          </Badge>
+        );
+      },
     },
     {
       label: "Ações",

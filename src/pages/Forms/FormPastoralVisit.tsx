@@ -49,7 +49,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
       .then((res) => {
         const options = res.data.result.map((p: any) => ({
           value: p.id,
-          label: p.userName,
+          label: p.fullName,
         }));
         setPastoresOptions(options);
 
