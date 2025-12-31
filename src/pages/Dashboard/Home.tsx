@@ -7,6 +7,7 @@ import OnboardingChecklist from "./OnboardingChecklist";
 import { useAuth } from "@/context/AuthContext";
 import NextEventsList from "@/components/ecommerce/NextEventsList";
 import FinancialTransactionsList from "@/components/ecommerce/FinancialTransactionsList";
+import PendingItemsAlert from "@/components/ecommerce/PendingItems";
 
 
 interface DashboardData {
@@ -39,6 +40,14 @@ interface DashboardData {
   totalMissions: number;
   totalWorshipTeams: number;
   totalBudgets: number;
+  pendingItems: {
+    lateRehearsals: number;
+    lateServices: number;
+    latePastoralVisits: number;
+    lateEvents: number;
+    total: number;
+  };
+
 }
 
 
@@ -55,6 +64,14 @@ export default function Home() {
     totalMissions: 0,
     totalWorshipTeams: 0,
     totalBudgets: 0,
+    pendingItems: {
+      lateRehearsals: 0,
+      lateServices: 0,
+      latePastoralVisits: 0,
+      lateEvents: 0,
+      total: 0,
+    },
+
   });
 
   const [loading, setLoading] = useState(true);
@@ -100,6 +117,10 @@ export default function Home() {
             totalPatrimonies={dashboardData.totalPatrimonies} />
           )}  
 
+          {dashboardData.pendingItems && (
+            <PendingItemsAlert pendingItems={dashboardData.pendingItems} />
+          )}
+          
         {/* Métricas gerais */}
           <EcommerceMetrics
             totalUsers={dashboardData.totalUsers}
