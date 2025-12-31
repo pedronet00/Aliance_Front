@@ -3,7 +3,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Link } from "react-router";
 import apiClient from "@/api/apiClient";
-import { BellIcon, TimerIcon, AlertTriangleIcon, Calendar1Icon, Mic2Icon } from "lucide-react";
+import { BellIcon, TimerIcon, AlertTriangleIcon, Calendar1Icon, StarIcon } from "lucide-react";
 
 type Notification = {
   id: number;
@@ -30,7 +30,7 @@ function getNotificationStyle(type: string) {
       };
     case "Comunicados": // Comunicados
       return {
-        icon: <Mic2Icon/>,
+        icon: <StarIcon/>,
         bg: "bg-blue-100",
         text: "text-blue-700",
       };
@@ -132,8 +132,9 @@ export default function NotificationDropdown() {
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className="absolute -right-[240px] mt-4 h-[480px] w-[360px] rounded-xl border bg-white p-3 shadow-lg"
+        className="absolute -right-[240px] mt-4 flex h-[480px] w-[360px] flex-col rounded-xl border bg-white p-3 shadow-lg"
       >
+
         <div className="flex items-center justify-between border-b pb-3 mb-3">
           <h5 className="font-semibold">Notificações</h5>
 
@@ -147,7 +148,7 @@ export default function NotificationDropdown() {
           )}
         </div>
 
-        <ul className="flex flex-col overflow-y-auto">
+        <ul className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
           {loading && (
             <li className="p-4 text-sm text-gray-500">Carregando...</li>
           )}

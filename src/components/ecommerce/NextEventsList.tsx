@@ -40,11 +40,11 @@ const getEventBadge = (days: number) => {
     return <Badge color="warning">Em {days} dias</Badge>;
   }
 
-  if (days = 10) {
+  if (days == 10) {
     return <Badge color="info">Em 10 dias</Badge>;
   }
 
-  if (days = 15) {
+  if (days == 15) {
     return <Badge color="success">Em 15 dias</Badge>;
   }
 
