@@ -26,6 +26,9 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
 
   const [formData, setFormData] = useState<SundaySchoolClassFormData>({
   lesson: initialData?.lesson ?? "",
+  date: initialData?.date
+        ? initialData.date.split("T")[0]
+        : new Date().toISOString().split("T")[0],
   teacherId: initialData?.teacherId ?? "",
   sundaySchoolClassroomId: initialData?.sundaySchoolClassroomId ?? 0,
 });
@@ -74,6 +77,7 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
 
     await onSubmit({
       guid: initialData?.guid,
+      date: formData.date,
       lesson: formData.lesson.trim(),
       teacherId: formData.teacherId,
       sundaySchoolClassroomId: Number(formData.sundaySchoolClassroomId),
@@ -91,6 +95,19 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
           onChange={(e) =>
             setFormData({ ...formData, lesson: e.target.value })
           }
+        />
+      </div>
+
+      <div>
+        <Label>Data</Label>
+        <Input
+          type="datetime-local"
+          value={
+            typeof formData.date === "string"
+              ? formData.date
+              : formData.date.toISOString().split("T")[0]
+          }
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
         />
       </div>
 

@@ -75,6 +75,11 @@ export default function SundaySchoolClassList() {
 
   const columns = [
     { key: "lesson", label: "Lição" },
+    {
+          key: "date",
+          label: "Data da aula",
+          render: (e: SundaySchoolClass) => new Date(e.date).toLocaleDateString("pt-BR"),
+        },
     { key: "teacherName", label: "Professor" },
     { key: "sundaySchoolClassroomName", label: "Sala" },
     {
