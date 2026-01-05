@@ -8,7 +8,7 @@ import ComponentCard from "@/components/common/ComponentCard";
 import { Button } from "@/components/ui/button";
 import NoData from "@/components/no-data";
 import { showErrorToast } from "@/components/toast/Toasts";
-import { Presence } from "@/types/Presence/Presence";
+import { Presence } from "@/types/Presence/ServicePresence";
 
 export default function ServicePresences() {
   const { serviceGuid } = useParams<{ serviceGuid: string }>();

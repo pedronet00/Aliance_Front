@@ -101,6 +101,8 @@ import MissionEdit from "./pages/Mission/Edit";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ServicePresences from "./pages/Service/Presences";
 import AddServicePresence from "./pages/Service/AddPresence";
+import WorshipTeamRehearsalPresences from "./pages/WorshipTeamRehearsal/Presences";
+import AddWorshipTeamRehearsalPresence from "./pages/WorshipTeamRehearsal/AddPresence";
 
 export default function App() {
   return (
@@ -232,6 +234,8 @@ export default function App() {
               {/* LOUVOR */}
               <Route element={<RoleRoute roles={["Admin", "Musico", "Pastor", "Secretaria"]} />}>
                 <Route path="/grupos-de-louvor/:guidEquipe/ensaios/criar" element={<WorshipTeamRehearsalCreate />} />
+                <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:rehearsalGuid/presencas" element={<WorshipTeamRehearsalPresences />} />
+                <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:rehearsalGuid/presencas/adicionar" element={<AddWorshipTeamRehearsalPresence />} />
                 <Route path="/grupos-de-louvor/:guidEquipe/ensaios/:guidEnsaio/editar" element={<WorshipTeamRehearsalEdit />} />
                 <Route path="/grupos-de-louvor/:teamGuid/membros/criar" element={<WorshipTeamMemberCreate />} />
                 <Route path="/grupos-de-louvor/criar" element={<WorshipTeamCreate />} />

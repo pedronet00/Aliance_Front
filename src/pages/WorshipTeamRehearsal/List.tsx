@@ -121,8 +121,13 @@ export default function WorshipTeamRehearsalList() {
               <MoreDotIcon />
             </button>
           </DropdownMenuTrigger>
-          {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
           <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuItem onClick={() => navigate(`/grupos-de-louvor/${guidEquipe}/ensaios/${r.guid}/presencas`)}>
+              Presenças
+            </DropdownMenuItem>
+
+          {can(["Admin", "Pastor", "Musico","Secretaria"]) && (
+            <>
             <DropdownMenuItem onClick={() => handleEditar(r)}>
               Editar
             </DropdownMenuItem>
@@ -149,8 +154,9 @@ export default function WorshipTeamRehearsalList() {
             >
               Excluir
             </DropdownMenuItem>
-          </DropdownMenuContent>
+            </>
           )}
+          </DropdownMenuContent>
         </DropdownMenu>
       ),
     },
