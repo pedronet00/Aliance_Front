@@ -34,6 +34,7 @@ interface DashboardData {
     }[];
   };
   totalUsers: number;
+  usersGrowthRate: number;
   totalPatrimonies: number;
   totalEvents: number;
   totalDepartments: number;
@@ -58,6 +59,7 @@ export default function Home() {
     nextEvents: [],
     financialTransactions: { incomes: [], expenses: [] },
     totalUsers: 0,
+    usersGrowthRate: 0,
     totalPatrimonies: 0,
     totalEvents: 0,
     totalDepartments: 0,
@@ -123,6 +125,7 @@ export default function Home() {
           
         {/* Métricas gerais */}
           <EcommerceMetrics
+            usersGrowthRate={dashboardData.usersGrowthRate}
             totalUsers={dashboardData.totalUsers}
             totalDeparments={dashboardData.totalDepartments}
             totalMissions={dashboardData.totalMissions}

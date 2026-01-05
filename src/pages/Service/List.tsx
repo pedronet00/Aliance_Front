@@ -136,11 +136,8 @@ export default function ServiceList() {
           </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem
-            onClick={() => navigate(`/cultos/${s.guid}/escalas`)}
-            >
-            Escalas
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate(`/cultos/${s.guid}/escalas`)}>Escalas</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate(`/cultos/${s.guid}/presencas`)}>Presenças</DropdownMenuItem>
             {can(["Admin", "Pastor","Secretaria"]) && (
               <>
               {s.status != "Completado" && (

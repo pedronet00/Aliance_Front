@@ -99,6 +99,8 @@ import MissionList from "./pages/Mission/List";
 import MissionCreate from "./pages/Mission/Create";
 import MissionEdit from "./pages/Mission/Edit";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
+import ServicePresences from "./pages/Service/Presences";
+import AddServicePresence from "./pages/Service/AddPresence";
 
 export default function App() {
   return (
@@ -205,6 +207,8 @@ export default function App() {
               {/* SERVIÇO ECLESIÁSTICO */}
               <Route element={<RoleRoute roles={["Admin", "Pastor", "Secretaria"]} />}>
                 <Route path="/cultos/:serviceGuid/escalas/criar" element={<ServiceRoleCreate />} />
+                <Route path="/cultos/:serviceGuid/presencas" element={<ServicePresences />} />
+                <Route path="/cultos/:serviceGuid/presencas/adicionar" element={<AddServicePresence />} />
                 <Route path="/cultos/criar" element={<ServiceCreate />} />
                 <Route path="/cultos/editar/:guid" element={<ServiceEdit />} />
               </Route>
