@@ -21,8 +21,8 @@ export default function AddWorshipTeamRehearsalPresence() {
 
   const fetchUsers = async () => {
     try {
-      const res = await apiClient.get("/User/active");
-      setUsers(res.data.result || []);
+      const res = await apiClient.get(`/WorshipTeamMember/${guidEquipe}`);
+      setUsers(res.data.items || []);
     } catch (err) {
       showErrorToast("Erro ao carregar usuários ativos");
     } finally {
@@ -49,9 +49,7 @@ export default function AddWorshipTeamRehearsalPresence() {
   };
 
   const columns = [
-    { key: "fullName", label: "Nome" },
-    { key: "email", label: "E-mail" },
-    { key: "phoneNumber", label: "Telefone" },
+    { key: "userName", label: "Nome" },
     {
       label: "Ação",
       render: (u: User) => (
@@ -77,7 +75,7 @@ export default function AddWorshipTeamRehearsalPresence() {
         ]}
       />
 
-      <ComponentCard title="Usuários Ativos">
+      <ComponentCard title="Membros do grupo de louvor">
         <div className="mb-4">
           <Button variant="secondary" onClick={() => navigate(-1)}>
             Voltar
