@@ -145,7 +145,7 @@ const BranchSwitcher = ({
             onClick={() => setOpen(true)}
             className="
               w-11 h-11 flex items-center justify-center
-              hover:bg-gray-200 dark:hover:bg-gray-700
+              hover:bg-gray-200 dark:hover:bg-gray-700 
               transition
             "
           >
