@@ -4,7 +4,7 @@ import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import { Button } from "../ui/button";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { showSuccessfulLogininToast, showErrorToast } from "../toast/Toasts";
 
 export default function SignInForm() {
