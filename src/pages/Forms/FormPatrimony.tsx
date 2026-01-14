@@ -28,7 +28,8 @@ export default function FormPatrimony({ initialData, onSubmit }: Props) {
       initialData
         ? {
             ...initialData,
-            acquisitionDate: normalizeDate(initialData.acquisitionDate)
+            acquisitionDate: normalizeDate(initialData.acquisitionDate),
+            branchId: user?.branchId,
           }
         : {
             name: "",
@@ -38,7 +39,8 @@ export default function FormPatrimony({ initialData, onSubmit }: Props) {
             totalValue: 0,
             acquisitionDate: "",
             condition: "",
-            churchId: user?.churchId ?? 0
+            churchId: user?.churchId ?? 0,
+            branchId: user?.branchId,
           }
     );
 

@@ -22,6 +22,7 @@ export default function FormService({ initialData, onSubmit }: Props) {
         ...initialData,
         date: new Date(initialData.date),
         churchId: user?.churchId ?? 0,
+        branchId: user?.branchId,
       };
     }
 
@@ -32,6 +33,7 @@ export default function FormService({ initialData, onSubmit }: Props) {
       status: "Agendado",
       locationId: 0,
       churchId: user?.churchId ?? 0,
+      branchId: user?.branchId,
     };
   });
 
@@ -99,6 +101,7 @@ export default function FormService({ initialData, onSubmit }: Props) {
     locationId: formData.locationId,
     churchId: formData.churchId,
     guid: undefined as any,
+    branchId: user?.branchId,
   };
 
   await onSubmit(payload);

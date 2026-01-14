@@ -17,13 +17,14 @@ export default function FormSundaySchoolClassroom({ initialData, onSubmit }: Pro
     const goBack = useGoBack();
     const [loading, setLoading] = useState(false);
 
-    const [formData, setFormData] = useState<SundaySchoolClassroomDTO>(
-        initialData ?? {
-        name: "",
-        status: true,
-        churchId: user?.churchId ?? 0
-        }
-    );
+    const [formData, setFormData] = useState<SundaySchoolClassroomDTO>({
+      ...initialData,
+      name: initialData?.name ?? "",
+      status: initialData?.status ?? true,
+      churchId: initialData?.churchId ?? user?.churchId ?? 0,
+      branchId: initialData?.branchId ?? user?.branchId,
+    });
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

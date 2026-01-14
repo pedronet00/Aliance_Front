@@ -95,9 +95,9 @@ import SundaySchoolClassDocumentList from "./pages/SundaySchoolClass/SundaySchoo
 import MemberRolesListing from "./pages/Usuarios/RoleListing";
 import SundaySchoolClassroomMembersList from "./pages/SundaySchoolClassroomMember/List";
 import SundaySchoolClassroomMemberCreate from "./pages/SundaySchoolClassroomMember/Create";
-import MissionList from "./pages/Mission/List";
-import MissionCreate from "./pages/Mission/Create";
-import MissionEdit from "./pages/Mission/Edit";
+import BranchList from "./pages/Branch/List";
+import BranchCreate from "./pages/Branch/Create";
+import BranchEdit from "./pages/Branch/Edit";
 import ForgotPassword from "./pages/AuthPages/ForgotPassword";
 import ServicePresences from "./pages/Service/Presences";
 import AddServicePresence from "./pages/Service/AddPresence";
@@ -126,9 +126,9 @@ export default function App() {
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
               <Route path="/cultos" element={<ServiceList />} />
               <Route path="/locais" element={<LocationList />} />
-              <Route path="/missoes" element={<MissionList />} />
-              <Route path="/missoes/criar" element={<MissionCreate />} />
-              <Route path="/missoes/:guid/editar" element={<MissionEdit />} />
+              <Route path="/filiais" element={<BranchList />} />
+              <Route path="/filiais/criar" element={<BranchCreate />} />
+              <Route path="/filiais/:guid/editar" element={<BranchEdit />} />
               <Route path="/cultos/:serviceGuid/escalas" element={<ServiceRoleList />} />
               <Route path="/eventos" element={<EventList />} />
               <Route path="/celulas" element={<CellList />} />
@@ -242,7 +242,7 @@ export default function App() {
                 <Route path="/grupos-de-louvor/editar/:guid" element={<WorshipTeamEdit />} />
               </Route>
               
-              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/profile/:userId" element={<UserProfiles />} />
             </Route>
           </Route>
         </Routes>

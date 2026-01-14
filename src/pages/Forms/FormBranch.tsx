@@ -3,22 +3,22 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import { MissionDTO } from "@/types/Mission/MissionDTO";
+import { BranchDTO } from "@/types/Branch/BranchDTO";
 import useGoBack from "@/hooks/useGoBack";
 
 type Props = {
-  initialData?: MissionDTO;
-  onSubmit: (data: MissionDTO) => Promise<void>;
+  initialData?: BranchDTO;
+  onSubmit: (data: BranchDTO) => Promise<void>;
 };
 
-export default function FormMission({ initialData, onSubmit }: Props) {
+export default function FormBranch({ initialData, onSubmit }: Props) {
 
   const { user } = useAuth();
   const goBack = useGoBack();
 
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState<MissionDTO>(
+  const [formData, setFormData] = useState<BranchDTO>(
     initialData ?? {
       name: "",
       city: "",
@@ -38,7 +38,7 @@ export default function FormMission({ initialData, onSubmit }: Props) {
     <form onSubmit={handleSubmit} className="space-y-4">
 
       <div>
-        <Label>Nome da missão</Label>
+        <Label>Nome da filial</Label>
         <Input
           type="text"
           value={formData.name}

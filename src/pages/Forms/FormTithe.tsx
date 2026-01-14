@@ -23,6 +23,7 @@ export default function FormTithe({ onSubmit }: Props) {
     churchId: user?.churchId ?? 0,
     amount: 0,
     date: new Date().toISOString().split("T")[0],
+    branchId: user?.branchId,
   });
 
   useEffect(() => {

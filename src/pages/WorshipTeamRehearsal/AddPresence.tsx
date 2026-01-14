@@ -53,7 +53,7 @@ export default function AddWorshipTeamRehearsalPresence() {
     {
       label: "Ação",
       render: (u: User) => (
-        <Button size="sm" onClick={() => handleAddPresence(u.id)}>
+        <Button size="sm" onClick={() => handleAddPresence(u.userId)}>
           Adicionar
         </Button>
       ),

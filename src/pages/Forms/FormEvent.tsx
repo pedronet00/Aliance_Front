@@ -27,6 +27,7 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
       locationId: 0,
       costCenterId: 0,
       churchId: user?.churchId ?? 0,
+      branchId: user?.branchId,
     }
   );
 
@@ -73,6 +74,7 @@ export default function FormEvent({ initialData, onSubmit }: Props) {
             ? initialData.date.split("T")[0]
             : new Date().toISOString().split("T")[0],
           churchId: initialData.churchId ?? user?.churchId ?? 0,
+          branchId: user?.branchId,
         }));
       }
     } catch (err) {

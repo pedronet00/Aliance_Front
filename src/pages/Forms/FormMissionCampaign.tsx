@@ -29,7 +29,8 @@ export default function FormMissionCampaign({ initialData, onSubmit }: Props) {
           ...initialData,
           startDate: formatDate(initialData.startDate),
           endDate: formatDate(initialData.endDate),
-          collectedAmount: initialData.collectedAmount ?? 0
+          collectedAmount: initialData.collectedAmount ?? 0,
+          branchId: user?.branchId,
         }
       : {
           name: "",
@@ -38,7 +39,8 @@ export default function FormMissionCampaign({ initialData, onSubmit }: Props) {
           endDate: formatDate(new Date()),
           targetAmount: 0,
           collectedAmount: 0,
-          churchId: user?.churchId
+          churchId: user?.churchId,
+          branchId: user?.branchId,
         }
   );
 

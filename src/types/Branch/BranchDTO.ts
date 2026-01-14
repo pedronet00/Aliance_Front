@@ -1,6 +1,4 @@
-export type Mission = {
-    id: number;
-    guid: string;
+export type BranchDTO = {
     name: string;
     city: string;
     state: string;

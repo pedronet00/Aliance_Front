@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
-
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "../context/SidebarContext";
-import { LayoutDashboard, ChevronDown, Calendar, GraduationCap, Clock, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, FileArchive } from "lucide-react";
+import { LayoutDashboard, ChevronDown, ChevronUp, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, Check } from "lucide-react";
+import apiClient from "@/api/apiClient";
+import { Branch } from "@/types/Branch/Branch";
+import { showErrorToast } from "@/components/toast/Toasts";
+import Select from "@/components/form/Select";
+import Swal from 'sweetalert2';
 
 type NavItem = {
   name: string;
@@ -15,17 +19,196 @@ type NavItem = {
 
 const othersItems: NavItem[] = [];
 
+const BranchSwitcher = ({
+  branches,
+  activeBranchId,
+  onChange,
+  isExpanded,
+  isHovered,
+  isMobileOpen,
+}: {
+  branches: Branch[];
+  activeBranchId?: number;
+  onChange: (id: number) => void;
+  isExpanded: boolean;
+  isHovered: boolean;
+  isMobileOpen: boolean;
+}) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const showFull = isExpanded || isHovered || isMobileOpen;
+
+  const activeBranch =
+    branches.find(b => b.id === activeBranchId) ?? {
+      id: 0,
+      name: "Sede",
+    };
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="mt-auto px-3 pb-4">
+      {showFull ? (
+        /* SIDEBAR EXPANDIDA */
+        <div className="relative">
+          <span className="text-[10px] uppercase tracking-wide text-gray-400 mb-2 block">
+            Filial ativa
+          </span>
+
+          <button
+            onClick={() => setOpen(v => !v)}
+            className="
+              w-full flex items-center gap-3
+              rounded-xl border border-gray-200 dark:border-gray-700
+              bg-gray-50 dark:bg-gray-800
+              px-3 py-2
+              hover:bg-gray-100 dark:hover:bg-gray-700
+              transition
+            "
+          >
+            {/* Avatar */}
+            <div className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-500 flex items-center justify-center font-semibold">
+              {activeBranch.name.charAt(0).toUpperCase()}
+            </div>
+
+            <div className="flex-1 text-left overflow-hidden">
+              <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {activeBranch.name}
+              </div>
+              <div className="text-xs text-gray-400">Trocar filial</div>
+            </div>
+
+            <ChevronUp
+              className={`w-4 h-4 text-gray-400 transition-transform ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {open && (
+            <div
+              className="
+                absolute bottom-[calc(100%+8px)] left-0 w-full
+                rounded-xl border border-gray-200 dark:border-gray-700
+                bg-white dark:bg-gray-900
+                shadow-lg z-50 overflow-hidden
+              "
+            >
+              {[{ id: 0, name: "Sede" }, ...branches].map(branch => (
+                <button
+                  key={branch.id}
+                  onClick={() => {
+                    onChange(branch.id);
+                    setOpen(false);
+                  }}
+                  className={`
+                    w-full flex items-center gap-3 px-3 py-2
+                    hover:bg-gray-100 dark:hover:bg-gray-800
+                    transition
+                    ${
+                      branch.id === activeBranchId
+                        ? "bg-gray-100 dark:bg-gray-800"
+                        : ""
+                    }
+                  `}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-500 flex items-center justify-center font-semibold">
+                    {branch.name.charAt(0).toUpperCase()}
+                  </div>
+
+                  <span className="flex-1 text-sm text-gray-900 dark:text-gray-100 truncate">
+                    {branch.name}
+                  </span>
+
+                  {branch.id === activeBranchId && (
+                    <Check className="w-4 h-4 text-brand-500" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* SIDEBAR RECOLHIDA */
+        <div className="flex justify-center">
+          <button
+            title={`Filial: ${activeBranch.name}`}
+            onClick={() => setOpen(true)}
+            className="
+              w-11 h-11 flex items-center justify-center
+              hover:bg-gray-200 dark:hover:bg-gray-700
+              transition
+            "
+          >
+            <Church className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, setBranch } = useAuth();
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
 
+  useEffect(() => {
+  if (!user) {
+    console.log("user ainda não carregado");
+    return;
+  }
+
+  console.log("branch persistida:", user.branchId);
+  console.log("localStorage:", localStorage.getItem("activeBranchId"));
+}, [user]);
+
+
+  
   // função utilitária p/ verificar se o usuário possui um dos roles
   const can = (roles: string[]) => {
     const userRoles = Array.isArray(user?.role) ? user.role : [user?.role];
     return userRoles.some((r: string) => roles.includes(r));
   };
- 
+
+ const fetchBranches = async () => {
+    try {
+      const res = await apiClient.get(
+        `/Branch/paged?pageNumber=1&pageSize=1000`
+      );
+      const data = res.data;
+
+      setBranches(data.result.items || []);
+    } catch (err) {
+      showErrorToast("Erro ao carregar filiais");
+    }
+  };
+
+  useEffect(() => {
+    fetchBranches();
+  }, []);
+
+   const branchOptions = [
+  { value: 0, label: "Sede" },
+  ...branches.map(branch => ({
+    value: branch.id,
+    label: branch.name,
+  })),
+];
+
+
   const navItems: NavItem[] = [
     {
       icon: <LayoutDashboard />,
@@ -62,12 +245,12 @@ const AppSidebar: React.FC = () => {
     },
 
     {
-      name: "Eventos & Missões",
+      name: "Eventos & Filiais",
       icon: <Calendar />,
       subItems: [
         { name: "Campanhas de Missões", path: "/campanhas-de-missoes" },
         { name: "Eventos", path: "/eventos" },
-        { name: "Missões", path: "/missoes" },
+        { name: "Filiais", path: "/filiais" },
       ],
     },
 
@@ -410,6 +593,26 @@ const AppSidebar: React.FC = () => {
           </div>
         </nav>
       </div>
+      <BranchSwitcher
+  branches={branches}
+  activeBranchId={user?.branchId}
+  isExpanded={isExpanded}
+  isHovered={isHovered}
+  isMobileOpen={isMobileOpen}
+  onChange={(branchId) => {
+    setBranch(branchId);
+
+    Swal.fire({
+      icon: "success",
+      title: "Filial alterada",
+      text: "A filial ativa foi atualizada.",
+      timer: 1500,
+      showConfirmButton: false,
+    }).then(() => window.location.reload());
+  }}
+/>
+
+
     </aside>
   );
 };

@@ -30,6 +30,7 @@ export default function FormAccountReceivable({ initialData, onSubmit }: Props) 
     description: initialData?.description ?? "",
     amount: initialData?.amount ?? 0,
     dueDate: initialData?.dueDate ? new Date(initialData.dueDate) : new Date(),
+    branchId: user?.branchId,
     paymentDate: initialData?.paymentDate
       ? new Date(initialData.paymentDate)
       : new Date(),
@@ -68,6 +69,7 @@ export default function FormAccountReceivable({ initialData, onSubmit }: Props) 
       description: formData.description,
       amount: formData.amount,
       dueDate: formData.dueDate,
+      branchId: user?.branchId,
       paymentDate: formData.isReceived ? formData.paymentDate : null, // nulo se não foi recebido
       accountStatus: formData.isReceived ? "Paga" : "Pendente",
       costCenterId: Number(formData.costCenterId),

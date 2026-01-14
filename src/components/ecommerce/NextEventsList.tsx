@@ -67,7 +67,6 @@ export default function NextEventsList({ events }: NextEventsListProps) {
       <div className="space-y-3 max-h-60 overflow-y-auto no-scrollbar pr-1">
         {sortedEvents.map((event) => {
           const daysUntil = getDaysUntilEvent(event.date);
-          console.log("days until:" + daysUntil)
           return (
             <div
               key={event.id}

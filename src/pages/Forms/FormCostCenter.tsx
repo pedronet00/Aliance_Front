@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import TextArea from "@/components/form/input/TextArea";
 import Select from "@/components/form/Select";
 import apiClient from "@/api/apiClient";
-import { CostCenter } from "@/types/CostCenter/CostCenter";
 import { CostCenterDTO } from "@/types/CostCenter/CostCenterDTO";
 import { Department } from "@/types/Department/Department";
 import useGoBack from "@/hooks/useGoBack";
@@ -28,6 +26,7 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
       ...initialData,
       departmentId: String(initialData.departmentId ?? ""),
       churchId: user?.churchId ?? 0,
+        branchId: user?.branchId
     };
   }
 
@@ -35,6 +34,7 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
     name: "",
     departmentId: "",
     churchId: user?.churchId ?? 0,
+        branchId: user?.branchId
   };
 });
 
@@ -55,7 +55,8 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
       if (initialData?.departmentId) {
         setFormData((prev) => ({
           ...prev,
-          departmentId: String(initialData.departmentId), // garante string
+          departmentId: String(initialData.departmentId),
+        branchId: user?.branchId // garante string
         }));
       }
 
@@ -79,6 +80,7 @@ export default function FormCostCenter({ initialData, onSubmit }: Props) {
     await onSubmit({
       ...formData,
       departmentId: Number(formData.departmentId),
+      branchId: user?.branchId
     });
   };
 

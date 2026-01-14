@@ -31,6 +31,7 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
         endDate: initialData.endDate
           ? new Date(initialData.endDate)
           : new Date(),
+        branchId: user?.branchId,
         costCenterId: initialData.costCenterId ?? 0,
       };
     }
@@ -41,6 +42,7 @@ export default function FormBudget({ initialData, onSubmit }: Props) {
       totalAmount: null,
       startDate: new Date(),
       endDate: new Date(),
+      branchId: user?.branchId,
       status: "PendenteAprovacao",
       costCenterId: 0,
       churchId: user?.churchId ?? 0,

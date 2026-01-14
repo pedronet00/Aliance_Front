@@ -1,48 +1,48 @@
 import apiClient from "@/api/apiClient";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import FormMission from "../Forms/FormMission";
+import FormBranch from "../Forms/FormBranch";
 import { showEditedSuccessfullyToast } from "@/components/toast/Toasts";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import PageMeta from "@/components/common/PageMeta";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import ComponentCard from "@/components/common/ComponentCard";
-import { MissionDTO } from "@/types/Mission/MissionDTO";
+import { BranchDTO } from "@/types/Branch/BranchDTO";
 
-export default function MissionEdit() {
+export default function BranchEdit() {
   const { guid } = useParams();
   const navigate = useNavigate();
-  const [mission, setMission] = useState<MissionDTO | null>(null);
+  const [branch, setBranch] = useState<BranchDTO | null>(null);
 
   useEffect(() => {
-    apiClient.get(`/Mission/${guid}`).then((res) => {
-      setMission(res.data.result);
+    apiClient.get(`/Branch/${guid}`).then((res) => {
+      setBranch(res.data.result);
     });
   }, [guid]);
 
-  const handleSubmit = async (data: MissionDTO) => {
-    await apiClient.put(`/Mission`, data);
+  const handleSubmit = async (data: BranchDTO) => {
+    await apiClient.put(`/Branch/${guid}`, data);
     showEditedSuccessfullyToast();
-    navigate("/missoes");
+    navigate("/filiais");
   };
 
-  if (!mission) return <LoadingSpinner />;
+  if (!branch) return <LoadingSpinner />;
 
   return (
     <>
-      <PageMeta title="Editar Missão" description="Editar Missão" />
+      <PageMeta title="Editar Filial" description="Editar Filial" />
 
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
           { label: "Missões", path: "/missoes" },
-          { label: "Editar Missão", path: `/missoes/editar/${guid}` },
+          { label: "Editar Filial", path: `/filiais/editar/${guid}` },
         ]}
       />
 
       <div className="space-y-6">
         <ComponentCard title="">
-          <FormMission initialData={mission} onSubmit={handleSubmit} />
+          <FormBranch initialData={branch} onSubmit={handleSubmit} />
         </ComponentCard>
       </div>
     </>

@@ -132,13 +132,6 @@ export default function AccountPayableList() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem
-              disabled={u.accountStatus === "Paga"}
-              onClick={() => handleEditar(u)}
-            >
-              Editar
-            </DropdownMenuItem>
-
             {u.accountStatus != "Paga" && (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>

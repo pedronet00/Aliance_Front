@@ -22,7 +22,8 @@ export default function FormIncome({ initialData, onSubmit }: Props) {
       amount: 0,
       date: new Date(),
       category: "",
-      churchId: user?.churchId ?? 0
+      churchId: user?.churchId ?? 0,
+      branchId: user?.branchId,
     }
   );
 

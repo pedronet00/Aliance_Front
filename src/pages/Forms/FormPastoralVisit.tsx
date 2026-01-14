@@ -26,6 +26,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
         ...initialData,
         visitDate: new Date(initialData.visitDate), // garante Date
         churchId: user?.churchId ?? 0,
+        branchId: user?.branchId,
       };
     }
 
@@ -36,6 +37,7 @@ export default function FormPastoralVisit({ initialData, onSubmit }: Props) {
       pastorId: "",
       status: "Agendado",
       churchId: user?.churchId ?? 0,
+      branchId: user?.branchId,
     };
   });
 

@@ -29,6 +29,7 @@ export default function FormAutomaticAccount({ initialData, onSubmit }: Props) {
     amount: initialData?.amount ?? 0,
     dueDay: initialData?.dueDay ?? 1,
     accountType: initialData?.accountType ?? "payable",
+    branchId: user?.branchId,
     costCenterId: initialData?.costCenterId ? String(initialData.costCenterId) : "",
     churchId: user?.churchId
   }));
@@ -63,6 +64,7 @@ export default function FormAutomaticAccount({ initialData, onSubmit }: Props) {
       description: formData.description,
       amount: formData.amount,
       dueDay: formData.dueDay,
+      branchId: user?.branchId,
       accountType: formData.accountType,
       costCenterId: Number(formData.costCenterId),
       churchId: formData.churchId

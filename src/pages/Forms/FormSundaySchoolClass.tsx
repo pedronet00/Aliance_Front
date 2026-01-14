@@ -31,6 +31,7 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
         : new Date().toISOString().split("T")[0],
   teacherId: initialData?.teacherId ?? "",
   sundaySchoolClassroomId: initialData?.sundaySchoolClassroomId ?? 0,
+  branchId: user?.branchId,
 });
 
   useEffect(() => {
@@ -60,6 +61,7 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
             teacherId: initialData.teacherId ?? teachersList[0]?.value ?? "",
             sundaySchoolClassroomId:
               initialData.sundaySchoolClassroomId ?? classroomList[0]?.value ?? 0,
+            branchId: user?.branchId,
           }));
         }
       } catch (err) {
@@ -81,6 +83,7 @@ export default function FormSundaySchoolClass({ initialData, onSubmit }: Props) 
       lesson: formData.lesson.trim(),
       teacherId: formData.teacherId,
       sundaySchoolClassroomId: Number(formData.sundaySchoolClassroomId),
+      branchId: user?.branchId,
     });
   };
 

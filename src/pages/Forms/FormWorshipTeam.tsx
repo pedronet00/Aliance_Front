@@ -18,13 +18,14 @@ export default function FormWorshipTeam({ initialData, onSubmit }: Props) {
 
     const [loading, setLoading] = useState(false);
 
-    const [formData, setFormData] = useState<WorshipTeamDTO>(
-        initialData ?? {
-        name: "",
-        status: true,
-        churchId: user?.churchId ?? 0
-        }
-    );
+    const [formData, setFormData] = useState<WorshipTeamDTO>({
+      ...initialData,
+      name: initialData?.name ?? "",
+      status: initialData?.status ?? true,
+      churchId: initialData?.churchId ?? user?.churchId ?? 0,
+      branchId: initialData?.branchId ?? user?.branchId,
+    });
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

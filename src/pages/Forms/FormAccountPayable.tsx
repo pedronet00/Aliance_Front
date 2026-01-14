@@ -35,6 +35,7 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
       ? new Date(initialData.paymentDate)
       : new Date(),
     accountStatus: initialData?.accountStatus ?? "Pendente",
+    branchId: user?.branchId,
     costCenterId: initialData?.costCenterId ? String(initialData.costCenterId) : "",
     isPaid: initialData?.paymentDate ? true : false, // define flag automaticamente se já existir data
   }));
@@ -69,6 +70,7 @@ export default function FormAccountPayable({ initialData, onSubmit }: Props) {
       description: formData.description,
       amount: formData.amount,
       dueDate: formData.dueDate,
+      branchId: user?.branchId,
       paymentDate: formData.isPaid ? formData.paymentDate : null, // envia nulo se não estiver pago
       accountStatus: formData.isPaid ? "Paga" : "Pendente",
       costCenterId: Number(formData.costCenterId),

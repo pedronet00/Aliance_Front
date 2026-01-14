@@ -38,7 +38,7 @@ interface DashboardData {
   totalPatrimonies: number;
   totalEvents: number;
   totalDepartments: number;
-  totalMissions: number;
+  totalBranches: number;
   totalWorshipTeams: number;
   totalBudgets: number;
   pendingItems: {
@@ -63,7 +63,7 @@ export default function Home() {
     totalPatrimonies: 0,
     totalEvents: 0,
     totalDepartments: 0,
-    totalMissions: 0,
+    totalBranches: 0,
     totalWorshipTeams: 0,
     totalBudgets: 0,
     pendingItems: {
@@ -128,7 +128,7 @@ export default function Home() {
             usersGrowthRate={dashboardData.usersGrowthRate}
             totalUsers={dashboardData.totalUsers}
             totalDeparments={dashboardData.totalDepartments}
-            totalMissions={dashboardData.totalMissions}
+            totalBranches={dashboardData.totalBranches}
             totalWorshipTeams={dashboardData.totalWorshipTeams}
           />
 

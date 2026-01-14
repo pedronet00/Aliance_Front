@@ -6,7 +6,7 @@ interface EcommerceMetricsProps {
   totalUsers: number;
   usersGrowthRate: number;
   totalDeparments: number;
-  totalMissions: number;
+  totalBranches: number;
   totalWorshipTeams: number;
 }
 
@@ -38,7 +38,7 @@ export default function EcommerceMetrics({
   totalUsers,
   usersGrowthRate,
   totalDeparments,
-  totalMissions,
+  totalBranches,
   totalWorshipTeams,
 }: EcommerceMetricsProps) {
 
@@ -120,10 +120,10 @@ export default function EcommerceMetrics({
 
           <div className="flex flex-col">
             <span className="text-sm text-violet-700/70 dark:text-violet-300/70">
-              Missões
+              Filiais
             </span>
             <span className="mt-1 font-bold text-violet-900 text-xl dark:text-violet-100">
-              {totalMissions}
+              {totalBranches}
             </span>
           </div>
         </div>

@@ -13,7 +13,6 @@ type Props = {
   onSubmit: (data: CellDTO) => Promise<void>;
 };
 
-// 🔹 Enum de dias da semana (sincronizado com backend)
 const WEEKDAYS = [
   { value: 0, label: "Domingo" },
   { value: 1, label: "Segunda-feira" },
@@ -36,6 +35,7 @@ export default function FormCell({ initialData, onSubmit }: Props) {
     name: initialData?.name ?? "",
     locationId: initialData?.locationId ?? 0,
     leaderId: initialData?.leaderId ?? "",
+    branchId: user?.branchId,
     meetingDay: initialData?.meetingDay ?? "",
     churchId: user?.churchId ?? 0
   });
@@ -86,7 +86,8 @@ export default function FormCell({ initialData, onSubmit }: Props) {
       locationId: Number(formData.locationId),
       leaderId: formData.leaderId, 
       meetingDay: String(formData.meetingDay),
-      churchId: user?.churchId ?? 0
+      churchId: user?.churchId ?? 0,
+      branchId: user?.branchId,
     };
 
     await onSubmit(payload);

@@ -24,6 +24,7 @@ export default function FormExpense({ initialData, onSubmit }: Props) {
     date: new Date(),
     category: "",
     churchId: user?.churchId ?? 0,
+    branchId: user?.branchId,
   });
 
   // aplica initialData se vier depois do carregamento inicial

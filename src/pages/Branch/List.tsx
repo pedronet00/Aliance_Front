@@ -25,10 +25,10 @@ import { Button } from "@/components/ui/button";
 import Badge from "@/components/ui/badge/Badge";
 import NoData from "@/components/no-data";
 import { useAuth } from "@/context/AuthContext";
-import { Mission } from "@/types/Mission/Mission";
+import { Branch } from "@/types/Branch/Branch";
 
-export default function MissionList() {
-  const [missions, setMissions] = useState<Mission[]>([]);
+export default function BranchList() {
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [showFilters, setShowFilters] = useState(false);
@@ -43,46 +43,46 @@ export default function MissionList() {
   const { can } = useAuth();
   const navigate = useNavigate();
 
-  const fetchMissions = async (page: number = 1) => {
+  const fetchBranches = async (page: number = 1) => {
     setLoading(true);
     try {
       const res = await apiClient.get(
-        `/Mission/paged?pageNumber=${page}&pageSize=${pageSize}`
+        `/Branch/paged?pageNumber=${page}&pageSize=${pageSize}`
       );
       const data = res.data;
 
-      setMissions(data.result.items || []);
+      setBranches(data.result.items || []);
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
       setCurrentPage(data.currentPage);
     } catch (err) {
-      showErrorToast("Erro ao carregar missões");
+      showErrorToast("Erro ao carregar filiais");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchMissions(currentPage);
+    fetchBranches(currentPage);
   }, [currentPage]);
 
-  const handleEditar = (m: Mission) => navigate(`/missoes/${m.guid}/editar`);
+  const handleEditar = (m: Branch) => navigate(`/filiais/${m.guid}/editar`);
 
-  const handleExcluir = async (m: Mission) => {
+  const handleExcluir = async (m: Branch) => {
     try {
-      await apiClient.delete(`/Mission/${m.guid}`);
+      await apiClient.delete(`/Branch/${m.guid}`);
       showDeletedToast();
-      fetchMissions(currentPage);
+      fetchBranches(currentPage);
     } catch (error) {
       showErrorToast("Erro ao deletar missão: " + error);
     }
   };
 
-  const handleStatus = async (m: Mission) => {
+  const handleStatus = async (m: Branch) => {
     try {
-      await apiClient.patch(`/Mission/toggle-status/${m.guid}`);
+      await apiClient.patch(`/Branch/toggle-status/${m.guid}`);
       showEditedSuccessfullyToast();
-      fetchMissions(currentPage);
+      fetchBranches(currentPage);
     } catch (error) {
       showErrorToast("Erro ao atualizar status: " + error);
     }
@@ -95,7 +95,7 @@ export default function MissionList() {
     {
       key: "status",
       label: "Status",
-      render: (m: Mission) => (
+      render: (m: Branch) => (
         <Badge size="sm" color={m.status ? "success" : "error"}>
           {m.status ? "Ativo" : "Inativo"}
         </Badge>
@@ -103,7 +103,7 @@ export default function MissionList() {
     },
     {
       label: "Ações",
-      render: (m: Mission) => (
+      render: (m: Branch) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -142,7 +142,7 @@ export default function MissionList() {
     },
   ];
 
-  const filtered = missions.filter((m) => {
+  const filtered = branches.filter((m) => {
     return (
       m.name.toLowerCase().includes(filterNome.toLowerCase()) &&
       (filterStatus === "" ||
@@ -153,21 +153,21 @@ export default function MissionList() {
 
   return (
     <>
-      <PageMeta title="Missões" description="Lista de Missões" />
+      <PageMeta title="Filiais" description="Lista de Filiais" />
       <PageBreadcrumb
         items={[
           { label: "Início", path: "/" },
-          { label: "Missões", path: "/missoes" },
+          { label: "Filiais", path: "/filiais" },
         ]}
       />
 
       <div className="space-y-6">
-        <ComponentCard title="Lista de Missões">
+        <ComponentCard title="Lista de Filiais">
           <div className="flex flex-col gap-3 mb-6">
             <div className="flex gap-3 items-center">
               {can(["Admin", "Secretaria"]) && (
-                <Button onClick={() => navigate("/missoes/criar")}>
-                  Nova missão
+                <Button onClick={() => navigate("/filiais/criar")}>
+                  Nova filial
                 </Button>
               )}
 
