@@ -385,6 +385,7 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
+      
       {items.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
@@ -508,7 +509,7 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
             ? "w-[290px]"
@@ -516,7 +517,7 @@ const AppSidebar: React.FC = () => {
             ? "w-[290px]"
             : "w-[90px]"
         }
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+        ${isMobileOpen ? "translate-x-0 h-[calc(100vh-4rem)]" : "-translate-x-full h-screen"}
         lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -589,30 +590,29 @@ const AppSidebar: React.FC = () => {
               >
               </h2>
               {renderMenuItems(othersItems, "others")}
+              
             </div>
           </div>
+          <BranchSwitcher
+        branches={branches}
+        activeBranchId={user?.branchId}
+        isExpanded={isExpanded}
+        isHovered={isHovered}
+        isMobileOpen={isMobileOpen}
+        onChange={(branchId) => {
+          setBranch(branchId);
+
+          Swal.fire({
+            icon: "success",
+            title: "Filial alterada",
+            text: "A filial ativa foi atualizada.",
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => window.location.reload());
+        }}
+      />
         </nav>
       </div>
-      <BranchSwitcher
-  branches={branches}
-  activeBranchId={user?.branchId}
-  isExpanded={isExpanded}
-  isHovered={isHovered}
-  isMobileOpen={isMobileOpen}
-  onChange={(branchId) => {
-    setBranch(branchId);
-
-    Swal.fire({
-      icon: "success",
-      title: "Filial alterada",
-      text: "A filial ativa foi atualizada.",
-      timer: 1500,
-      showConfirmButton: false,
-    }).then(() => window.location.reload());
-  }}
-/>
-
-
     </aside>
   );
 };
