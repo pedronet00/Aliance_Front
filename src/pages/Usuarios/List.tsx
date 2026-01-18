@@ -41,23 +41,33 @@ export default function UsuariosList() {
   }, [currentPage]);
 
   const carregarUsuarios = async (page: number = 1) => {
-    setLoading(true);
-    try {
-      const res = await apiClient.get(
-        `/User/paged?pageNumber=${page}&pageSize=${pageSize}`
-      );
-      const data = res.data.result || res.data;
+  setLoading(true);
+  try {
+    const res = await apiClient.get(
+      `/User/pagedByBranch?pageNumber=${page}&pageSize=${pageSize}`
+    );
 
-      setUsuarios(data.items || []);
-      setCurrentPage(data.currentPage);
-      setTotalPages(data.totalPages);
-      setTotalCount(data.totalCount);
-    } catch (err) {
-      console.error("Erro ao carregar usuários", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = res.data;
+
+    const usuariosMapeados: User[] = data.items.map((bm: any) => ({
+      id: bm.member.id,
+      fullName: bm.member.fullName,
+      email: bm.member.email,
+      phoneNumber: bm.member.phoneNumber,
+      status: bm.status,
+    }));
+
+    setUsuarios(usuariosMapeados);
+    setCurrentPage(data.currentPage);
+    setTotalPages(data.totalPages);
+    setTotalCount(data.totalCount);
+  } catch (err) {
+    console.error("Erro ao carregar usuários", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleEditar = (u: User) => {
     navigate(`/membros/editar/${u.id}`);

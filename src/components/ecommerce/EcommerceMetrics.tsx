@@ -1,5 +1,5 @@
 import { GroupIcon } from "../../icons";
-import { Building2, Target, Music } from "lucide-react";
+import { Building2, Target, Music, Split } from "lucide-react";
 import { useNavigate } from "react-router";
 
 interface EcommerceMetricsProps {
@@ -57,13 +57,13 @@ export default function EcommerceMetrics({
       >
 
         {/* Badge de crescimento */}
-        <span
+        {/* <span
   title="Comparado ao mês passado"
   aria-label={`Crescimento de usuários comparado ao mês passado: ${growthBadge.label}`}
   className={`absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full cursor-help ${growthBadge.className}`}
 >
   {growthBadge.label}
-</span>
+</span> */}
 
 
 
@@ -115,7 +115,7 @@ export default function EcommerceMetrics({
       >
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-violet-100 rounded-xl dark:bg-violet-900/40">
-            <Target className="size-6 text-violet-700 dark:text-violet-300" />
+            <Split className="size-6 text-violet-700 dark:text-violet-300" />
           </div>
 
           <div className="flex flex-col">

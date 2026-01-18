@@ -2,11 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "../context/SidebarContext";
-import { LayoutDashboard, ChevronDown, ChevronUp, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, Check } from "lucide-react";
+import { LayoutDashboard, ChevronDown, ArrowDownUp, ChevronUp, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, Check } from "lucide-react";
 import apiClient from "@/api/apiClient";
 import { Branch } from "@/types/Branch/Branch";
 import { showErrorToast } from "@/components/toast/Toasts";
-import Select from "@/components/form/Select";
 import Swal from 'sweetalert2';
 
 type NavItem = {
@@ -149,7 +148,7 @@ const BranchSwitcher = ({
               transition
             "
           >
-            <Church className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            <ArrowDownUp className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </button>
         </div>
       )}
