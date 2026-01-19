@@ -27,6 +27,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { Department } from "@/types/Department/Department";
 import NoData from "@/components/no-data";
 import { useAuth } from "@/context/AuthContext";
+import Swal from "sweetalert2";
 
 export default function DepartmentList() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -68,25 +69,108 @@ export default function DepartmentList() {
   const handleEditar = (u: Department) => navigate(`/departamentos/editar/${u.guid}`);
 
   const handleExcluir = async (u: Department) => {
-    try {
-      await apiClient.delete(`/Department/${u.guid}`);
-      showDeletedToast();
-      fetchDepartments(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao deletar departamento: " + error);
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text: "Tem certeza que deseja excluir este departamento?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await apiClient.delete(`/Department/${u.guid}`);
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
     }
-  };
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Departamento excluído com sucesso.",
+    });
+
+    fetchDepartments(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao excluir departamento.",
+      });
+    }
+  }
+};
 
   const handleStatus = async (u: Department) => {
-    try {
-      const endpoint = `Department/ToggleStatus/${u.guid}`;
-      await apiClient.patch(endpoint);
-      showEditedSuccessfullyToast();
-      fetchDepartments(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao atualizar status: " + error);
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text: "Tem certeza que deseja alterar o status deste departamento?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, confirmar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await apiClient.patch(
+      `Department/ToggleStatus/${u.guid}`
+    );
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
     }
-  };
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Status do departamento atualizado com sucesso.",
+    });
+
+    fetchDepartments(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao atualizar status.",
+      });
+    }
+  }
+};
+
 
   const columns = [
     { key: "name", label: "Nome" },

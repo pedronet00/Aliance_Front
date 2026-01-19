@@ -25,6 +25,7 @@ import NoData from "@/components/no-data";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Error from "../OtherPage/Error";
+import Swal from "sweetalert2";
 
 export default function PatrimonyList() {
   const [patrimonies, setPatrimonies] = useState<Patrimony[]>([]);
@@ -74,14 +75,56 @@ export default function PatrimonyList() {
   };
 
   const handleExcluir = async (u: Patrimony) => {
-    try {
-      await apiClient.delete(`/Patrimony/${u.id}`);
-      showDeletedToast();
-      fetchPatrimonies(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao deletar patrimônio: " + error);
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text: "Tem certeza que deseja excluir este patrimônio?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await apiClient.delete(`/Patrimony/${u.id}`);
+
+    // erro de regra de negócio / validação
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
     }
-  };
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Patrimônio excluído com sucesso.",
+    });
+
+    fetchPatrimonies(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao excluir patrimônio.",
+      });
+    }
+  }
+};
 
   const columns = [
     { key: "name", label: "Nome" },

@@ -26,6 +26,7 @@ import Badge from "@/components/ui/badge/Badge";
 import { CostCenter } from "@/types/CostCenter/CostCenter";
 import NoData from "@/components/no-data";
 import Error from "../OtherPage/Error";
+import Swal from "sweetalert2";
 
 export default function CostCenterList() {
   const [centers, setCenters] = useState<CostCenter[]>([]);
@@ -67,28 +68,118 @@ export default function CostCenterList() {
   const handleEditar = (u: CostCenter) => navigate(`/centros-de-custo/editar/${u.guid}`);
 
   const handleExcluir = async (u: CostCenter) => {
-    try {
-      await apiClient.delete(`/CostCenter/${u.guid}`);
-      showDeletedToast();
-      fetchCenters(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao deletar centro de custo: " + error);
-    }
-  };
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text: "Tem certeza que deseja excluir este centro de custo?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+  });
 
-  const handleStatus = async (u: CostCenter, action: "activate" | "deactivate") => {
-    try {
-      const endpoint =
-        action === "activate"
-          ? `CostCenter/activate/${u.guid}`
-          : `CostCenter/deactivate/${u.guid}`;
-      await apiClient.patch(endpoint);
-      showEditedSuccessfullyToast();
-      fetchCenters(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao atualizar status: " + error);
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await apiClient.delete(`/CostCenter/${u.guid}`);
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
     }
-  };
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Centro de custo excluído com sucesso.",
+    });
+
+    fetchCenters(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao excluir centro de custo.",
+      });
+    }
+  }
+};
+
+
+  const handleStatus = async (
+  u: CostCenter,
+  action: "activate" | "deactivate"
+) => {
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text:
+      action === "activate"
+        ? "Deseja ativar este centro de custo?"
+        : "Deseja desativar este centro de custo?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, confirmar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const endpoint =
+      action === "activate"
+        ? `CostCenter/activate/${u.guid}`
+        : `CostCenter/deactivate/${u.guid}`;
+
+    const res = await apiClient.patch(endpoint);
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
+    }
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Status do centro de custo atualizado com sucesso.",
+    });
+
+    fetchCenters(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao atualizar status do centro de custo.",
+      });
+    }
+  }
+};
+
 
   const columns = [
     { key: "name", label: "Nome" },

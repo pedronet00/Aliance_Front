@@ -103,6 +103,7 @@ import ServicePresences from "./pages/Service/Presences";
 import AddServicePresence from "./pages/Service/AddPresence";
 import WorshipTeamRehearsalPresences from "./pages/WorshipTeamRehearsal/Presences";
 import AddWorshipTeamRehearsalPresence from "./pages/WorshipTeamRehearsal/AddPresence";
+import BranchMemberCreate from "./pages/Branch/AddUserToBranch";
 
 export default function App() {
   return (
@@ -126,6 +127,7 @@ export default function App() {
               <Route path="/classes-ebd" element={<SundaySchoolClassroomList />} />
               <Route path="/cultos" element={<ServiceList />} />
               <Route path="/locais" element={<LocationList />} />
+              <Route path="/filiais/:branchId/membros/adicionar" element={<BranchMemberCreate />} />
               <Route path="/filiais" element={<BranchList />} />
               <Route path="/filiais/criar" element={<BranchCreate />} />
               <Route path="/filiais/:guid/editar" element={<BranchEdit />} />

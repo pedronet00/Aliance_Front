@@ -68,6 +68,8 @@ export default function BranchList() {
 
   const handleEditar = (m: Branch) => navigate(`/filiais/${m.guid}/editar`);
 
+  const handleAddMember = (m: Branch) => navigate(`/filiais/${m.guid}/membros/adicionar`);
+
   const handleExcluir = async (m: Branch) => {
     try {
       await apiClient.delete(`/Branch/${m.guid}`);
@@ -114,6 +116,9 @@ export default function BranchList() {
           <DropdownMenuContent align="end" className="w-40">
             {can(["Admin", "Secretaria"]) && (
               <>
+                <DropdownMenuItem onClick={() => handleAddMember(m)}>
+                  Adicionar membro
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleEditar(m)}>
                   Editar
                 </DropdownMenuItem>

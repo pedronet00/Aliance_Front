@@ -75,7 +75,7 @@ export default function UsuariosList() {
 
   const handleExcluir = async (u: User) => {
     try {
-      await apiClient.delete(`/User/${u.id}`);
+      await apiClient.delete(`/User/removeFromBranch/${u.id}`);
 
       showDeletedToast();
     } catch (err) {

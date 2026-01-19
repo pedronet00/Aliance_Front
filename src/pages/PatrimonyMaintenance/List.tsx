@@ -28,6 +28,7 @@ import { PatrimonyMaintenance } from "@/types/PatrimonyMaintenance/PatrimonyMain
 import { toast } from "react-toastify";
 import NoData from "@/components/no-data";
 import Error from "../OtherPage/Error";
+import Swal from "sweetalert2";
 
 export default function PatrimonyMaintenanceList() {
   const [maintenances, setMaintenances] = useState<PatrimonyMaintenance[]>([]);
@@ -72,59 +73,118 @@ export default function PatrimonyMaintenanceList() {
   };
 
   const handleExcluir = async (u: PatrimonyMaintenance) => {
-    try {
-      await apiClient.delete(`/PatrimonyMaintenance/${u.guid}`);
-      showDeletedToast();
-      fetchMaintenances(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao deletar manutenção: " + error);
-    }
-  };
+  const confirm = await Swal.fire({
+    icon: "warning",
+    title: "Confirmação",
+    text: "Tem certeza que deseja excluir esta manutenção?",
+    showCancelButton: true,
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    confirmButtonColor: "#d33",
+  });
 
-  const handleToggleStatus = async (u: PatrimonyMaintenance, newStatus: string) => {
-    if (newStatus === "Concluido") {
-      toast.warn(
-        ({ closeToast }) => (
-          <div>
-            <p>
-              Tem certeza que deseja marcar como <b>Concluído</b>? Essa ação não é reversível.
-            </p>
-            <div className="flex justify-end mt-3 space-x-2">
-              <Button size="sm" variant="outline" onClick={() => closeToast && closeToast()}>
-                Cancelar
-              </Button>
-              <Button
-                size="sm"
-                onClick={async () => {
-                  try {
-                    await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
-                    showEditedSuccessfullyToast();
-                    fetchMaintenances(currentPage);
-                  } catch (error) {
-                    showErrorToast("Erro ao alterar status: " + error);
-                  } finally {
-                    closeToast && closeToast();
-                  }
-                }}
-              >
-                Confirmar
-              </Button>
-            </div>
-          </div>
-        ),
-        { autoClose: false, closeOnClick: false }
-      );
+  if (!confirm.isConfirmed) return;
+
+  try {
+    const res = await apiClient.delete(
+      `/PatrimonyMaintenance/${u.guid}`
+    );
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
       return;
     }
 
-    try {
-      await apiClient.patch(`/PatrimonyMaintenance/${u.guid}/status/${newStatus}`);
-      showEditedSuccessfullyToast("Status atualizado com sucesso");
-      fetchMaintenances(currentPage);
-    } catch (error) {
-      showErrorToast("Erro ao alterar status: " + error);
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Manutenção excluída com sucesso.",
+    });
+
+    fetchMaintenances(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao excluir manutenção.",
+      });
     }
-  };
+  }
+};
+
+  const handleToggleStatus = async (
+  u: PatrimonyMaintenance,
+  newStatus: string
+) => {
+  if (newStatus === "Concluido") {
+    const confirm = await Swal.fire({
+      icon: "warning",
+      title: "Confirmação",
+      html:
+        "Tem certeza que deseja marcar como <b>Concluído</b>?<br/>" +
+        "Essa ação não é reversível.",
+      showCancelButton: true,
+      confirmButtonText: "Sim, confirmar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#d33",
+    });
+
+    if (!confirm.isConfirmed) return;
+  }
+
+  try {
+    const res = await apiClient.patch(
+      `/PatrimonyMaintenance/${u.guid}/status/${newStatus}`
+    );
+
+    if (res.data?.hasNotifications) {
+      await Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        html: res.data.notifications.join("<br/>"),
+      });
+      return;
+    }
+
+    await Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Status atualizado com sucesso.",
+    });
+
+    fetchMaintenances(currentPage);
+  } catch (err: any) {
+    const notifications = err?.response?.data?.notifications;
+
+    if (notifications?.length) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        html: notifications.join("<br/>"),
+      });
+    } else {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: "Erro inesperado ao alterar status.",
+      });
+    }
+  }
+};
+
 
   const columns = [
     { key: "patrimonyName", label: "Patrimônio" },
