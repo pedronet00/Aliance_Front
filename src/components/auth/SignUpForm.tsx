@@ -5,6 +5,7 @@ import Label from "@/components/form/Label";
 import apiClient from "@/api/apiClient";
 import { showErrorToast } from "../toast/Toasts";
 import { Link } from "react-router";
+import Swal from "sweetalert2";
 
 // =======================
 // DTO COMPLETO
@@ -28,8 +29,16 @@ interface NewClientDTO {
   userPhone: string;
 
   plan: string;
+  planValue: number;
   paymentMethod: string;
 }
+
+const PLAN_VALUES: Record<string, number> = {
+  Básico: 79.9,
+  Essencial: 119.9,
+  Premium: 199.9,
+};
+
 
 // =======================
 // UI HELPERS
@@ -85,7 +94,7 @@ export default function SignUpForm() {
     userName: "",
     userEmail: "",
     userPhone: "",
-
+    planValue: 0,
     plan: "",
     paymentMethod: "CREDIT_CARD",
   });
@@ -171,11 +180,6 @@ export default function SignUpForm() {
   };
 
   const validateStep = () => {
-    if (step === 1) {
-      return ["churchName", "churchEmail", "churchPhone"].every(
-        (f) => form[f as keyof NewClientDTO] !== ""
-      );
-    }
 
     if (step === 2) {
       return [
@@ -195,12 +199,64 @@ export default function SignUpForm() {
     return true;
   };
 
+  const validateStep1Async = async () => {
+  const requiredFilled = ["churchName", "churchEmail", "churchPhone"].every(
+    (f) => form[f as keyof NewClientDTO] !== ""
+  );
 
-  const nextStep = () => {
-    if (!validateStep())
-      return showErrorToast("Preencha todos os campos obrigatórios.");
-    setStep((s) => s + 1);
-  };
+  if (!requiredFilled) {
+    showErrorToast("Preencha todos os campos obrigatórios.");
+    return false;
+  }
+
+  try {
+    const res = await apiClient.get(
+      `/Register/${encodeURIComponent(form.churchEmail)}`
+    );
+
+    const checkoutUrl = res.data?.checkoutUrl?.[0];
+
+    if (checkoutUrl) {
+      const result = await Swal.fire({
+        icon: "warning",
+        title: "Cadastro já encontrado",
+        text:
+          "Identificamos um cadastro para este e-mail que ainda não concluiu o pagamento. Deseja continuar para o checkout?",
+        showCancelButton: true,
+        confirmButtonText: "Ir para pagamento",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      });
+
+      if (result.isConfirmed) {
+        window.location.href = checkoutUrl;
+      }
+
+      return false; // interrompe o fluxo em qualquer caso
+    }
+
+    return true;
+  } catch {
+    showErrorToast("Erro ao validar cadastro existente.");
+    return false;
+  }
+};
+
+
+  const nextStep = async () => {
+  if (step === 1) {
+    const ok = await validateStep1Async();
+    if (!ok) return;
+  } else {
+    if (!validateStep()) {
+      showErrorToast("Preencha todos os campos obrigatórios.");
+      return;
+    }
+  }
+
+  setStep((s) => s + 1);
+};
+
 
   const prevStep = () => setStep((s) => s - 1);
 
@@ -326,7 +382,14 @@ export default function SignUpForm() {
                 <select
                   className="h-11 w-full rounded-lg border px-3 shadow-sm"
                   value={form.plan}
-                  onChange={(e) => handleChange("plan", e.target.value)}
+                  onChange={(e) => {
+                    const selectedPlan = e.target.value;
+                    setForm((prev) => ({
+                      ...prev,
+                      plan: selectedPlan,
+                      planValue: PLAN_VALUES[selectedPlan] ?? 0,
+                    }));
+                  }}
                 >
                   <option value="">Selecione...</option>
                   <option value="Básico">Básico</option>
