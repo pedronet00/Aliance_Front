@@ -1,4 +1,4 @@
-import { CheckIcon, CircleIcon } from "lucide-react";
+import { CheckCircle2, CircleDashed, Rocket } from "lucide-react";
 
 interface OnboardingChecklistProps {
   totalMembers: number;
@@ -39,67 +39,78 @@ export default function OnboardingChecklist({ totalEvents, totalBudgets, totalMe
   const progress = (completedCount / tasks.length) * 100;
 
   return (
-    <div className="flex flex-col md:flex-row items-center gap-6 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900 shadow-sm">
+    <div className="relative overflow-hidden flex flex-col md:flex-row items-center gap-8 rounded-[2.5rem] border border-gray-200/60 bg-white p-8 dark:border-gray-800/80 dark:bg-gray-900 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+      {/* Background Glow */}
+      <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/3 w-96 h-96 bg-brand-500/10 dark:bg-brand-500/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
+
       {/* Imagem à esquerda */}
-      <div className="flex-shrink-0 w-full md:w-1/2 flex justify-center">
+      <div className="relative z-10 hidden md:flex flex-shrink-0 w-full md:w-5/12 justify-center items-center">
+        <div className="absolute inset-0 bg-gradient-to-tr from-brand-100/50 to-transparent dark:from-brand-900/20 rounded-full blur-2xl transform scale-75" />
         <img
           src="/images/vectors/champion.png"
           alt="Onboarding Illustration"
-          className="max-w-xs w-full h-auto object-contain"
+          className="relative z-10 max-w-sm w-full h-auto object-contain drop-shadow-xl transform transition-transform duration-700 hover:scale-105"
         />
       </div>
 
       {/* Checklist à direita */}
-      <div className="w-full md:w-1/2">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-          🧭 Onboarding — primeiros passos
-        </h2>
+      <div className="relative z-10 w-full md:w-7/12 flex flex-col justify-center">
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20 text-brand-600 dark:text-brand-400 text-xs font-bold uppercase tracking-widest mb-4">
+            <Rocket size={14} />
+            Primeiros Passos
+          </div>
+          <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">
+            Configure sua <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-500">Igreja</span>
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+            Complete estas {tasks.length} etapas fundamentais para tirar o máximo proveito do sistema.
+          </p>
+        </div>
 
-        <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 mb-5">
+        <div className="w-full bg-gray-100 dark:bg-gray-800/50 rounded-full h-2.5 mb-2 overflow-hidden border border-gray-200/50 dark:border-gray-700/50 relative">
           <div
-            className="bg-emerald-500 h-2 rounded-full transition-all duration-500"
+            className="absolute top-0 left-0 bg-gradient-to-r from-brand-400 to-brand-600 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(70,95,255,0.4)]"
             style={{ width: `${progress}%` }}
-          ></div>
+          />
+        </div>
+        <div className="flex justify-between items-center mb-6 text-xs font-bold text-gray-400 dark:text-gray-500">
+          <span>{completedCount} concluídas</span>
+          <span className="text-brand-500">{Math.round(progress)}%</span>
         </div>
 
         <ul className="space-y-3">
           {tasks.map((task) => (
             <li
               key={task.id}
-              className={`flex items-start gap-3 p-3 rounded-xl border ${
-                task.completed
-                  ? "border-emerald-200 bg-emerald-50 dark:bg-emerald-900/10"
-                  : "border-gray-200 dark:border-gray-700"
-              }`}
+              className={`group flex items-start gap-4 p-4 rounded-2xl border transition-all duration-300 ${task.completed
+                  ? "border-emerald-500/30 bg-emerald-50/50 shadow-[0_2px_10px_rgba(16,185,129,0.05)] dark:bg-emerald-500/5 dark:border-emerald-500/20"
+                  : "border-gray-200/60 bg-white/50 dark:bg-gray-800/40 dark:border-gray-700/50 shadow-sm hover:border-brand-300 dark:hover:border-brand-500/40 hover:shadow-md hover:bg-white dark:hover:bg-gray-800"
+                }`}
             >
-              <div className="mt-1">
+              <div className="mt-0.5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
                 {task.completed ? (
-                  <CheckIcon className="text-emerald-500 size-5" />
+                  <CheckCircle2 className="text-emerald-500 size-6" />
                 ) : (
-                  <CircleIcon className="text-gray-400 size-5" />
+                  <CircleDashed className="text-gray-300 dark:text-gray-600 size-6 group-hover:text-brand-400 transition-colors" />
                 )}
               </div>
               <div>
                 <h3
-                  className={`font-medium ${
-                    task.completed
+                  className={`font-semibold text-sm mb-0.5 transition-colors ${task.completed
                       ? "text-emerald-700 dark:text-emerald-400"
-                      : "text-gray-800 dark:text-gray-200"
-                  }`}
+                      : "text-gray-900 dark:text-gray-100 group-hover:text-brand-600 dark:group-hover:text-brand-400"
+                    }`}
                 >
                   {task.title}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-400/80 leading-relaxed">
                   {task.description}
                 </p>
               </div>
             </li>
           ))}
         </ul>
-
-        {/* <p className="mt-5 text-sm text-gray-500 dark:text-gray-400 text-center">
-          {completedCount} de {tasks.length} tarefas concluídas
-        </p> */}
       </div>
     </div>
   );

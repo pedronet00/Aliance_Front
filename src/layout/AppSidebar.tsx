@@ -7,12 +7,13 @@ import apiClient from "@/api/apiClient";
 import { Branch } from "@/types/Branch/Branch";
 import { showErrorToast } from "@/components/toast/Toasts";
 import Swal from 'sweetalert2';
+import { useUpgradeModal } from "@/context/UpgradeModalContext";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  subItems?: { name: string; path: string; pro?: boolean; new?: boolean; disabled?: boolean }[];
 };
 
 
@@ -39,9 +40,9 @@ const BranchSwitcher = ({
   const showFull = isExpanded || isHovered || isMobileOpen;
 
   const activeBranch =
-    branches.find(b => b.id === activeBranchId) ?? {
+    branches.find(b => b.id === activeBranchId) || branches[0] || {
       id: 0,
-      name: "Sede",
+      name: "Carregando...",
     };
 
   useEffect(() => {
@@ -87,9 +88,8 @@ const BranchSwitcher = ({
             </div>
 
             <ChevronUp
-              className={`w-4 h-4 text-gray-400 transition-transform ${
-                open ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""
+                }`}
             />
           </button>
 
@@ -102,7 +102,7 @@ const BranchSwitcher = ({
                 shadow-lg z-50 overflow-hidden
               "
             >
-              {[{ id: 0, name: "Sede" }, ...branches].map(branch => (
+              {branches.map(branch => (
                 <button
                   key={branch.id}
                   onClick={() => {
@@ -110,26 +110,29 @@ const BranchSwitcher = ({
                     setOpen(false);
                   }}
                   className={`
-                    w-full flex items-center gap-3 px-3 py-2
+                    w-full flex items-center gap-3 px-4 py-3
                     hover:bg-gray-100 dark:hover:bg-gray-800
-                    transition
-                    ${
-                      branch.id === activeBranchId
-                        ? "bg-gray-100 dark:bg-gray-800"
-                        : ""
+                    transition-all duration-200
+                    ${branch.id === activeBranchId
+                      ? "bg-brand-50/50 dark:bg-brand-500/10 border-l-4 border-brand-500"
+                      : "border-l-4 border-transparent"
                     }
                   `}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-brand-500/10 text-brand-500 flex items-center justify-center font-semibold">
+                  <div className="w-9 h-9 shrink-0 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-sm">
                     {branch.name.charAt(0).toUpperCase()}
                   </div>
 
-                  <span className="flex-1 text-sm text-gray-900 dark:text-gray-100 truncate">
-                    {branch.name}
-                  </span>
+                  <div className="flex-1 text-left">
+                    <span className="block text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {branch.name}
+                    </span>
+                  </div>
 
                   {branch.id === activeBranchId && (
-                    <Check className="w-4 h-4 text-brand-500" />
+                    <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    </div>
                   )}
                 </button>
               ))}
@@ -162,27 +165,27 @@ const AppSidebar: React.FC = () => {
   const location = useLocation();
   const { user, setBranch } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
+  const { openUpgradeModal } = useUpgradeModal();
 
   useEffect(() => {
-  if (!user) {
-    console.log("user ainda não carregado");
-    return;
-  }
+    if (!user) {
+      console.log("user ainda não carregado");
+      return;
+    }
 
-  console.log("branch persistida:", user.branchId);
-  console.log("localStorage:", localStorage.getItem("activeBranchId"));
-}, [user]);
+    console.log("branch persistida:", user.branchId);
+    console.log("localStorage:", localStorage.getItem("activeBranchId"));
+  }, [user]);
 
 
-  
+
   // função utilitária p/ verificar se o usuário possui um dos roles
   const can = (roles: string[]) => {
     const userRoles = Array.isArray(user?.role) ? user.role : [user?.role];
-    return userRoles.some((r: string) => roles.includes(r));
+    return userRoles.some((r) => r && roles.includes(r as string));
   };
 
- const fetchBranches = async () => {
+  const fetchBranches = async () => {
     try {
       const res = await apiClient.get(
         `/Branch/paged?pageNumber=1&pageSize=1000`
@@ -198,14 +201,6 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     fetchBranches();
   }, []);
-
-   const branchOptions = [
-  { value: 0, label: "Sede" },
-  ...branches.map(branch => ({
-    value: branch.id,
-    label: branch.name,
-  })),
-];
 
 
   const navItems: NavItem[] = [
@@ -226,11 +221,11 @@ const AppSidebar: React.FC = () => {
         { name: "Departamentos", path: "/departamentos" },
 
         ...(can(["Admin", "Pastor", "Department Leader"])
-          ? [{ name: "Manutenção Patrimonial", path: "/manutencoes-patrimonios" }]
+          ? [{ name: "Manutenção Patrimonial", path: "/manutencoes-patrimonios", disabled: user?.plan === "Gratuito" }]
           : []),
 
         ...(can(["Admin", "Pastor", "Department Leader", "Cell Leader"])
-          ? [{ name: "Patrimônios", path: "/patrimonios" }]
+          ? [{ name: "Patrimônios", path: "/patrimonios", disabled: user?.plan === "Gratuito" }]
           : []),
       ],
     },
@@ -239,7 +234,7 @@ const AppSidebar: React.FC = () => {
       icon: <GraduationCap />,
       subItems: [
         { name: "Células", path: "/celulas" },
-        { name: "Aulas de EBD", path: "/aulas-ebd" },
+        { name: "Aulas de EBD", path: "/aulas-ebd", disabled: user?.plan === "Gratuito" },
       ],
     },
 
@@ -247,7 +242,7 @@ const AppSidebar: React.FC = () => {
       name: "Eventos & Filiais",
       icon: <Calendar />,
       subItems: [
-        { name: "Campanhas de Missões", path: "/campanhas-de-missoes" },
+        { name: "Campanhas de Missões", path: "/campanhas-de-missoes", disabled: user?.plan === "Gratuito" },
         { name: "Eventos", path: "/eventos" },
         { name: "Filiais", path: "/filiais" },
       ],
@@ -258,15 +253,15 @@ const AppSidebar: React.FC = () => {
       icon: <DollarSign />,
       subItems: [
         ...(can(["Admin", "Pastor", "Financeiro"])
-          ? [{ name: "Contas Automáticas", path: "/contas-automaticas" }]
+          ? [{ name: "Contas Automáticas", path: "/contas-automaticas", disabled: user?.plan === "Gratuito" }]
           : []),
 
         ...(can(["Admin", "Pastor", "Financeiro"])
-          ? [{ name: "Contas a Pagar", path: "/contas-a-pagar" }]
+          ? [{ name: "Contas a Pagar", path: "/contas-a-pagar", disabled: user?.plan === "Gratuito" }]
           : []),
 
         ...(can(["Admin", "Pastor", "Financeiro"])
-          ? [{ name: "Contas a Receber", path: "/contas-a-receber" }]
+          ? [{ name: "Contas a Receber", path: "/contas-a-receber", disabled: user?.plan === "Gratuito" }]
           : []),
 
         ...(can(["Admin", "Pastor", "Financeiro"])
@@ -278,7 +273,7 @@ const AppSidebar: React.FC = () => {
           : []),
 
         ...(can(["Admin", "Pastor", "Financeiro"])
-          ? [{ name: "Orçamentos", path: "/orcamentos" }]
+          ? [{ name: "Orçamentos", path: "/orcamentos", disabled: user?.plan === "Gratuito" }]
           : []),
 
         ...(can(["Admin", "Pastor", "Financeiro"])
@@ -293,7 +288,7 @@ const AppSidebar: React.FC = () => {
         { name: "Membros", path: "/membros" },
 
         ...(can(["Admin", "Pastor"])
-          ? [{ name: "Visitas Pastorais", path: "/visitas-pastorais" }]
+          ? [{ name: "Visitas Pastorais", path: "/visitas-pastorais", disabled: user?.plan === "Gratuito" }]
           : []),
       ],
     },
@@ -302,14 +297,14 @@ const AppSidebar: React.FC = () => {
       icon: <Church />,
       subItems: [
         { name: "Cultos", path: "/cultos" },
-        { name: "Louvor", path: "/grupos-de-louvor" },
+        { name: "Louvor", path: "/grupos-de-louvor", disabled: user?.plan === "Gratuito" },
       ],
     },
     {
       name: "Outros",
       icon: <Ellipsis />,
       subItems: [
-        { name: "Classes de EBD", path: "/classes-ebd" },
+        { name: "Classes de EBD", path: "/classes-ebd", disabled: user?.plan === "Gratuito" },
         { name: "Locais", path: "/locais" },
         ...(can(["Admin", "Financeiro", "Pastor"])
           ? [{ name: "Relatórios", path: "/relatorios" }]
@@ -384,28 +379,25 @@ const AppSidebar: React.FC = () => {
 
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
-      
+
       {items.map((nav, index) => (
         <li key={nav.name}>
           {nav.subItems ? (
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              } cursor-pointer ${
-                !isExpanded && !isHovered
+              className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
+                ? "menu-item-active"
+                : "menu-item-inactive"
+                } cursor-pointer ${!isExpanded && !isHovered
                   ? "lg:justify-center"
                   : "lg:justify-start"
-              }`}
+                }`}
             >
               <span
-                className={`menu-item-icon-size  ${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
+                className={`menu-item-icon-size  ${openSubmenu?.type === menuType && openSubmenu?.index === index
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
+                  }`}
               >
                 {nav.icon}
               </span>
@@ -414,12 +406,11 @@ const AppSidebar: React.FC = () => {
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDown
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
+                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
+                    ? "rotate-180 text-brand-500"
+                    : ""
+                    }`}
                 />
               )}
             </button>
@@ -427,16 +418,14 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
-                className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                }`}
+                className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  }`}
               >
                 <span
-                  className={`menu-item-icon-size ${
-                    isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
-                  }`}
+                  className={`menu-item-icon-size ${isActive(nav.path)
+                    ? "menu-item-icon-active"
+                    : "menu-item-icon-inactive"
+                    }`}
                 >
                   {nav.icon}
                 </span>
@@ -462,40 +451,54 @@ const AppSidebar: React.FC = () => {
               <ul className="mt-2 space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
-                    <Link
-                      to={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
+                    {subItem.disabled ? (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          openUpgradeModal();
+                        }}
+                        className={`w-full text-left menu-dropdown-item opacity-60 hover:bg-transparent hover:text-gray-500 cursor-not-allowed`}
+                      >
+                        {subItem.name}
+                        <span className="flex items-center gap-1 ml-auto">
+                          <span className="ml-auto text-[10px] font-bold text-white bg-gradient-to-r from-brand-500 to-amber-500 rounded px-1.5 py-0.5 shadow-sm border border-brand-400">
+                            PRO
+                          </span>
+                        </span>
+                      </button>
+                    ) : (
+                      <Link
+                        to={subItem.path}
+                        className={`menu-dropdown-item ${isActive(subItem.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-                      <span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
+                          }`}
+                      >
+                        {subItem.name}
+                        <span className="flex items-center gap-1 ml-auto">
+                          {subItem.new && (
+                            <span
+                              className={`ml-auto ${isActive(subItem.path)
                                 ? "menu-dropdown-badge-active"
                                 : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            new
-                          </span>
-                        )}
-                        {subItem.pro && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
+                                } menu-dropdown-badge`}
+                            >
+                              new
+                            </span>
+                          )}
+                          {subItem.pro && (
+                            <span
+                              className={`ml-auto ${isActive(subItem.path)
                                 ? "menu-dropdown-badge-active"
                                 : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge`}
-                          >
-                            pro
-                          </span>
-                        )}
-                      </span>
-                    </Link>
+                                } menu-dropdown-badge`}
+                            >
+                              pro
+                            </span>
+                          )}
+                        </span>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -508,11 +511,12 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
-        ${
-          isExpanded || isMobileOpen
-            ? "w-[290px]"
-            : isHovered
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0
+        transition-all duration-300 ease-in-out z-50 border-r border-gray-200/50 dark:border-white/10 shadow-sm dark:shadow-2xl
+        bg-white dark:bg-linear-to-b dark:from-[#0e357a] dark:to-[#061d44]
+        ${isExpanded || isMobileOpen
+          ? "w-[290px]"
+          : isHovered
             ? "w-[290px]"
             : "w-[90px]"
         }
@@ -522,9 +526,8 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
+        className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+          }`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
@@ -546,20 +549,20 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <>
-            <img
-              className="dark:hidden"
-              src="/images/logo/PNG PRETO.png"
-              alt="Logo"
-              width={50}
-              height={32}
-            />
-            <img
-              className="hidden dark:block"
-              src="/images/logo/PNG BRANCO.png"
-              alt="Logo"
-              width={50}
-              height={32}
-            />
+              <img
+                className="dark:hidden"
+                src="/images/logo/PNG PRETO.png"
+                alt="Logo"
+                width={50}
+                height={32}
+              />
+              <img
+                className="hidden dark:block"
+                src="/images/logo/PNG BRANCO.png"
+                alt="Logo"
+                width={50}
+                height={32}
+              />
             </>
           )}
         </Link>
@@ -569,49 +572,49 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
+                className={`mb-4 text-[11px] font-bold uppercase tracking-widest flex leading-[20px] text-gray-400/80 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
               >
-                
+                {!isExpanded && !isHovered ? "•••" : "Menu Principal"}
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
             <div className="">
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                  !isExpanded && !isHovered
-                    ? "lg:justify-center"
-                    : "justify-start"
-                }`}
+                className={`mb-4 mt-6 text-[11px] font-bold uppercase tracking-widest flex leading-[20px] text-gray-400/80 ${!isExpanded && !isHovered
+                  ? "lg:justify-center"
+                  : "justify-start"
+                  }`}
               >
+                {!isExpanded && !isHovered ? "•••" : "Aplicações"}
               </h2>
               {renderMenuItems(othersItems, "others")}
-              
+
             </div>
           </div>
           <BranchSwitcher
-        branches={branches}
-        activeBranchId={user?.branchId}
-        isExpanded={isExpanded}
-        isHovered={isHovered}
-        isMobileOpen={isMobileOpen}
-        onChange={(branchId) => {
-          setBranch(branchId);
+            branches={branches}
+            activeBranchId={user?.branchId}
+            isExpanded={isExpanded}
+            isHovered={isHovered}
+            isMobileOpen={isMobileOpen}
+            onChange={(branchId) => {
+              setBranch(branchId);
 
-          Swal.fire({
-            icon: "success",
-            title: "Filial alterada",
-            text: "A filial ativa foi atualizada.",
-            timer: 1500,
-            showConfirmButton: false,
-          }).then(() => window.location.reload());
-        }}
-      />
+              Swal.fire({
+                icon: "success",
+                title: "Filial alterada",
+                text: "A filial ativa foi atualizada.",
+                timer: 1500,
+                showConfirmButton: false,
+              }).then(() => window.location.reload());
+            }}
+          />
         </nav>
       </div>
+
     </aside>
   );
 };

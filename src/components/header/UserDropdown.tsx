@@ -7,7 +7,7 @@ import { useNavigate } from "react-router";
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const auth = useAuth();
-  const {can} = useAuth();
+  const { can } = useAuth();
 
   const navigate = useNavigate();
 
@@ -42,14 +42,13 @@ export default function UserDropdown() {
           {userInitial}
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">
+        <span className="block mr-1 font-medium text-theme-sm text-gray-700 dark:text-white/90">
           {auth?.user?.name?.toUpperCase() ?? ""}
         </span>
 
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`stroke-gray-500 dark:stroke-white/60 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"
@@ -79,27 +78,27 @@ export default function UserDropdown() {
             {auth?.user?.email}
           </span>
         </div>
-        
+
         {can(["Admin", "Secretaria"]) && (
-        <>
-        <Button
-        variant={"outline"}
-          onClick={() => {
-            closeDropdown();
-            navigate("/detalhes-assinatura");
-          }}
-          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
-        >
-          Dados de cobrança
-        </Button>
-        <Button
-        variant={"secondary"}
-          onClick={() => {closeDropdown(); navigate("/log")}}
-          className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
-        >
-          Logs
-        </Button>
-        </>
+          <>
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                closeDropdown();
+                navigate("/detalhes-assinatura");
+              }}
+              className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
+            >
+              Dados de cobrança
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={() => { closeDropdown(); navigate("/log") }}
+              className="flex items-center gap-3 px-3 py-2 mt-3 font-medium w-full justify-center"
+            >
+              Logs
+            </Button>
+          </>
         )}
         <Button
           onClick={() => auth.logout()}

@@ -1,5 +1,6 @@
 import PageMeta from "../../components/common/PageMeta";
 import ResetPasswordForm from "../../components/auth/ResetPasswordForm";
+import AuthLayout from "./AuthPageLayout";
 
 export default function ForgotPassword() {
   return (
@@ -9,17 +10,9 @@ export default function ForgotPassword() {
         description="Redefinição de senha do sistema Aliance ERP."
       />
 
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{
-          backgroundImage: `url("./images/backgrounds/fundo.jpg")`,
-          backgroundSize: "cover",
-        }}
-      >
-        <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-2xl border border-gray-200">
-          <ResetPasswordForm />
-        </div>
-      </div>
+      <AuthLayout>
+        <ResetPasswordForm />
+      </AuthLayout>
     </>
   );
 }
