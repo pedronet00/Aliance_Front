@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "../context/SidebarContext";
-import { LayoutDashboard, ChevronDown, ArrowDownUp, ChevronUp, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, Check } from "lucide-react";
+import { LayoutDashboard, ChevronDown, ArrowDownUp, ChevronUp, Calendar, GraduationCap, Church, SquareChartGantt, Ellipsis, UsersRound, DollarSign, Check, Menu } from "lucide-react";
 import apiClient from "@/api/apiClient";
 import { Branch } from "@/types/Branch/Branch";
 import { showErrorToast } from "@/components/toast/Toasts";
@@ -23,17 +23,12 @@ const BranchSwitcher = ({
   branches,
   activeBranchId,
   onChange,
-  isExpanded,
-  isHovered,
-  isMobileOpen,
 }: {
   branches: Branch[];
   activeBranchId?: number;
   onChange: (id: number) => void;
-  isExpanded: boolean;
-  isHovered: boolean;
-  isMobileOpen: boolean;
 }) => {
+  const { isExpanded, isHovered, isMobileOpen, toggleSidebar } = useSidebar();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -144,7 +139,10 @@ const BranchSwitcher = ({
         <div className="flex justify-center">
           <button
             title={`Filial: ${activeBranch.name}`}
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              toggleSidebar();
+              setOpen(true);
+            }}
             className="
               w-11 h-11 flex items-center justify-center
               hover:bg-gray-200 dark:hover:bg-gray-700 
@@ -161,7 +159,7 @@ const BranchSwitcher = ({
 
 
 const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
   const location = useLocation();
   const { user, setBranch } = useAuth();
   const [branches, setBranches] = useState<Branch[]>([]);
@@ -384,13 +382,16 @@ const AppSidebar: React.FC = () => {
         <li key={nav.name}>
           {nav.subItems ? (
             <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
+              onClick={() => {
+                handleSubmenuToggle(index, menuType);
+                if (!isExpanded) toggleSidebar();
+              }}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
                 ? "menu-item-active"
                 : "menu-item-inactive"
-                } cursor-pointer ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "lg:justify-start"
+                } cursor-pointer ${!isExpanded
+                  ? "justify-center px-0"
+                  : "justify-start"
                 }`}
             >
               <span
@@ -401,10 +402,10 @@ const AppSidebar: React.FC = () => {
               >
                 {nav.icon}
               </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
+              {(isExpanded || isMobileOpen) && (
                 <span className="menu-item-text">{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
+              {(isExpanded || isMobileOpen) && (
                 <ChevronDown
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
                     openSubmenu?.index === index
@@ -418,8 +419,12 @@ const AppSidebar: React.FC = () => {
             nav.path && (
               <Link
                 to={nav.path}
+                onClick={() => {
+                  if (isExpanded) toggleSidebar();
+                  if (isMobileOpen) toggleMobileSidebar();
+                }}
                 className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                  }`}
+                  } ${!isExpanded ? "justify-center px-0" : ""}`}
               >
                 <span
                   className={`menu-item-icon-size ${isActive(nav.path)
@@ -429,13 +434,13 @@ const AppSidebar: React.FC = () => {
                 >
                   {nav.icon}
                 </span>
-                {(isExpanded || isHovered || isMobileOpen) && (
+                {(isExpanded || isMobileOpen) && (
                   <span className="menu-item-text">{nav.name}</span>
                 )}
               </Link>
             )
           )}
-          {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
+          {nav.subItems && (isExpanded || isMobileOpen) && (
             <div
               ref={(el) => {
                 subMenuRefs.current[`${menuType}-${index}`] = el;
@@ -469,6 +474,10 @@ const AppSidebar: React.FC = () => {
                     ) : (
                       <Link
                         to={subItem.path}
+                        onClick={() => {
+                          if (isExpanded) toggleSidebar();
+                          if (isMobileOpen) toggleMobileSidebar();
+                        }}
                         className={`menu-dropdown-item ${isActive(subItem.path)
                           ? "menu-dropdown-item-active"
                           : "menu-dropdown-item-inactive"
@@ -511,39 +520,32 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0
         transition-all duration-300 ease-in-out z-50 border-r border-gray-200/50 dark:border-white/10 shadow-sm dark:shadow-2xl
         bg-white dark:bg-linear-to-b dark:from-[#0e357a] dark:to-[#061d44]
-        ${isExpanded || isMobileOpen
-          ? "w-[290px]"
-          : isHovered
-            ? "w-[290px]"
-            : "w-[90px]"
-        }
+        ${isExpanded || isMobileOpen ? "w-[290px] px-5" : "w-[90px] px-3"}
         ${isMobileOpen ? "translate-x-0 h-[calc(100vh-4rem)]" : "-translate-x-full h-screen"}
         lg:translate-x-0`}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
+        className={`py-8 flex items-center ${!isExpanded ? "lg:flex-col lg:gap-6" : "justify-between"
           }`}
       >
         <Link to="/">
-          {isExpanded || isHovered || isMobileOpen ? (
+          {isExpanded || isMobileOpen ? (
             <>
               <img
                 className="dark:hidden"
                 src="/images/logo/PNG PRETO CORTADO.png"
                 alt="Logo"
-                width={240}
+                width={200}
                 height={40}
               />
               <img
                 className="hidden dark:block"
                 src="/images/logo/PNG BRANCO 2 CORTADO.png"
                 alt="Logo"
-                width={240}
+                width={200}
                 height={40}
               />
             </>
@@ -553,56 +555,51 @@ const AppSidebar: React.FC = () => {
                 className="dark:hidden"
                 src="/images/logo/PNG PRETO.png"
                 alt="Logo"
-                width={50}
+                width={40}
                 height={32}
               />
               <img
                 className="hidden dark:block"
                 src="/images/logo/PNG BRANCO.png"
                 alt="Logo"
-                width={50}
+                width={40}
                 height={32}
               />
             </>
           )}
         </Link>
+        <button
+          onClick={toggleSidebar}
+          className="flex items-center justify-center p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5 transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
             <div>
-              <h2
-                className={`mb-4 text-[11px] font-bold uppercase tracking-widest flex leading-[20px] text-gray-400/80 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {!isExpanded && !isHovered ? "•••" : "Menu Principal"}
-              </h2>
+              {(isExpanded || isMobileOpen) && (
+                <h2 className="mb-4 text-[11px] font-bold uppercase tracking-widest leading-[20px] text-gray-400/80">
+                  Menu Principal
+                </h2>
+              )}
               {renderMenuItems(navItems, "main")}
             </div>
             <div className="">
-              <h2
-                className={`mb-4 mt-6 text-[11px] font-bold uppercase tracking-widest flex leading-[20px] text-gray-400/80 ${!isExpanded && !isHovered
-                  ? "lg:justify-center"
-                  : "justify-start"
-                  }`}
-              >
-                {!isExpanded && !isHovered ? "•••" : "Aplicações"}
-              </h2>
+              {(isExpanded || isMobileOpen) && (
+                <h2 className="mb-4 mt-6 text-[11px] font-bold uppercase tracking-widest leading-[20px] text-gray-400/80">
+                  Aplicações
+                </h2>
+              )}
               {renderMenuItems(othersItems, "others")}
-
             </div>
           </div>
           <BranchSwitcher
             branches={branches}
             activeBranchId={user?.branchId}
-            isExpanded={isExpanded}
-            isHovered={isHovered}
-            isMobileOpen={isMobileOpen}
             onChange={(branchId) => {
               setBranch(branchId);
-
               Swal.fire({
                 icon: "success",
                 title: "Filial alterada",
@@ -614,7 +611,6 @@ const AppSidebar: React.FC = () => {
           />
         </nav>
       </div>
-
     </aside>
   );
 };

@@ -6,7 +6,7 @@ import AppSidebar from "./AppSidebar";
 import { UpgradeModalProvider } from "../context/UpgradeModalContext";
 
 const LayoutContent: React.FC = () => {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  const { isExpanded, isMobileOpen } = useSidebar();
 
   return (
     <div className="min-h-screen xl:flex">
@@ -15,8 +15,7 @@ const LayoutContent: React.FC = () => {
         <Backdrop />
       </div>
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${isExpanded || isHovered ? "lg:ml-[290px]" : "lg:ml-[90px]"
-          } ${isMobileOpen ? "ml-0" : ""} ${isMobileOpen || (isExpanded && window.innerWidth < 1024) ? "blur-[2px] pointer-events-none opacity-50" : ""
+        className={`flex-1 transition-all duration-300 ease-in-out lg:ml-[90px] ${isMobileOpen ? "ml-0" : ""} ${isMobileOpen || isExpanded ? "blur-md pointer-events-none opacity-60" : ""
           }`}
       >
         <AppHeader />
