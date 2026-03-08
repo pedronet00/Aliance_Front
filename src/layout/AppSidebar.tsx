@@ -384,12 +384,12 @@ const AppSidebar: React.FC = () => {
             <button
               onClick={() => {
                 handleSubmenuToggle(index, menuType);
-                if (!isExpanded) toggleSidebar();
+                if (!isExpanded && !isMobileOpen) toggleSidebar();
               }}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
                 ? "menu-item-active"
                 : "menu-item-inactive"
-                } cursor-pointer ${!isExpanded
+                } cursor-pointer ${!(isExpanded || isMobileOpen)
                   ? "justify-center px-0"
                   : "justify-start"
                 }`}
@@ -424,7 +424,7 @@ const AppSidebar: React.FC = () => {
                   if (isMobileOpen) toggleMobileSidebar();
                 }}
                 className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
-                  } ${!isExpanded ? "justify-center px-0" : ""}`}
+                  } ${!(isExpanded || isMobileOpen) ? "justify-center px-0" : "justify-start px-3"}`}
               >
                 <span
                   className={`menu-item-icon-size ${isActive(nav.path)

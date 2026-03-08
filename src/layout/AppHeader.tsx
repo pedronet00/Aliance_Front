@@ -11,7 +11,7 @@ const AppHeader: React.FC = () => {
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState<typeof modules>([]);
 
-  const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
+  const { toggleSidebar, toggleMobileSidebar } = useSidebar();
 
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
@@ -80,6 +80,28 @@ const AppHeader: React.FC = () => {
       <div className="flex flex-col items-center justify-between grow lg:flex-row lg:px-6">
         <div className="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-white/10 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4">
 
+
+          <button
+            onClick={handleToggle}
+            className="flex items-center justify-center w-10 h-10 text-gray-500 dark:text-white/70 rounded-lg lg:hidden hover:bg-gray-100 dark:hover:bg-white/5 transition-colors shrink-0"
+          >
+            <svg
+              className="fill-current text-gray-500 dark:text-white/70"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 6H20M4 12H20M4 18H20"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
           <Link to="/" className="lg:hidden">
             <img
