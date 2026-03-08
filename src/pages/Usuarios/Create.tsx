@@ -1,15 +1,34 @@
 import apiClient from "@/api/apiClient";
 import { Link, useNavigate } from "react-router-dom";
 import { showCreatedSuccessfullyToast } from "@/components/toast/Toasts";
-import FormUser, { UsuarioDTO } from "../Forms/FormUser";
+import FormUser from "../Forms/FormUser";
+import { UserDTO } from "@/types/Usuario/UserDTO";
 import Alert from "@/components/ui/alert/Alert";
 
 export default function UsuariosCreate() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (data: UsuarioDTO) => {
+  const handleSubmit = async (data: UserDTO) => {
     try {
-      const response = await apiClient.post("/User", data);
+      let payload: FormData | UserDTO = data;
+      let headers = {};
+
+      if (data.image) {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            if (value instanceof File) {
+              formData.append(key, value);
+            } else {
+              formData.append(key, value.toString());
+            }
+          }
+        });
+        payload = formData;
+        headers = { "Content-Type": "multipart/form-data" };
+      }
+
+      const response = await apiClient.post("/User", payload, { headers });
       const result = response.data;
 
       if (result.hasNotifications && result.notifications?.length > 0) {
@@ -28,8 +47,8 @@ export default function UsuariosCreate() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <Alert title="Usuário de outra igreja?" message={<>Para cadastrar um usuário que já era de outra igreja utilizadora do Aliance,  
-      clique <Link to="/usuarios/importar" className="underline">aqui</Link>.</>} variant={"info"}/>
+        <Alert title="Usuário de outra igreja?" message={<>Para cadastrar um usuário que já era de outra igreja utilizadora do Aliance,
+          clique <Link to="/usuarios/importar" className="underline">aqui</Link>.</>} variant={"info"} />
       </div>
       <h1 className="text-xl font-semibold mb-4">Cadastrar Usuário</h1>
       {/* validacao usuario de outra igreja */}
